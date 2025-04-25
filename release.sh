@@ -64,7 +64,7 @@ fi
 
 # ⬆️ Aggiorna il changelog
 DATE=$(date +%Y-%m-%d)
-HEADER="## [v$VERSION] - $DATE"
+HEADER="## [$VERSION] - $DATE"
 
 # Prepara changelog temporaneo
 TEMP_FILE=$(mktemp)
@@ -91,12 +91,28 @@ if echo "$COMMITS" | grep -i -v -E '^feat|add|new|fix|bug'; then
   echo "" >> "$TEMP_FILE"
 fi
 
-# Inserisci in cima al changelog
-if [ -f "$CHANGELOG_FILE" ]; then
-  cat "$TEMP_FILE" "$CHANGELOG_FILE" > "${CHANGELOG_FILE}.new"
-  mv "${CHANGELOG_FILE}.new" "$CHANGELOG_FILE"
+# Trova il separatore "---" nel changelog esistente
+if grep -q "^---" "$CHANGELOG_FILE"; then
+  # Aggiungi il nuovo changelog sotto ---
+  sed -i "0,/^---/a $(cat $TEMP_FILE)" "$CHANGELOG_FILE"
 else
-  mv "$TEMP_FILE" "$CHANGELOG_FILE"
+  # Se non esiste, lo aggiunge direttamente
+  cat "$TEMP_FILE" >> "$CHANGELOG_FILE"
+fi
+
+# Rimuovi il file temporaneo
+rm "$TEMP_FILE"
+
+# Messaggio di conferma finale
+echo ""
+echo "### 📝 Nuove modifiche nel changelog:"
+cat "$TEMP_FILE"
+echo ""
+
+read -p "⚠️ Sei sicuro di voler eseguire commit, tag e push per la versione $VERSION? [y/N]: " FINAL_CONFIRM
+if [[ "$FINAL_CONFIRM" != "y" && "$FINAL_CONFIRM" != "Y" ]]; then
+  echo "❌ Release aborted."
+  exit 1
 fi
 
 # Esegui commit, tag e push
@@ -107,4 +123,3 @@ git push origin main
 git push origin "v$VERSION"
 
 echo "✅ Released v$VERSION and updated CHANGELOG.md"
-echo "🚀 Release complete!"
