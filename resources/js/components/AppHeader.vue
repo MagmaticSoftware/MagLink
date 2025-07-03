@@ -108,7 +108,7 @@ const rightNavItems: NavItem[] = [
                     </Sheet>
                 </div>
 
-                <Link :href="route('dashboard')" class="flex items-center gap-x-2">
+                <Link :href="route('tenant.index', { tenant: $page.props.auth.user.tenant_id })" class="flex items-center gap-x-2">
                     <AppLogo />
                 </Link>
 

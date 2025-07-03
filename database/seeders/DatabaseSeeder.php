@@ -2,9 +2,10 @@
 
 namespace Database\Seeders;
 
+use App\Models\Tenant;
 use App\Models\User;
-// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Spatie\Permission\Models\Role;
 
 class DatabaseSeeder extends Seeder
 {
@@ -13,11 +14,26 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
+        // Crea il tenant se non esiste
+        $tenant = Tenant::firstOrCreate(['id' => 'demo'], ['name' => 'Demo Tenant']);
 
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
+        // Crea il dominio se non esiste
+        $tenant->domains()->firstOrCreate(['domain' => 'maglink.localhost']);
+
+        $tenant->run(function () {
+            User::factory()->create([
+                    'name' => 'Demo User',
+                    'email' => 'demo@demo.com',
+                ]);
+        });
+
+        $admin = User::factory()->create([
+            'name' => 'Admin User',
+            'email' => 'admin@demo.com',
         ]);
+
+        Role::findOrCreate('admin', 'web');
+
+        $admin->assignRole('admin');
     }
 }
