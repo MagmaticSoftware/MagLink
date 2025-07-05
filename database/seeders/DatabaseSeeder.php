@@ -14,16 +14,19 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // Crea il tenant se non esiste
-        $tenant = Tenant::firstOrCreate(['id' => 'demo'], ['name' => 'Demo Tenant']);
-
-        // Crea il dominio se non esiste
-        $tenant->domains()->firstOrCreate(['domain' => 'maglink.localhost']);
-
-        $tenant->run(function () {
+        $tenant1 = Tenant::firstOrCreate(['id' => 'demo'], ['name' => 'Demo Tenant']);
+        $tenant1->run(function () {
             User::factory()->create([
                     'name' => 'Demo User',
                     'email' => 'demo@demo.com',
+                ]);
+        });
+
+        $tenant2 = Tenant::firstOrCreate(['id' => 'maglink'], ['name' => 'Maglink']);
+        $tenant2->run(function () {
+            User::factory()->create([
+                    'name' => 'Maglink User',
+                    'email' => 'mag@demo.com',
                 ]);
         });
 

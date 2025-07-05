@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Http\Middleware\SetDefaultTenantForUrls;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -23,7 +24,9 @@ use Stancl\Tenancy\Middleware\PreventAccessFromCentralDomains;
 Route::middleware([
     'web',
     InitializeTenancyByPath::class,
-    PreventAccessFromCentralDomains::class
+    PreventAccessFromCentralDomains::class,
+    'auth',
+    SetDefaultTenantForUrls::class
 ])->prefix('/{tenant}')->group(function () {
     
     Route::get('/dashboard', function () {
@@ -34,5 +37,5 @@ Route::middleware([
             'url' => request()->url(),
         ]);
         return Inertia::render('Dashboard');
-    })->middleware('auth')->name('tenant.index');
+    })->name('tenant.index');
 });
