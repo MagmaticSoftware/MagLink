@@ -47,4 +47,12 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    /**
+     * Get the tenant associated with the user.
+     */
+    public function tenant()
+    {
+        return $this->belongsTo(Tenant::class);
+    }
 }

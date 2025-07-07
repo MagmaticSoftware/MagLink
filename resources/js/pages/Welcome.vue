@@ -7,6 +7,8 @@ const showMobileMenu = ref(false);
 const page = usePage<SharedData>();
 
 const isAuthenticated = computed(() => page.props.auth?.user);
+const isAdmin = computed(() => page.props.auth?.isAdmin);
+const isTenant = computed(() => page.props.auth?.tenant);
 </script>
 
 <template>
@@ -34,13 +36,21 @@ const isAuthenticated = computed(() => page.props.auth?.user);
                         <a href="#about" class="text-gray-700 hover:text-blue-600 dark:text-gray-300 dark:hover:text-blue-400 transition-colors">About</a>
                         
                         <div class="flex items-center space-x-4">
-                            <Link
-                                v-if="isAuthenticated"
-                                :href="route('tenant.index')"
-                                class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors"
-                            >
-                                Dashboard
-                            </Link>
+                            <template v-if="isAuthenticated">
+                                <Link
+                                    v-if="isTenant"
+                                    :href="route('tenant.index')"
+                                    class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors"
+                                >
+                                    Dashboard
+                                </Link>
+                                <a v-else-if="isAdmin"
+                                    :href="route('admin.index')"
+                                    class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors"
+                                >
+                                    Admin Dashboard
+                                </a>
+                            </template>
                             <template v-else>
                                 <Link
                                     :href="route('login')"
@@ -120,7 +130,7 @@ const isAuthenticated = computed(() => page.props.auth?.user);
                         custom branding, and enterprise-grade features for your business.
                     </p>
                     <div class="flex flex-col sm:flex-row gap-4 justify-center">
-                        <Link
+                        <!-- <Link
                             v-if="!isAuthenticated"
                             :href="route('register')"
                             class="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-lg font-medium transition-colors text-lg"
@@ -139,7 +149,7 @@ const isAuthenticated = computed(() => page.props.auth?.user);
                             class="border-2 border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white px-8 py-3 rounded-lg font-medium transition-colors text-lg"
                         >
                             Learn More
-                        </a>
+                        </a> -->
                     </div>
                 </div>
                 
