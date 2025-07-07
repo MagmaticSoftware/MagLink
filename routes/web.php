@@ -7,7 +7,7 @@ Route::get('/', function () {
     return Inertia::render('Welcome');
 })->name('home');
 
-Route::domain('admin.maglink.localhost')->group(function () {
+Route::domain('admin.maglink.localhost')->middleware('auth')->group(function () {
     Route::get('admin', function () {
         return Inertia::render('admin/Index');
     })->name('admin.index');
