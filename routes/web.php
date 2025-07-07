@@ -9,7 +9,7 @@ Route::get('/', function () {
 
 Route::domain('admin.maglink.localhost')->group(function () {
     Route::get('admin', function () {
-        return 'This is your admin application.';
+        return Inertia::render('admin/Index');
     })->name('admin.index');
 });
 
