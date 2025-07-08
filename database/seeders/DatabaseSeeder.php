@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Company;
 use App\Models\Tenant;
 use App\Models\User;
 use Illuminate\Database\Seeder;
@@ -17,21 +18,38 @@ class DatabaseSeeder extends Seeder
         $tenant1 = Tenant::firstOrCreate(['id' => 'demo'], ['name' => 'Demo Tenant']);
         $tenant1->run(function () {
             User::factory()->create([
-                    'name' => 'Demo User',
-                    'email' => 'demo@demo.com',
-                ]);
+                'first_name' => 'Demo',
+                'last_name' => 'User',
+                'email' => 'demo@demo.com',
+            ]);
+
+            Company::factory()->create([
+                'name' => 'Demo Company',
+                'slug' => 'demo',
+            ]);
         });
 
         $tenant2 = Tenant::firstOrCreate(['id' => 'maglink'], ['name' => 'Maglink']);
         $tenant2->run(function () {
             User::factory()->create([
-                    'name' => 'Maglink User',
-                    'email' => 'mag@demo.com',
-                ]);
+                'first_name' => 'Maglink',
+                'last_name' => 'User',
+                'email' => 'mag@demo.com',
+            ]);
+
+            Company::factory()->create([
+                'name' => 'Maglink Company',
+                'slug' => 'maglink',
+            ]);
         });
 
+        Role::findOrCreate('tenant', 'web');
+        $tenant1->user->assignRole('tenant');
+        $tenant2->user->assignRole('tenant');
+
         $admin = User::factory()->create([
-            'name' => 'Admin User',
+            'first_name' => 'Admin',
+            'last_name' => 'User',
             'email' => 'admin@demo.com',
         ]);
 

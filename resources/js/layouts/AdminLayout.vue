@@ -49,6 +49,13 @@ const userMenuItems = ref([
 			{
 				label: 'Profile',
 				icon: 'pi pi-user',
+			},
+			{
+				label: 'Exit',
+				icon: 'pi pi-sign-out',
+				command: () => {
+					logout();
+				},
 			}
         ]
     }

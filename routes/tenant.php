@@ -36,6 +36,6 @@ Route::middleware([
             'request_path' => request()->path(),
             'url' => request()->url(),
         ]);
-        return Inertia::render('Dashboard');
+        return Inertia::render('tenant/Dashboard');
     })->name('tenant.index');
 });

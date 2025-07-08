@@ -37,13 +37,13 @@ const isTenant = computed(() => page.props.auth?.tenant);
                         
                         <div class="flex items-center space-x-4">
                             <template v-if="isAuthenticated">
-                                <Link
+                                <a
                                     v-if="isTenant"
-                                    :href="route('tenant.index')"
+                                    :href="route('tenant.index', { tenant: page.props.auth.tenant })"
                                     class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors"
                                 >
                                     Dashboard
-                                </Link>
+                                </a>
                                 <a v-else-if="isAdmin"
                                     :href="route('admin.index')"
                                     class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors"
