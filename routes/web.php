@@ -7,9 +7,11 @@ Route::get('/', function () {
     return Inertia::render('Welcome');
 })->name('home');
 
-Route::get('dashboard', function () {
-    return Inertia::render('Dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+Route::domain('admin.maglink.localhost')->middleware('auth')->group(function () {
+    Route::get('admin', function () {
+        return Inertia::render('admin/Index');
+    })->name('admin.index');
+});
 
-require __DIR__.'/settings.php';
 require __DIR__.'/auth.php';
+require __DIR__.'/settings.php';

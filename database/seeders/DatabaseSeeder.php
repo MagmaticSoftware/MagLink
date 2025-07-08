@@ -2,9 +2,10 @@
 
 namespace Database\Seeders;
 
+use App\Models\Tenant;
 use App\Models\User;
-// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Spatie\Permission\Models\Role;
 
 class DatabaseSeeder extends Seeder
 {
@@ -13,11 +14,29 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
+        $tenant1 = Tenant::firstOrCreate(['id' => 'demo'], ['name' => 'Demo Tenant']);
+        $tenant1->run(function () {
+            User::factory()->create([
+                    'name' => 'Demo User',
+                    'email' => 'demo@demo.com',
+                ]);
+        });
 
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
+        $tenant2 = Tenant::firstOrCreate(['id' => 'maglink'], ['name' => 'Maglink']);
+        $tenant2->run(function () {
+            User::factory()->create([
+                    'name' => 'Maglink User',
+                    'email' => 'mag@demo.com',
+                ]);
+        });
+
+        $admin = User::factory()->create([
+            'name' => 'Admin User',
+            'email' => 'admin@demo.com',
         ]);
+
+        Role::findOrCreate('admin', 'web');
+
+        $admin->assignRole('admin');
     }
 }
