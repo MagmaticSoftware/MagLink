@@ -11,16 +11,17 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('companies', function (Blueprint $table) {
+        Schema::create('links', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            $table->string('slug')->unique();
-            $table->string('name');
-            $table->string('logo')->nullable();
-            $table->string('email')->nullable();
-            $table->string('website')->nullable();
-            $table->json('social_links')->nullable();
+            $table->foreignId('company_id')->constrained()->onDelete('cascade');
             $table->string('tenant_id')->nullable();
+            $table->string('slug')->unique();
+            $table->string('url');
+            $table->string('title')->nullable();
+            $table->string('description')->nullable();
+            $table->boolean('is_active')->default(true);
+            $table->string('type')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });
@@ -31,6 +32,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('companies');
+        Schema::dropIfExists('links');
     }
 };

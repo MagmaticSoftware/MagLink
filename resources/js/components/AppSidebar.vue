@@ -5,7 +5,7 @@ import NavUser from '@/components/NavUser.vue';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/vue3';
-import { LayoutGrid } from 'lucide-vue-next';
+import { LayoutGrid, Link as LinkIcon } from 'lucide-vue-next';
 import AppLogo from './AppLogo.vue';
 
 
@@ -14,6 +14,11 @@ const mainNavItems: NavItem[] = [
         title: 'Dashboard',
         href: route('tenant.index'),
         icon: LayoutGrid,
+    },
+    {
+        title: 'Links',
+        href: route('links.index'),
+        icon: LinkIcon,
     },
 ];
 

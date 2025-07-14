@@ -7,10 +7,10 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Stancl\Tenancy\Database\Concerns\BelongsToTenant;
 
-class Company extends Model
+class Link extends Model
 {
-    /** @use HasFactory<\Database\Factories\CompanyFactory> */
-    use HasFactory, BelongsToTenant, SoftDeletes;
+    /** @use HasFactory<\Database\Factories\LinkFactory> */
+    use HasFactory, SoftDeletes, BelongsToTenant;
 
     /**
      * The attributes that are mass assignable.
@@ -18,21 +18,25 @@ class Company extends Model
      * @var list<string>
      */
     protected $fillable = [
+        'user_id',
+        'company_id',
+        'tenant_id',
         'slug',
-        'name',
-        'logo',
-        'email',
-        'website',
-        'social_links',
+        'url',
+        'title',
+        'description',
+        'is_active',
+        'type',
     ];
-    
-    public function billingProfile()
-    {
-        return $this->hasOne(BillingProfile::class);
-    }
 
     public function user()
     {
         return $this->belongsTo(User::class);
     }
+
+    public function company()
+    {
+        return $this->belongsTo(Company::class);
+    }
+
 }

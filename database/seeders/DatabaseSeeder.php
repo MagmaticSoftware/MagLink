@@ -17,7 +17,7 @@ class DatabaseSeeder extends Seeder
     {
         $tenant1 = Tenant::firstOrCreate(['id' => 'demo'], ['name' => 'Demo Tenant']);
         $tenant1->run(function () {
-            User::factory()->create([
+            $user = User::factory()->create([
                 'first_name' => 'Demo',
                 'last_name' => 'User',
                 'email' => 'demo@demo.com',
@@ -26,12 +26,13 @@ class DatabaseSeeder extends Seeder
             Company::factory()->create([
                 'name' => 'Demo Company',
                 'slug' => 'demo',
+                'user_id' => $user->id
             ]);
         });
 
         $tenant2 = Tenant::firstOrCreate(['id' => 'maglink'], ['name' => 'Maglink']);
         $tenant2->run(function () {
-            User::factory()->create([
+            $user = User::factory()->create([
                 'first_name' => 'Maglink',
                 'last_name' => 'User',
                 'email' => 'mag@demo.com',
@@ -40,6 +41,7 @@ class DatabaseSeeder extends Seeder
             Company::factory()->create([
                 'name' => 'Maglink Company',
                 'slug' => 'maglink',
+                'user_id' => $user->id,
             ]);
         });
 
@@ -56,5 +58,9 @@ class DatabaseSeeder extends Seeder
         Role::findOrCreate('admin', 'web');
 
         $admin->assignRole('admin');
+
+        $this->call([
+            LinkSeeder::class,
+        ]);
     }
 }

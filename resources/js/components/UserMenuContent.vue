@@ -3,7 +3,11 @@ import UserInfo from '@/components/UserInfo.vue';
 import { DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator } from '@/components/ui/dropdown-menu';
 import type { User } from '@/types';
 import { Link } from '@inertiajs/vue3';
-import { LogOut, Settings } from 'lucide-vue-next';
+import { LogOut, Settings, SunMedium, Moon } from 'lucide-vue-next';
+import { useDark, useToggle } from '@vueuse/core';
+
+const isDark = useDark();
+const toggleDark = useToggle(isDark);
 
 interface Props {
     user: User;
@@ -27,6 +31,14 @@ defineProps<Props>();
             </Link>
         </DropdownMenuItem>
     </DropdownMenuGroup>
+    <DropdownMenuSeparator />
+    <DropdownMenuItem :as-child="true">
+        <button type="button" class="block w-full" @click="toggleDark()">
+            <SunMedium v-if="isDark" class="mr-2 h-4 w-4" aria-hidden="true" />
+            <Moon v-else class="mr-2 h-4 w-4" aria-hidden="true" />
+            {{ isDark ? 'Light' : 'Dark' }} mode
+        </button>
+    </DropdownMenuItem>
     <DropdownMenuSeparator />
     <DropdownMenuItem :as-child="true">
         <Link class="block w-full" method="post" :href="route('logout')" as="button">
