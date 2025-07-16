@@ -4,15 +4,17 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
 use Stancl\Tenancy\Database\Concerns\BelongsToTenant;
 
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable, HasRoles, BelongsToTenant;
+    use HasFactory, Notifiable, HasRoles, BelongsToTenant, HasApiTokens, SoftDeletes;
 
     /**
      * The attributes that are mass assignable.
@@ -20,7 +22,8 @@ class User extends Authenticatable
      * @var list<string>
      */
     protected $fillable = [
-        'name',
+        'first_name',
+        'last_name',
         'email',
         'password',
     ];
@@ -54,5 +57,21 @@ class User extends Authenticatable
     public function tenant()
     {
         return $this->belongsTo(Tenant::class);
+    }
+
+    /**
+     * Get the links associated with the user.
+     */
+    public function links()
+    {
+        return $this->hasMany(Link::class);
+    }
+
+    /**
+     * Get the company associated with the user.
+     */
+    public function company()
+    {
+        return $this->hasOne(Company::class);
     }
 }

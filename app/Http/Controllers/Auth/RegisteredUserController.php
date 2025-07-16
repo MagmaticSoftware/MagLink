@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\Company;
+use App\Models\Tenant;
 use App\Models\User;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
@@ -31,21 +33,37 @@ class RegisteredUserController extends Controller
     public function store(Request $request): RedirectResponse
     {
         $request->validate([
-            'name' => 'required|string|max:255',
+            'first_name' => 'required|string|max:255',
+            'last_name' => 'required|string|max:255',
+            'company_name' => 'required|string|max:255',
+            'slug' => 'required|string|lowercase|alpha_dash|max:255|unique:tenants,id',
             'email' => 'required|string|lowercase|email|max:255|unique:'.User::class,
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
 
-        $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
+        $tenant = Tenant::create([
+            'id' => $request->slug,
+            'name' => $request->company_name,
         ]);
 
-        event(new Registered($user));
+        $tenant->run(function () use ($request) {
+            $user = User::create([
+                'first_name' => $request->first_name,
+                'last_name' => $request->last_name,
+                'email' => $request->email,
+                'password' => Hash::make($request->password),
+            ]);
 
-        Auth::login($user);
+            $company = Company::create([
+                'name' => $request->company_name,
+                'slug' => $request->slug
+            ]);
+            
+            event(new Registered($user));
+            
+            Auth::login($user);
+            return to_route('tenant.index');
+        });
 
-        return to_route('dashboard');
     }
 }

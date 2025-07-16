@@ -2,6 +2,9 @@
 
 declare(strict_types=1);
 
+use App\Http\Controllers\LinkController;
+use App\Http\Controllers\PageController;
+use App\Http\Controllers\QrCodeController;
 use App\Http\Middleware\SetDefaultTenantForUrls;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
@@ -22,9 +25,9 @@ use Stancl\Tenancy\Middleware\PreventAccessFromCentralDomains;
 */
 
 Route::middleware([
-    'web',
     InitializeTenancyByPath::class,
     PreventAccessFromCentralDomains::class,
+    'web',
     'auth',
     SetDefaultTenantForUrls::class
 ])->prefix('/{tenant}')->group(function () {
@@ -36,6 +39,10 @@ Route::middleware([
             'request_path' => request()->path(),
             'url' => request()->url(),
         ]);
-        return Inertia::render('Dashboard');
+        return Inertia::render('tenant/Dashboard');
     })->name('tenant.index');
+
+    Route::resource('links', LinkController::class)->names('links');
+    Route::resource('qrcodes', QrCodeController::class)->names('qrcodes');
+    Route::resource('pages', PageController::class)->names('pages');
 });
