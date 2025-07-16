@@ -11,7 +11,7 @@ class StorePageRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,7 +22,13 @@ class StorePageRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'title' => 'required|string|max:255',
+            'slug' => 'required|string|unique:pages,slug',
+            'content' => 'required|string',
+            'is_active' => 'boolean',
+            'meta_title' => 'nullable|string|max:255',
+            'meta_description' => 'nullable|string|max:500',
+            'meta_keywords' => 'nullable|string|max:255',
         ];
     }
 }

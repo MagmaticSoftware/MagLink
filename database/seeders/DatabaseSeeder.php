@@ -63,6 +63,7 @@ class DatabaseSeeder extends Seeder
             LinkSeeder::class,
             QrCodeSeeder::class,
             PageSeeder::class,
+            PageBlockSeeder::class,
         ]);
     }
 }

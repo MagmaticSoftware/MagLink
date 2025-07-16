@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class UpdatePageRequest extends FormRequest
+class StorePageBlockRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,13 +22,18 @@ class UpdatePageRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'user_id' => 'required|exists:users,id',
+            'company_id' => 'required|exists:companies,id',
+            'tenant_id' => 'nullable|string|max:255',
+            'slug' => 'required|string|unique:pages,slug',
             'title' => 'required|string|max:255',
-            'slug' => 'required|string|unique:pages,slug,' . $this->page->id,
-            'content' => 'required|string',
+            'description' => 'nullable|string',
+            'style' => 'nullable|array',
+            'settings' => 'nullable|array',
             'is_active' => 'boolean',
-            'meta_title' => 'nullable|string|max:255',
-            'meta_description' => 'nullable|string|max:500',
-            'meta_keywords' => 'nullable|string|max:255',
+            'views' => 'integer|min:0',
+            'last_viewed_at' => 'nullable|date',
+            'published_at' => 'nullable|date',
         ];
     }
 }
