@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Http\Controllers\LinkController;
+use App\Http\Controllers\QrCodeController;
 use App\Http\Middleware\SetDefaultTenantForUrls;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
@@ -41,4 +42,5 @@ Route::middleware([
     })->name('tenant.index');
 
     Route::resource('links', LinkController::class)->names('links');
+    Route::resource('qrcodes', QrCodeController::class)->names('qrcodes');
 });
