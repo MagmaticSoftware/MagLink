@@ -6,6 +6,8 @@ import Button from '@volt/Button.vue';
 import InputText from '@volt/InputText.vue';
 import Label from '@volt/Label.vue';
 import { LucideSave } from 'lucide-vue-next';
+import { GridLayout, GridItem } from 'grid-layout-plus';
+import { reactive } from 'vue';
 
 const props = defineProps<{
     page: {
@@ -55,6 +57,14 @@ const submitForm = () => {
         },
     });
 };
+
+const layout = reactive([
+    {"x":0,"y":0,"w":2,"h":2,"i":"Content", static: false},
+    {"x":2,"y":0,"w":2,"h":4,"i":"1", static: false},
+    {"x":2,"y":0,"w":2,"h":5,"i":"2", static: false},
+    {"x":2,"y":2,"w":2,"h":3,"i":"3", static: false},
+    {"x":0,"y":4,"w":2,"h":3,"i":"4", static: false},
+]);
 </script>
 
 <template>
@@ -87,6 +97,47 @@ const submitForm = () => {
                     </Button>
                 </div>
             </form>
+            <GridLayout
+                v-model:layout="layout"
+                :col-num="12"
+                :row-height="100"
+                :max-rows="12"
+                is-draggable
+                is-resizable
+                vertical-compact
+                use-css-transforms
+            >
+                <GridItem
+                v-for="item in layout"
+                :key="item.i"
+                :x="item.x"
+                :y="item.y"
+                :w="item.w"
+                :h="item.h"
+                :i="item.i"
+                class="bg-gray-200 dark:bg-gray-800 rounded-lg flex items-center justify-center text-gray-700 dark:text-gray-300"
+                >
+                {{ item.i }}
+                </GridItem>
+            </GridLayout>
         </div>
     </AppLayout>
 </template>
+
+<style scoped>
+.vgl-layout {
+  background-color: #333;
+}
+
+.vgl-layout::before {
+  position: absolute;
+  width: calc(100% - 5px);
+  height: calc(100% - 5px);
+  margin: 5px;
+  content: '';
+  background-image: linear-gradient(to right, rgb(41, 16, 16) 1px, transparent 1px),
+    linear-gradient(to bottom, rgb(41, 16, 16) 1px, transparent 1px);
+  background-repeat: repeat;
+  background-size: calc(calc(100% - 5px) / 12) 40px;
+}
+</style>
