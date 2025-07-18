@@ -22,18 +22,15 @@ class StorePageBlockRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'user_id' => 'required|exists:users,id',
-            'company_id' => 'required|exists:companies,id',
-            'tenant_id' => 'nullable|string|max:255',
-            'slug' => 'required|string|unique:pages,slug',
-            'title' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'style' => 'nullable|array',
-            'settings' => 'nullable|array',
+            'page_id' => 'required|exists:pages,id',
+            'type' => 'required|string',
+            'title' => 'nullable|string|max:255',
+            'content' => 'nullable|string',
+            'position' => 'nullable|array',
+            'size' => 'nullable|array',
+            'style' => 'nullable|json',
+            'settings' => 'nullable|json',
             'is_active' => 'boolean',
-            'views' => 'integer|min:0',
-            'last_viewed_at' => 'nullable|date',
-            'published_at' => 'nullable|date',
         ];
     }
 }

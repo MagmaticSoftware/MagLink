@@ -19,8 +19,7 @@ const breadcrumbs: BreadcrumbItem[] = [
         <div class="flex h-full flex-1 flex-col gap-4 rounded-xl p-4">
             <div class="grid auto-rows-min gap-4 md:grid-cols-3">
                 <div class="relative aspect-video overflow-hidden rounded-xl border border-sidebar-border/70 dark:border-sidebar-border">
-                    <h2 class="absolute top-4 left-4 z-10 text-lg font-semibold text-white">Welcome to MagLink</h2>
-                    <h3 class="absolute top-16 left-4 z-10 text-lg font-semibold text-white">Nome tenant {{ $page.props.auth.user.tenant_id }}</h3>
+                    <h2 class="absolute top-4 left-4 z-10 text-lg font-semibold text-black dark:text-white">Hi, {{ $page.props.auth.user.tenant_id }}! Welcome to MagLink</h2>
                 </div>
                 <div class="relative aspect-video overflow-hidden rounded-xl border border-sidebar-border/70 dark:border-sidebar-border">
                     <PlaceholderPattern />

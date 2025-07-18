@@ -1,0 +1,40 @@
+/* Mapping utility classes to CSS variables for primary palette */
+.bg-primary { background-color: var(--p-primary-color) !important; }
+.bg-primary-50 { background-color: var(--p-primary-50) !important; }
+.bg-primary-100 { background-color: var(--p-primary-100) !important; }
+.bg-primary-200 { background-color: var(--p-primary-200) !important; }
+.bg-primary-300 { background-color: var(--p-primary-300) !important; }
+.bg-primary-400 { background-color: var(--p-primary-400) !important; }
+.bg-primary-500 { background-color: var(--p-primary-500) !important; }
+.bg-primary-600 { background-color: var(--p-primary-600) !important; }
+.bg-primary-700 { background-color: var(--p-primary-700) !important; }
+.bg-primary-800 { background-color: var(--p-primary-800) !important; }
+.bg-primary-900 { background-color: var(--p-primary-900) !important; }
+.bg-primary-950 { background-color: var(--p-primary-950) !important; }
+.text-primary { color: var(--p-primary-color) !important; }
+.text-primary-contrast { color: var(--p-primary-contrast-color) !important; }
+.border-primary { border-color: var(--p-primary-color) !important; }
+.border-primary-200 { border-color: var(--p-primary-200) !important; }
+.border-primary-700 { border-color: var(--p-primary-700) !important; }
+/* Hover & Active states */
+.bg-primary-emphasis { background-color: var(--p-primary-hover-color) !important; }
+.bg-primary-emphasis-alt { background-color: var(--p-primary-active-color) !important; }
+.enabled\:hover\:bg-primary-emphasis:hover { background-color: var(--p-primary-hover-color) !important; }
+.enabled\:active\:bg-primary-emphasis-alt:active { background-color: var(--p-primary-active-color) !important; }
+.border-primary-emphasis { border-color: var(--p-primary-hover-color) !important; }
+.border-primary-emphasis-alt { border-color: var(--p-primary-active-color) !important; }
+.enabled\:hover\:border-primary-emphasis:hover { border-color: var(--p-primary-hover-color) !important; }
+.enabled\:active\:border-primary-emphasis-alt:active { border-color: var(--p-primary-active-color) !important; }
+/* Outlined & Text variants */
+.bg-primary-50 { background-color: var(--p-primary-50) !important; }
+.bg-primary-100 { background-color: var(--p-primary-100) !important; }
+.enabled\:hover\:bg-primary-50:hover { background-color: var(--p-primary-50) !important; }
+.enabled\:active\:bg-primary-100:active { background-color: var(--p-primary-100) !important; }
+.border-primary-200 { border-color: var(--p-primary-200) !important; }
+.enabled\:hover\:border-primary-200:hover { border-color: var(--p-primary-200) !important; }
+.enabled\:active\:border-primary-200:active { border-color: var(--p-primary-200) !important; }
+.text-primary { color: var(--p-primary-color) !important; }
+.enabled\:hover\:text-primary:hover { color: var(--p-primary-color) !important; }
+.enabled\:active\:text-primary:active { color: var(--p-primary-color) !important; }
+/* Dark mode handled by CSS variables, no extra selectors needed */
+/* Add more mappings as needed for other variants */

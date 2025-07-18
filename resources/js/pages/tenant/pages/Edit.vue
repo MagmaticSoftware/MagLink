@@ -1,5 +1,18 @@
 <script setup lang="ts">
+import axios from 'axios';
 import AppLayout from '@/layouts/AppLayout.vue';
+import LinkBlock from '@/components/tenant/pageblocks/edit/Link.vue';
+import HtmlBlock from '@/components/tenant/pageblocks/edit/Html.vue';
+import TextBlock from '@/components/tenant/pageblocks/edit/Text.vue';
+import ImageBlock from '@/components/tenant/pageblocks/edit/Image.vue';
+import DefaultBlock from '@/components/tenant/pageblocks/edit/Default.vue';
+
+const blockComponents: Record<string, any> = {
+  link: LinkBlock,
+  html: HtmlBlock,
+  text: TextBlock,
+  image: ImageBlock,
+};
 import { type BreadcrumbItem } from '@/types';
 import { Head, useForm } from '@inertiajs/vue3';
 import Button from '@volt/Button.vue';
@@ -25,6 +38,16 @@ const props = defineProps<{
         last_viewed_at: string | null;
         published_at: string | null;
     };
+    blocks: Array<{
+        id: number;
+        page_id: number;
+        type: string;
+        content: any;
+        position: any;
+        size?: any;
+        created_at: string;
+        updated_at: string;
+    }>;
 }>();
 
 const form = useForm({
@@ -58,13 +81,54 @@ const submitForm = () => {
     });
 };
 
-const layout = reactive([
-    {"x":0,"y":0,"w":2,"h":2,"i":"Content", static: false},
-    {"x":2,"y":0,"w":2,"h":4,"i":"1", static: false},
-    {"x":2,"y":0,"w":2,"h":5,"i":"2", static: false},
-    {"x":2,"y":2,"w":2,"h":3,"i":"3", static: false},
-    {"x":0,"y":4,"w":2,"h":3,"i":"4", static: false},
-]);
+const layout = reactive(
+    Array.isArray(props.blocks)
+        ? props.blocks.map(block => ({
+            x: block.position?.x ?? 0,
+            y: block.position?.y ?? 0,
+            w: block.size?.width ?? 2,
+            h: block.size?.height ?? 2,
+            i: String(block.id),
+            id: block.id,
+            page_id: block.page_id,
+            type: block.type,
+            title: block.title,
+            content: block.content,
+            position: block.position,
+            size: block.size,
+            style: block.style,
+            settings: block.settings,
+            is_active: block.is_active,
+            static: false
+        }))
+        : []
+);
+
+const updatePosition = (item: any) => {
+    const block = props.blocks.find((b: any) => b.id == item.i);
+    if (block) {
+        block.position.x = item.x;
+        block.position.y = item.y;
+        // Chiamata API per aggiornare posizione
+        axios.post(`/blocks/${block.id}/position`, {
+            x: item.x,
+            y: item.y
+        });
+    }
+};
+
+const updateSize = (item: any) => {
+    const block = props.blocks.find((b: any) => b.id == item.i);
+    if (block) {
+        block.size.width = item.w;
+        block.size.height = item.h;
+        // Chiamata API per aggiornare grandezza
+        axios.post(`/blocks/${block.id}/size`, {
+            width: item.w,
+            height: item.h
+        });
+    }
+};
 </script>
 
 <template>
@@ -99,9 +163,9 @@ const layout = reactive([
             </form>
             <GridLayout
                 v-model:layout="layout"
-                :col-num="12"
+                :col-num="1"
                 :row-height="100"
-                :max-rows="12"
+                :max-rows="20"
                 is-draggable
                 is-resizable
                 vertical-compact
@@ -115,9 +179,23 @@ const layout = reactive([
                 :w="item.w"
                 :h="item.h"
                 :i="item.i"
+                @moved="updatePosition(item)"
+                @resized="updateSize(item)"
                 class="bg-gray-200 dark:bg-gray-800 rounded-lg flex items-center justify-center text-gray-700 dark:text-gray-300"
                 >
-                {{ item.i }}
+                <component
+                  :is="blockComponents[item.type] ?? DefaultBlock"
+                  :id="item.id"
+                  :page-id="item.page_id"
+                  :type="item.type"
+                  :title="item.title"
+                  :content="item.content"
+                  :position="item.position"
+                  :size="item.size"
+                  :style="item.style"
+                  :settings="item.settings"
+                  :is-active="item.is_active"
+                />
                 </GridItem>
             </GridLayout>
         </div>

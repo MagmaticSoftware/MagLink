@@ -4,10 +4,14 @@ import AppShell from '@/components/AppShell.vue';
 import AppSidebar from '@/components/AppSidebar.vue';
 import AppSidebarHeader from '@/components/AppSidebarHeader.vue';
 import type { BreadcrumbItemType } from '@/types';
+import { useDark, useToggle } from '@vueuse/core';
 
 interface Props {
     breadcrumbs?: BreadcrumbItemType[];
 }
+
+const isDark = useDark();
+const toggleDark = useToggle(isDark);
 
 withDefaults(defineProps<Props>(), {
     breadcrumbs: () => [],

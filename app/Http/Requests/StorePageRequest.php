@@ -22,13 +22,15 @@ class StorePageRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'user_id' => 'required|exists:users,id',
+            'company_id' => 'required|exists:companies,id',
+            'tenant_id' => 'nullable|string',
             'title' => 'required|string|max:255',
-            'slug' => 'required|string|unique:pages,slug',
-            'content' => 'required|string',
+            'description' => 'nullable|string',
+            'style' => 'nullable|array',
+            'settings' => 'nullable|array',
             'is_active' => 'boolean',
-            'meta_title' => 'nullable|string|max:255',
-            'meta_description' => 'nullable|string|max:500',
-            'meta_keywords' => 'nullable|string|max:255',
+            'published_at' => 'nullable|date',
         ];
     }
 }

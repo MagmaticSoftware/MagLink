@@ -45,4 +45,8 @@ Route::middleware([
     Route::resource('links', LinkController::class)->names('links');
     Route::resource('qrcodes', QrCodeController::class)->names('qrcodes');
     Route::resource('pages', PageController::class)->names('pages');
+    Route::resource('page-blocks', \App\Http\Controllers\PageBlockController::class)
+        ->names('page-blocks');
+    Route::post('page-blocks/{block}/position', [\App\Http\Controllers\PageBlockController::class, 'updatePosition']);
+    Route::post('page-blocks/{block}/size', [\App\Http\Controllers\PageBlockController::class, 'updateSize']);
 });

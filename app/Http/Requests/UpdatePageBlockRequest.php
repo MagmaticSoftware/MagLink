@@ -22,18 +22,9 @@ class UpdatePageBlockRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'user_id' => 'required|exists:users,id',
-            'company_id' => 'required|exists:companies,id',
-            'tenant_id' => 'nullable|string|max:255',
-            'slug' => 'required|string|unique:pages,slug,' . $this->pageBlock->id,
-            'title' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'style' => 'nullable|array',
-            'settings' => 'nullable|array',
-            'is_active' => 'boolean',
-            'views' => 'integer|min:0',
-            'last_viewed_at' => 'nullable|date',
-            'published_at' => 'nullable|date',
+            'content' => 'nullable|string',
+            'position' => 'nullable|array',
+            'size' => 'nullable|array',
         ];
     }
 }

@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('title')->nullable();
             $table->text('content')->nullable();
             $table->json('position')->nullable();
+            $table->json('size')->nullable();
             $table->json('style')->nullable();
             $table->json('settings')->nullable();
             $table->boolean('is_active')->default(true);

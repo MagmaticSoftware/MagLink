@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StorePageRequest;
 use App\Http\Requests\UpdatePageRequest;
 use App\Models\Page;
+use Inertia\Inertia;
 
 class PageController extends Controller
 {
@@ -14,7 +15,7 @@ class PageController extends Controller
     public function index()
     {
         $pages = Page::orderBy('created_at', 'desc')->get();
-        return \Inertia\Inertia::render('tenant/pages/Index', [
+        return Inertia::render('tenant/pages/Index', [
             'pages' => $pages,
         ]);
     }
@@ -24,7 +25,7 @@ class PageController extends Controller
      */
     public function create()
     {
-        return \Inertia\Inertia::render('tenant/pages/Create');
+        return Inertia::render('tenant/pages/Create');
     }
 
     /**
@@ -42,7 +43,7 @@ class PageController extends Controller
      */
     public function show(Page $page)
     {
-        return \Inertia\Inertia::render('tenant/pages/Show', [
+        return Inertia::render('tenant/pages/Show', [
             'page' => $page,
         ]);
     }
@@ -52,8 +53,9 @@ class PageController extends Controller
      */
     public function edit(Page $page)
     {
-        return \Inertia\Inertia::render('tenant/pages/Edit', [
+        return Inertia::render('tenant/pages/Edit', [
             'page' => $page,
+            'blocks' => $page->blocks()->orderBy('position')->get(),
         ]);
     }
 

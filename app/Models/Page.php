@@ -5,33 +5,14 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Spatie\Sluggable\HasSlug;
+use Spatie\Sluggable\SlugOptions;
 use Stancl\Tenancy\Database\Concerns\BelongsToTenant;
 
-/**
- * @property int $id
- * @property int $user_id
- * @property int $company_id
- * @property string $tenant_id
- * @property string $slug
- * @property string $title
- * @property string|null $description
- * @property array|null $style
- * @property array|null $settings
- * @property bool $is_active
- * @property int $views
- * @property \Illuminate\Support\Carbon|null $last_viewed_at
- * @property \Illuminate\Support\Carbon|null $published_at
- *
- * @property-read \App\Models\User $user
- * @property-read \App\Models\Company $company
- * @property-read \App\Models\Tenant $tenant
- *
- * @method static \Database\Factories\PageFactory factory(...$parameters)
- */
 class Page extends Model
 {
     /** @use HasFactory<\Database\Factories\PageFactory> */
-    use HasFactory, SoftDeletes, BelongsToTenant;
+    use HasFactory, SoftDeletes, BelongsToTenant, HasSlug;
 
     /**
      * The attributes that are mass assignable.
@@ -88,5 +69,23 @@ class Page extends Model
     public function tenant()
     {
         return $this->belongsTo(Tenant::class);
+    }
+
+    /**
+     * Get the blocks associated with the page.
+     */
+    public function blocks()
+    {
+        return $this->hasMany(PageBlock::class)->orderBy('position');
+    }
+
+    /**
+     * Get the options for generating the slug.
+     */
+    public function getSlugOptions() : SlugOptions
+    {
+        return SlugOptions::create()
+            ->generateSlugsFrom('title')
+            ->saveSlugsTo('slug');
     }
 }
