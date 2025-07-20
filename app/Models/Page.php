@@ -48,6 +48,16 @@ class Page extends Model
     ];
 
     /**
+     * Get the route key name for the model.
+     *
+     * @return string
+     */
+    public function getRouteKeyName()
+    {
+        return 'slug';
+    }
+
+    /**
      * Get the user that owns the page.
      */
     public function user()

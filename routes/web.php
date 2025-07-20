@@ -1,17 +1,19 @@
 <?php
 
+use App\Http\Controllers\PageController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
-Route::get('/', function () {
-    return Inertia::render('Welcome');
-})->name('home');
 
-Route::domain('admin.maglink.localhost')->middleware('auth')->group(function () {
-    Route::get('admin', function () {
-        return Inertia::render('admin/Index');
-    })->name('admin.index');
+// Rotte admin spostate in admin.php
+if (file_exists(__DIR__.'/admin.php')) {
+    require __DIR__.'/admin.php';
+}
+
+Route::domain(config('app.url'))->middleware('web')->group(function () {
+    Route::get('/', function () {
+        return Inertia::render('Welcome');
+    })->name('home');
+
+    Route::get('{page:slug}', [PageController::class, 'showPublic'])->name('pages.show.public');
 });
-
-require __DIR__.'/auth.php';
-require __DIR__.'/settings.php';

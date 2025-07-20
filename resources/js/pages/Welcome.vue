@@ -52,18 +52,18 @@ const isTenant = computed(() => page.props.auth?.tenant);
                                 </a>
                             </template>
                             <template v-else>
-                                <Link
+                                <a
                                     :href="route('login')"
                                     class="text-gray-700 hover:text-blue-600 dark:text-gray-300 dark:hover:text-blue-400 transition-colors"
                                 >
                                     Log in
-                                </Link>
-                                <Link
+                                </a>
+                                <a
                                     :href="route('register')"
                                     class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors"
                                 >
                                     Get Started
-                                </Link>
+                                </a>
                             </template>
                         </div>
                     </nav>

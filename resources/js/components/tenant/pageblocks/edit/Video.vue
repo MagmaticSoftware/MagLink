@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { LetterText } from 'lucide-vue-next';
+import { SquarePlay } from 'lucide-vue-next';
 
 defineProps<{
   id: number;
@@ -15,7 +15,7 @@ defineProps<{
 <template>
   <div class="flex flex-row flex-wrap items-center justify-start gap-2 w-full">
     <div class="p-4">
-        <LetterText class="text-gray-400 dark:text-gray-400" :size="30"></LetterText>
+      <SquarePlay class="text-gray-400 dark:text-gray-400" :size="30"></SquarePlay>
     </div>
     <div class="flex-1 flex flex-col gap-2">
         <div class="font-semibold text-gray-700 dark:text-gray-400 w-full">{{ title }} | position: {{ position.x }} - {{ position.y }}</div>

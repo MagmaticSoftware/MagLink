@@ -49,6 +49,18 @@ class PageController extends Controller
     }
 
     /**
+     * Show the public page view.
+     * 
+     * @param Page $page
+     */
+    public function showPublic(Page $page)
+    {
+        return Inertia::render('tenant/pages/Public', [
+            'page' => $page->load('blocks'),
+        ]);
+    }
+
+    /**
      * Show the form for editing the specified resource.
      */
     public function edit(Page $page)

@@ -2,7 +2,7 @@
 import AppLayout from '@/layouts/AppLayout.vue';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link } from '@inertiajs/vue3';
-import { LucideEdit, LucideTrash2, LucidePlus } from 'lucide-vue-next';
+import { LucideEdit, LucideTrash2, LucidePlus, LucideEye } from 'lucide-vue-next';
 
 const props = defineProps<{
     pages: any[]; // Adjust type as necessary
@@ -40,14 +40,19 @@ const breadcrumbs: BreadcrumbItem[] = [
                         <p class="text-sm text-gray-500">{{ page.description }}</p>
                     </div>
                     <div class="flex items-center gap-2">
+                        <a :href="route('pages.show.public', page.slug)" target="_blank"
+                            class="btn btn-sm btn-secondary flex items-center gap-1"
+                        >
+                            <LucideEye class="w-4 h-4 mr-1" /> Visualizza
+                        </a>
                         <Link
-                            :href="route('pages.edit', page.id)"
+                            :href="route('pages.edit', page.slug)"
                             class="btn btn-sm btn-secondary flex items-center gap-1"
                         >
                             <LucideEdit class="w-4 h-4 mr-1" /> Modifica
                         </Link>
                         <Link
-                            :href="route('pages.destroy', page.id)"
+                            :href="route('pages.destroy', page.slug)"
                             method="delete"
                             as="button"
                             class="btn btn-sm btn-danger flex items-center gap-1"

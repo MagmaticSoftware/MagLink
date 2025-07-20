@@ -4,11 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Stancl\Tenancy\Database\Concerns\BelongsToPrimaryModel;
 
 class PageBlock extends Model
 {
     /** @use HasFactory<\Database\Factories\PageBlockFactory> */
-    use HasFactory;
+    use HasFactory, BelongsToPrimaryModel;
 
     /**
      * The attributes that are mass assignable.
@@ -44,5 +45,13 @@ class PageBlock extends Model
     public function page()
     {
         return $this->belongsTo(Page::class);
+    }
+
+    /**
+     * Get the primary model that this block belongs to.
+     */
+    public function getRelationshipToPrimaryModel(): string
+    {
+        return 'page';
     }
 }

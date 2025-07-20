@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StorePageBlockRequest;
 use App\Http\Requests\UpdatePageBlockRequest;
 use App\Models\PageBlock;
+use Illuminate\Http\Request;
 
 class PageBlockController extends Controller
 {
@@ -29,7 +30,9 @@ class PageBlockController extends Controller
      */
     public function store(StorePageBlockRequest $request)
     {
-        //
+        $validated = $request->validated();
+        $pageBlock = PageBlock::create($validated);
+        return response()->json(['success' => true, 'block' => $pageBlock]);
     }
 
     /**
@@ -66,21 +69,23 @@ class PageBlockController extends Controller
         //
     }
 
-        /**
-     * Update the position of a block.
+    /**
+     * Update positions of multiple blocks.
      */
-    public function updatePosition($id)
+    public function updatePositions(Request $request)
     {
-        $block = PageBlock::findOrFail($id);
-        $data = request()->validate([
-            'x' => 'required|integer',
-            'y' => 'required|integer',
-        ]);
-        $block->position = array_merge($block->position ?? [], [
-            'x' => $data['x'],
-            'y' => $data['y'],
-        ]);
-        $block->save();
+        $positions = $request->input('positions', []);
+        foreach ($positions as $pos) {
+            if (!isset($pos['id'], $pos['x'], $pos['y'])) continue;
+            $block = PageBlock::find($pos['id']);
+            if ($block) {
+                $block->position = array_merge($block->position ?? [], [
+                    'x' => $pos['x'],
+                    'y' => $pos['y'],
+                ]);
+                $block->save();
+            }
+        }
         return response()->json(['success' => true]);
     }
 
