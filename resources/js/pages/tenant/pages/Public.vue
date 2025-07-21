@@ -64,7 +64,7 @@ const maxRows = Math.max(
             </div>
             <div class="mt-8 overflow-y-auto max-h-full w-3/5">
                 <div
-                    :class="`grid grid-cols-2 gap-4 relative grid-rows-${maxRows}`"
+                    class="grid grid-cols-2 gap-4 relative auto-rows-[150px]"
                 >
                     <div v-for="block in props.page.blocks" :key="block.id"
                         :class="[
@@ -74,7 +74,7 @@ const maxRows = Math.max(
                             `col-span-${block.size?.width ?? 1}`,
                             `row-span-${block.size?.height ?? 1}`
                         ]">
-                        <div class="h-[150px] w-full bg-white/80 dark:bg-gray-900/80 border border-gray-200 dark:border-gray-700 rounded-xl flex items-center justify-center shadow">
+                        <div class="h-full w-full bg-white/80 dark:bg-gray-900/80 border border-gray-200 dark:border-gray-700 rounded-xl flex items-center justify-center shadow">
                             <component
                                 :is="blockComponents[block.type] ?? DefaultBlock"
                                 v-bind="block"
