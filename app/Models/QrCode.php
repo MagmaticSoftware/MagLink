@@ -37,6 +37,16 @@ class QrCode extends Model
         'last_scanned_at' => 'datetime',
     ];
 
+    /**
+     * Get the route key name for the model.
+     *
+     * @return string
+     */
+    public function getRouteKeyName()
+    {
+        return 'slug';
+    }
+
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);

@@ -8,7 +8,7 @@ import Label from '@volt/Label.vue';
 import { LucideSave } from 'lucide-vue-next';
 
 const props = defineProps<{
-    qrCode: {
+    qrcode: {
         id: number;
         user_id: number;
         company_id: number;
@@ -27,13 +27,14 @@ const props = defineProps<{
 }>();
 
 const form = useForm({
-    name: props.qrCode.name ?? '',
-    description: props.qrCode.description ?? '',
-    type: props.qrCode.type,
-    format: props.qrCode.format,
-    payload: props.qrCode.payload ?? {},
-    options: props.qrCode.options ?? {},
-    is_active: props.qrCode.is_active,
+    name: props.qrcode.name ?? '',
+    slug: props.qrcode.slug ?? '',
+    description: props.qrcode.description ?? '',
+    type: props.qrcode.type,
+    format: props.qrcode.format,
+    payload: props.qrcode.payload ?? {},
+    options: props.qrcode.options ?? {},
+    is_active: props.qrcode.is_active,
 });
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -43,12 +44,12 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
     {
         title: 'Modifica',
-        href: route('qrcodes.edit', props.qrCode.id),
+        href: route('qrcodes.edit', props.qrcode.slug),
     },
 ];
 
 const submitForm = () => {
-    form.put(route('qrcodes.update', props.qrCode.id), {
+    form.put(route('qrcodes.update', props.qrcode.slug), {
         onSuccess: () => {
             form.reset();
         },

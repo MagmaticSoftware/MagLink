@@ -5,7 +5,7 @@ import { Head, Link } from '@inertiajs/vue3';
 import { LucideEdit, LucideTrash2, LucidePlus, LucideQrCode, LucideEye } from 'lucide-vue-next';
 
 const props = defineProps<{
-    qrCodes: any[]; // Adjust type as necessary
+    qrcodes: any[]; // Adjust type as necessary
 }>();
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -55,8 +55,8 @@ const getTypeColor = (type: string) => {
             </div>
             <div class="flex flex-col gap-4">
                 <div
-                    v-for="qrCode in props.qrCodes"
-                    :key="qrCode.id"
+                    v-for="qrcode in props.qrcodes"
+                    :key="qrcode.id"
                     class="flex items-center justify-between rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-6 shadow transition hover:shadow-md"
                 >
                     <div class="flex items-start gap-4">
@@ -66,45 +66,45 @@ const getTypeColor = (type: string) => {
                         <div class="flex-1">
                             <div class="flex items-center gap-2 mb-2">
                                 <h2 class="text-lg font-bold text-gray-900 dark:text-white">
-                                    {{ qrCode.name || 'QR Code senza nome' }}
+                                    {{ qrcode.name || 'QR Code senza nome' }}
                                 </h2>
                                 <span
                                     class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium"
-                                    :class="getTypeColor(qrCode.type)"
+                                    :class="getTypeColor(qrcode.type)"
                                 >
-                                    {{ qrCode.type }}
+                                    {{ qrcode.type }}
                                 </span>
                                 <span
                                     class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium"
-                                    :class="qrCode.is_active ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'"
+                                    :class="qrcode.is_active ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'"
                                 >
-                                    {{ qrCode.is_active ? 'Attivo' : 'Inattivo' }}
+                                    {{ qrcode.is_active ? 'Attivo' : 'Inattivo' }}
                                 </span>
                             </div>
                             <p class="text-sm text-gray-600 dark:text-gray-300 mb-2">
-                                {{ qrCode.description || 'Nessuna descrizione' }}
+                                {{ qrcode.description || 'Nessuna descrizione' }}
                             </p>
                             <div class="flex items-center gap-4 text-xs text-gray-500 dark:text-gray-400">
                                 <span class="flex items-center gap-1">
-                                    <span>{{ getFormatIcon(qrCode.format) }}</span>
-                                    <span class="font-medium">{{ qrCode.format.toUpperCase() }}</span>
+                                    <span>{{ getFormatIcon(qrcode.format) }}</span>
+                                    <span class="font-medium">{{ qrcode.format.toUpperCase() }}</span>
                                 </span>
                                 <span class="flex items-center gap-1">
                                     <span>👁️</span>
-                                    <span class="font-medium">{{ qrCode.scans }} scansioni</span>
+                                    <span class="font-medium">{{ qrcode.scans }} scansioni</span>
                                 </span>
                                 <span class="flex items-center gap-1">
                                     <span>🗂️</span>
-                                    <span class="font-medium">{{ qrCode.slug }}</span>
+                                    <span class="font-medium">{{ qrcode.slug }}</span>
                                 </span>
                                 <div class="flex items-center gap-2">
                                     <span class="font-medium">URL:</span>
                                     <a
-                                        :href="`/qrcodes/${qrCode.slug}`"
+                                        :href="`/qrcodes/${qrcode.slug}`"
                                         target="_blank"
                                         class="text-blue-600 dark:text-blue-400 underline hover:text-blue-800"
                                     >
-                                        {{ `/qrcodes/${qrCode.slug}` }}
+                                        {{ `/qrcodes/${qrcode.slug}` }}
                                     </a>
                                 </div>
                             </div>
@@ -112,19 +112,19 @@ const getTypeColor = (type: string) => {
                     </div>
                     <div class="flex gap-2">
                         <Link
-                            :href="route('qrcodes.show', qrCode.id)"
+                            :href="route('qrcodes.show', qrcode.slug)"
                             class="btn btn-sm btn-outline flex items-center gap-1"
                         >
                             <LucideEye class="w-4 h-4" /> Visualizza
                         </Link>
                         <Link
-                            :href="route('qrcodes.edit', qrCode.id)"
+                            :href="route('qrcodes.edit', qrcode.slug)"
                             class="btn btn-sm btn-secondary flex items-center gap-1"
                         >
                             <LucideEdit class="w-4 h-4" /> Modifica
                         </Link>
                         <Link
-                            :href="route('qrcodes.destroy', qrCode.id)"
+                            :href="route('qrcodes.destroy', qrcode.slug)"
                             method="delete"
                             as="button"
                             class="btn btn-sm btn-danger flex items-center gap-1"
@@ -134,7 +134,7 @@ const getTypeColor = (type: string) => {
                     </div>
                 </div>
                 <div
-                    v-if="props.qrCodes.length === 0"
+                    v-if="props.qrcodes.length === 0"
                     class="text-center py-12 text-gray-500 dark:text-gray-400"
                 >
                     <LucideQrCode class="w-16 h-16 mx-auto mb-4 text-gray-300" />

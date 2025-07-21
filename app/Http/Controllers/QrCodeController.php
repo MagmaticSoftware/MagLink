@@ -15,9 +15,9 @@ class QrCodeController extends Controller
      */
     public function index()
     {
-        $qrCodes = QrCode::orderBy('created_at', 'desc')->get();
+        $qrcodes = QrCode::orderBy('created_at', 'desc')->get();
         return Inertia::render('tenant/qrcodes/Index', [
-            'qrCodes' => $qrCodes,
+            'qrcodes' => $qrcodes,
         ]);
     }
 
@@ -38,46 +38,46 @@ class QrCodeController extends Controller
     public function store(StoreQrCodeRequest $request)
     {
         $validated = $request->validated();
-        $qrCode = QrCode::create($validated);
+        $qrcode = QrCode::create($validated);
         return redirect()->route('qrcodes.index')->with('success', 'QR Code created successfully.');
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(QrCode $qrCode)
+    public function show(QrCode $qrcode)
     {
         return Inertia::render('tenant/qrcodes/Show', [
-            'qrCode' => $qrCode,
+            'qrcode' => $qrcode,
         ]);
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(QrCode $qrCode)
+    public function edit(QrCode $qrcode)
     {
         return Inertia::render('tenant/qrcodes/Edit', [
-            'qrCode' => $qrCode,
+            'qrcode' => $qrcode,
         ]);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateQrCodeRequest $request, QrCode $qrCode)
+    public function update(UpdateQrCodeRequest $request, QrCode $qrcode)
     {
         $validated = $request->validated();
-        $qrCode->update($validated);
+        $qrcode->update($validated);
         return redirect()->route('qrcodes.index')->with('success', 'QR Code updated successfully.');
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(QrCode $qrCode)
+    public function destroy(QrCode $qrcode)
     {
-        $qrCode->delete();
+        $qrcode->delete();
         return redirect()->route('qrcodes.index');
     }
 

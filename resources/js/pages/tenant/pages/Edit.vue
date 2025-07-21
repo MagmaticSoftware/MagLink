@@ -227,11 +227,6 @@ function handleBlockCreated(newBlock: any) {
                     </GridItem>
                 </template>
             </GridLayout>
-            <div>
-                <div v-for="item in layout" :key="item.i">
-                    title: {{ item.title }}, x: {{ item.x }}, y: {{ item.y }}, position: {{ item.position }}
-                </div>
-            </div>
         </div>
         <Dialog v-model:visible="visible" modal header="Aggiungi blocco" class="sm:w-100 w-9/10">
             <CreateBlock :page="props.page" @created="handleBlockCreated" />
