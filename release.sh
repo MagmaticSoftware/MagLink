@@ -122,8 +122,9 @@ echo "✅ Released v$VERSION and updated CHANGELOG.md"
 # 🪄 Opzionale: creare un branch release dalla tag
 read -p "📦 Vuoi creare anche il branch release/v$VERSION? [y/N]: " CREATE_BRANCH
 if [[ "$CREATE_BRANCH" == "y" || "$CREATE_BRANCH" == "Y" ]]; then
-  git checkout -b "release/v$VERSION" "v$VERSION"
-  git push -u origin "release/v$VERSION"
-  echo "✅ Branch release/v$VERSION creato e pushato."
+  BRANCH_VERSION=${VERSION#v}
+  git checkout -b "release/v$BRANCH_VERSION" "v$BRANCH_VERSION"
+  git push -u origin "release/v$BRANCH_VERSION"
+  echo "✅ Branch release/v$BRANCH_VERSION creato e pushato."
   git checkout main
 fi
