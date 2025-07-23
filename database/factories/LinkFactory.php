@@ -21,7 +21,7 @@ class LinkFactory extends Factory
         $user = User::role('tenant')->inRandomOrder()->first() ?? User::factory()->create();
         return [
             'user_id' => $user->id,
-            'company_id' => $user->company->first()->id,
+            'company_id' => $user->companies->first()->id,
             'tenant_id' => $user->tenant_id,
             'slug' => $this->faker->slug(),
             'url' => $this->faker->url(),

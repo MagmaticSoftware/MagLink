@@ -15,6 +15,8 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+        Role::findOrCreate('tenant', 'web');
+
         $tenant1 = Tenant::firstOrCreate(['id' => 'demo'], ['name' => 'Demo Tenant']);
         $tenant1->run(function () {
             $user = User::factory()->create([
@@ -23,11 +25,14 @@ class DatabaseSeeder extends Seeder
                 'email' => 'demo@demo.com',
             ]);
 
-            Company::factory()->create([
+            $user->assignRole('tenant');
+
+            $company = Company::factory()->create([
                 'name' => 'Demo Company',
                 'slug' => 'demo',
-                'user_id' => $user->id
             ]);
+
+            $company->users()->attach($user->id, ['is_company_admin' => true]);
         });
 
         $tenant2 = Tenant::firstOrCreate(['id' => 'maglink'], ['name' => 'Maglink']);
@@ -38,16 +43,15 @@ class DatabaseSeeder extends Seeder
                 'email' => 'mag@demo.com',
             ]);
 
-            Company::factory()->create([
+            $user->assignRole('tenant');
+
+            $company = Company::factory()->create([
                 'name' => 'Maglink Company',
                 'slug' => 'maglink',
-                'user_id' => $user->id,
             ]);
-        });
 
-        Role::findOrCreate('tenant', 'web');
-        $tenant1->user->assignRole('tenant');
-        $tenant2->user->assignRole('tenant');
+            $company->users()->attach($user->id, ['is_company_admin' => true]);
+        });
 
         $admin = User::factory()->create([
             'first_name' => 'Admin',

@@ -70,8 +70,8 @@ class User extends Authenticatable
     /**
      * Get the company associated with the user.
      */
-    public function company()
+    public function companies()
     {
-        return $this->hasOne(Company::class);
+        return $this->belongsToMany(Company::class);
     }
 }
