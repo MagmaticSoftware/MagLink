@@ -18,6 +18,7 @@ const form = useForm({
     password_confirmation: '',
     slug: '',
     company_name: '',
+    company_email: '',
     errors: {},
 });
 
@@ -97,6 +98,12 @@ const checkSlug = throttle(async () => {
                         <label for="name">Company name</label>
                         <InputText id="name" v-model="form.company_name" aria-describedby="name-help" placeholder="Your company name" class="w-full" />
                         <Message v-if="form.errors.company_name" size="small" severity="error" variant="simple">{{ form.errors.company_name }}</Message>
+                    </div>
+                    
+                    <div class="flex flex-col gap-2 w-full">
+                        <label for="name">Company email</label>
+                        <InputText id="name" v-model="form.company_email" aria-describedby="name-help" placeholder="Your company email" class="w-full" />
+                        <Message v-if="form.errors.company_email" size="small" severity="error" variant="simple">{{ form.errors.company_email }}</Message>
                     </div>
                 </div>
             </Fieldset>

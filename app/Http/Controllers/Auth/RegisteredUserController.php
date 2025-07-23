@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\BillingProfile;
 use App\Models\Company;
 use App\Models\Tenant;
 use App\Models\User;
@@ -30,7 +31,7 @@ class RegisteredUserController extends Controller
      *
      * @throws \Illuminate\Validation\ValidationException
      */
-    public function store(Request $request): RedirectResponse
+    public function store(Request $request)
     {
         $request->validate([
             'first_name' => 'required|string|max:255',
@@ -46,7 +47,7 @@ class RegisteredUserController extends Controller
             'name' => $request->company_name,
         ]);
 
-        $tenant->run(function () use ($request) {
+        $tenant->run(function () use ($request, $tenant) {
             $user = User::create([
                 'first_name' => $request->first_name,
                 'last_name' => $request->last_name,
@@ -56,13 +57,23 @@ class RegisteredUserController extends Controller
 
             $company = Company::create([
                 'name' => $request->company_name,
-                'slug' => $request->slug
+                'slug' => $request->slug,
+                'email' => $request->company_email,
+            ]);
+
+            $user->companies()->attach($company->id, [
+                'is_company_admin' => true,
+            ]);
+
+            BillingProfile::create([
+                'company_id' => $company->id,
+                'company_name' => $request->company_name,
             ]);
             
             event(new Registered($user));
             
             Auth::login($user);
-            return to_route('tenant.index');
+            return to_route('tenant.index', ['tenant' => $tenant->id]);
         });
 
     }
