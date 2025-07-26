@@ -19,6 +19,11 @@ return new class extends Migration
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->string('tenant_id')->nullable()->index();
+            $table->boolean('privacy_policy_accepted')->default(false);
+            $table->boolean('terms_of_service_accepted')->default(false);
+            $table->boolean('marketing_opt_in')->default(false);
+            $table->string('locale')->default('en');
+            $table->string('timezone')->default('UTC');
             $table->rememberToken();
             $table->timestamps();
             $table->softDeletes();

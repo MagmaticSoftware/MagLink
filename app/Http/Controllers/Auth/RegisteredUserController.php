@@ -7,6 +7,7 @@ use App\Models\BillingProfile;
 use App\Models\Company;
 use App\Models\Tenant;
 use App\Models\User;
+use App\Models\UserPreferences;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -37,6 +38,7 @@ class RegisteredUserController extends Controller
             'first_name' => 'required|string|max:255',
             'last_name' => 'required|string|max:255',
             'company_name' => 'required|string|max:255',
+            'company_name' => 'required|string|max:255',
             'slug' => 'required|string|lowercase|alpha_dash|max:255|unique:tenants,id',
             'email' => 'required|string|lowercase|email|max:255|unique:'.User::class,
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
@@ -59,6 +61,8 @@ class RegisteredUserController extends Controller
                 'name' => $request->company_name,
                 'slug' => $request->slug,
                 'email' => $request->company_email,
+                'industry' => $request->company_industry,
+                'size' => $request->company_size,
             ]);
 
             $user->companies()->attach($company->id, [
@@ -68,6 +72,24 @@ class RegisteredUserController extends Controller
             BillingProfile::create([
                 'company_id' => $company->id,
                 'company_name' => $request->company_name,
+                'phone' => $request->company_phone,
+            ]);
+
+            UserPreferences::create([
+                'user_id' => $user->id,
+                'usage_type' => $request->usage_type ?? 'personal',
+                'discovery_source' => $request->discovery_source ?? 'direct',
+                'main_goal' => $request->main_goal ?? 'manage campaigns',
+                'estimated_usage' => $request->estimated_usage ?? 'medium',
+                'team_size' => $request->team_size ?? 'solo',
+                'lang' => $request->lang ?? 'en',
+                'timezone' => $request->timezone ?? config('app.timezone'),
+                'terms_and_conditions' => $request->terms_and_conditions ?? false,
+                'terms_and_conditions_accepted_at' => $request->terms_and_conditions ? now() : null,
+                'privacy_policy' => $request->privacy_policy ?? false,
+                'privacy_policy_accepted_at' => $request->privacy_policy ? now() : null,
+                'newsletter' => $request->newsletter ?? false,
+                'newsletter_accepted_at' => $request->newsletter ? now() : null,
             ]);
             
             event(new Registered($user));

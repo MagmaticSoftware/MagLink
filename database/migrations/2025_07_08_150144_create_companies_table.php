@@ -19,6 +19,8 @@ return new class extends Migration
             $table->string('email')->nullable();
             $table->string('website')->nullable();
             $table->json('social_links')->nullable();
+            $table->string('industry')->nullable();
+            $table->string('size')->nullable();
             $table->string('tenant_id')->nullable();
             $table->timestamps();
             $table->softDeletes();
