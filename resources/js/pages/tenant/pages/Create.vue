@@ -3,9 +3,9 @@ import AppLayout from '@/layouts/AppLayout.vue';
 import { type BreadcrumbItem } from '@/types';
 import { Head, useForm, usePage } from '@inertiajs/vue3';
 import { LucideSave } from 'lucide-vue-next';
-import InputText from '@volt/InputText.vue';
-import Button from '@volt/Button.vue';
-import Label from '@volt/Label.vue';
+import InputText from '@/components/volt/InputText.vue';
+import Button from '@/components/volt/Button.vue';
+import Label from '@/components/ui/label/Label.vue';
 import { type PageProps } from '@/types/inertia';
 
 const page = usePage<PageProps>();

@@ -1,0 +1,205 @@
+{
+  "common": {
+    "welcome": "Benvenuto",
+    "logout": "Disconnetti",
+    "settings": "Impostazioni",
+    "profile": "Profilo",
+    "billing": "Fatturazione",
+    "help": "Aiuto e Supporto",
+    "darkMode": "Modalità Scura",
+    "lightMode": "Modalità Chiara",
+    "search": "Cerca",
+    "actions": "Azioni",
+    "edit": "Modifica",
+    "delete": "Elimina",
+    "view": "Visualizza",
+    "create": "Crea",
+    "save": "Salva",
+    "cancel": "Annulla",
+    "back": "Indietro",
+    "next": "Avanti",
+    "previous": "Precedente",
+    "loading": "Caricamento...",
+    "noResults": "Nessun risultato trovato"
+  },
+  "nav": {
+    "dashboard": "Dashboard",
+    "links": "Links",
+    "qrcodes": "QR Code",
+    "pages": "La Tua Pagina"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "welcome": "Benvenuto su",
+    "subtitle": "Gestisci i tuoi link, QR Code e pagine in modo semplice e moderno",
+    "newLink": "Nuovo Link",
+    "newQrCode": "Nuovo QR Code",
+    "stats": {
+      "linksCreated": "Link creati",
+      "qrCodesGenerated": "QR Code generati",
+      "uniqueVisitors": "Visitatori unici",
+      "pageStatus": "Pagina pubblica",
+      "online": "Online"
+    },
+    "planStatus": {
+      "title": "Stato piano",
+      "currentPlan": "Piano attuale",
+      "linksAvailable": "Link disponibili",
+      "qrCodesAvailable": "QR Code disponibili",
+      "upgradeToPro": "Passa al piano PRO"
+    },
+    "notifications": {
+      "title": "Notifiche importanti",
+      "linkLimit": "Hai quasi raggiunto il limite massimo di link",
+      "renewalDays": "giorni al rinnovo"
+    },
+    "performance": {
+      "title": "Performance ultimi 7 giorni",
+      "demo": "Demo"
+    },
+    "recentLogins": {
+      "title": "Accessi recenti"
+    },
+    "latestContent": {
+      "links": "Ultimi link",
+      "qrCodes": "Ultimi QR Code",
+      "pageBlocks": "Ultimi blocchi pagina"
+    }
+  },
+  "links": {
+    "title": "Links",
+    "subtitle": "Gestisci tutti i tuoi link abbreviati",
+    "addNew": "Aggiungi nuovo link",
+    "createDescription": "Crea un nuovo link breve per condividere contenuti",
+    "noLinks": "Nessun link trovato",
+    "createFirst": "Crea il tuo primo link per iniziare!",
+    "url": "URL",
+    "slug": "Slug",
+    "linkTitle": "Titolo",
+    "description": "Descrizione",
+    "search": "Cerca link...",
+    "sortBy": "Ordina per",
+    "filterBy": "Filtra per",
+    "stats": {
+      "totalLinks": "Link Totali",
+      "activeLinks": "Link Attivi",
+      "totalClicks": "Click Totali",
+      "avgClicks": "Media Click/Link"
+    },
+    "sort": {
+      "newest": "Più recenti",
+      "oldest": "Più vecchi",
+      "mostClicks": "Più cliccati",
+      "leastClicks": "Meno cliccati",
+      "alphabetical": "Alfabetico"
+    },
+    "filter": {
+      "all": "Tutti i link",
+      "active": "Solo attivi",
+      "inactive": "Solo inattivi"
+    },
+    "copyLink": "Copia link",
+    "openLink": "Apri link",
+    "createdAt": "Creato",
+    "clicks": "click"
+  },
+  "qrcodes": {
+    "title": "QR Code",
+    "subtitle": "Crea e gestisci i tuoi QR Code dinamici",
+    "addNew": "Aggiungi nuovo QR Code",
+    "createDescription": "Crea un nuovo QR Code per condividere contenuti",
+    "noQrCodes": "Nessun QR Code trovato",
+    "createFirst": "Crea il tuo primo QR Code per iniziare!",
+    "format": "Formato",
+    "scans": "scansioni",
+    "active": "Attivo",
+    "inactive": "Inattivo",
+    "static": "statico",
+    "dynamic": "dinamico",
+    "noName": "QR Code senza nome",
+    "noDescription": "Nessuna descrizione",
+    "search": "Cerca QR Code per nome, descrizione o slug...",
+    "sortBy": "Ordina per",
+    "filterBy": "Filtra per",
+    "stats": {
+      "totalQrCodes": "Totale QR Code",
+      "activeQrCodes": "QR Code Attivi",
+      "totalScans": "Totale Scansioni",
+      "avgScans": "Media Scansioni"
+    },
+    "sort": {
+      "newest": "Più recenti",
+      "oldest": "Più vecchi",
+      "mostScans": "Più scansionati",
+      "leastScans": "Meno scansionati",
+      "alphabetical": "Alfabetico"
+    },
+    "filter": {
+      "all": "Tutti",
+      "active": "Attivi",
+      "inactive": "Inattivi",
+      "static": "Statici",
+      "dynamic": "Dinamici"
+    },
+    "createdAt": "Creato"
+  },
+  "pages": {
+    "title": "Le Tue Pagine",
+    "subtitle": "Crea pagine personalizzate con blocchi componibili",
+    "addNew": "Aggiungi nuova pagina",
+    "noPages": "Nessuna pagina trovata",
+    "createFirst": "Crea la tua prima pagina per iniziare!",
+    "search": "Cerca pagine per titolo, descrizione o slug...",
+    "sortBy": "Ordina per",
+    "filterBy": "Filtra per",
+    "stats": {
+      "totalPages": "Totale Pagine",
+      "published": "Pubblicate",
+      "totalBlocks": "Totale Blocchi",
+      "avgBlocks": "Media Blocchi",
+      "activeBlocks": "Blocchi Attivi",
+      "views": "Visualizzazioni Pagina"
+    },
+    "sort": {
+      "newest": "Più recenti",
+      "oldest": "Più vecchie",
+      "alphabetical": "Alfabetico",
+      "mostBlocks": "Più blocchi"
+    },
+    "filter": {
+      "all": "Tutte",
+      "published": "Pubblicate",
+      "draft": "Bozze"
+    },
+    "url": "URL",
+    "viewPage": "Visualizza pagina",
+    "blocks": "blocchi",
+    "published": "Pubblicata",
+    "draft": "Bozza",
+    "createdAt": "Creato",
+    "edit": "Modifica Pagina",
+    "settings": "Impostazioni Pagina",
+    "form": {
+      "title": "Titolo",
+      "description": "Descrizione",
+      "published": "Pubblicata il",
+      "active": "Attiva"
+    },
+    "update": "Aggiorna Pagina",
+    "addBlock": "Aggiungi Blocco",
+    "blockEditor": "Editor Blocchi",
+    "dragAndDrop": "Trascina per riordinare",
+    "noBlocks": "Nessun blocco ancora",
+    "addFirstBlock": "Aggiungi il primo blocco",
+    "preview": "Anteprima",
+    "publicView": "Visualizzazione pubblica",
+    "addBlocksToPage": "Aggiungi blocchi per iniziare a costruire la tua pagina",
+    "editPage": "Modifica Pagina"
+  },
+  "footer": {
+    "copyright": "Tutti i diritti riservati.",
+    "privacy": "Privacy",
+    "terms": "Termini",
+    "support": "Supporto"
+  }
+}

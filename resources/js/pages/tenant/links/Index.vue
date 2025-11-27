@@ -2,70 +2,372 @@
 import AppLayout from '@/layouts/AppLayout.vue';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link } from '@inertiajs/vue3';
-import { LucideEdit, LucideTrash2, LucidePlus } from 'lucide-vue-next';
+import { 
+    LucideEdit, 
+    LucideTrash2, 
+    LucidePlus, 
+    LucideLink, 
+    LucideSearch,
+    LucideFilter,
+    LucideArrowUpDown,
+    LucideEye,
+    LucideMousePointerClick,
+    LucideTrendingUp,
+    LucideCopy,
+    LucideExternalLink,
+    LucideCalendar
+} from 'lucide-vue-next';
+import { useI18n } from 'vue-i18n';
+import { ref, computed } from 'vue';
+import InputText from '@/components/volt/InputText.vue';
+import Select from '@/components/volt/Select.vue';
+
+const { t } = useI18n();
 
 const props = defineProps<{
-    links: any[]; // Adjust type as necessary
+    links: any[];
+    stats?: {
+        total: number;
+        active: number;
+        totalClicks: number;
+        avgClicksPerLink: number;
+    };
 }>();
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
-        title: 'Links',
+        title: t('links.title'),
         href: route('links.index'),
     },
 ];
+
+// Search and filter state
+const searchQuery = ref('');
+const sortBy = ref('created_desc');
+const filterStatus = ref('all');
+
+// Compute stats from links if not provided
+const computedStats = computed(() => {
+    if (props.stats) return props.stats;
+    
+    const totalClicks = props.links.reduce((sum, link) => sum + (link.clicks || 0), 0);
+    return {
+        total: props.links.length,
+        active: props.links.filter(l => l.is_active).length,
+        totalClicks,
+        avgClicksPerLink: props.links.length > 0 ? Math.round(totalClicks / props.links.length) : 0
+    };
+});
+
+// Sort options
+const sortOptions = [
+    { label: t('links.sort.newest'), value: 'created_desc' },
+    { label: t('links.sort.oldest'), value: 'created_asc' },
+    { label: t('links.sort.mostClicks'), value: 'clicks_desc' },
+    { label: t('links.sort.leastClicks'), value: 'clicks_asc' },
+    { label: t('links.sort.alphabetical'), value: 'title_asc' }
+];
+
+// Filter options
+const filterOptions = [
+    { label: t('links.filter.all'), value: 'all' },
+    { label: t('links.filter.active'), value: 'active' },
+    { label: t('links.filter.inactive'), value: 'inactive' }
+];
+
+// Filtered and sorted links
+const filteredLinks = computed(() => {
+    let result = [...props.links];
+    
+    // Apply search filter
+    if (searchQuery.value) {
+        const query = searchQuery.value.toLowerCase();
+        result = result.filter(link => 
+            link.title?.toLowerCase().includes(query) ||
+            link.description?.toLowerCase().includes(query) ||
+            link.slug?.toLowerCase().includes(query)
+        );
+    }
+    
+    // Apply status filter
+    if (filterStatus.value !== 'all') {
+        result = result.filter(link => 
+            filterStatus.value === 'active' ? link.is_active : !link.is_active
+        );
+    }
+    
+    // Apply sorting
+    result.sort((a, b) => {
+        switch (sortBy.value) {
+            case 'created_desc':
+                return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+            case 'created_asc':
+                return new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
+            case 'clicks_desc':
+                return (b.clicks || 0) - (a.clicks || 0);
+            case 'clicks_asc':
+                return (a.clicks || 0) - (b.clicks || 0);
+            case 'title_asc':
+                return (a.title || '').localeCompare(b.title || '');
+            default:
+                return 0;
+        }
+    });
+    
+    return result;
+});
+
+// Copy link to clipboard
+const copyToClipboard = (slug: string) => {
+    const url = `${window.location.origin}/links/${slug}`;
+    navigator.clipboard.writeText(url);
+    // TODO: Add toast notification
+};
+
+// Format date
+const formatDate = (date: string) => {
+    return new Date(date).toLocaleDateString(undefined, { 
+        year: 'numeric', 
+        month: 'short', 
+        day: 'numeric' 
+    });
+};
 </script>
 
 <template>
-    <Head title="Dashboard" />
+    <Head title="Links" />
 
     <AppLayout :breadcrumbs="breadcrumbs">
-        <div class="flex h-full flex-1 flex-col gap-4 rounded-xl p-4">
-            
-            <div class="mt-6 flex justify-end">
-                <Link
-                    :href="route('links.create')"
-                    class="btn btn-primary flex items-center gap-2"
-                >
-                    <LucidePlus class="w-4 h-4" /> Aggiungi nuovo link
-                </Link>
+        <div class="flex h-full flex-1 flex-col gap-6 p-6">
+            <!-- Page Header -->
+            <div class="flex items-center justify-between">
+                <div>
+                    <h1 class="text-3xl font-bold text-surface-900 dark:text-surface-50">{{ t('links.title') }}</h1>
+                    <p class="text-surface-600 dark:text-surface-400 mt-1">{{ t('links.subtitle') }}</p>
+                </div>
+                <div>
+                    <Link
+                        :href="route('links.create')"
+                        class="button-primary flex items-center gap-2"
+                    >
+                        <LucidePlus class="w-4 h-4" /> {{ t('links.addNew') }}
+                    </Link>
+                </div>
             </div>
-            <div class="flex flex-col gap-4">
-                <div
-                    v-for="link in props.links"
-                    :key="link.id"
-                    class="flex items-center justify-between rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-6 shadow transition hover:shadow-md"
-                >
-                    <div>
-                        <h2 class="text-lg font-bold text-gray-900 dark:text-white">{{ link.title }}</h2>
-                        <p class="text-sm text-gray-600 dark:text-gray-300 mb-1">{{ link.description }}</p>
-                        <div class="flex items-center gap-2 text-xs text-blue-600 dark:text-blue-400">
-                            <span class="font-medium">URL:</span>
-                            <a
-                                :href="`/links/${link.slug}`"
-                                target="_blank"
-                                class="underline hover:text-blue-800"
-                            >
-                                {{ `/links/${link.slug}` }}
-                            </a>
+
+            <!-- Statistics Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div class="bg-white dark:bg-surface-900 rounded-xl p-6 shadow-sm border border-surface-200 dark:border-surface-800">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm font-medium text-surface-600 dark:text-surface-400">{{ t('links.stats.totalLinks') }}</p>
+                            <p class="text-3xl font-bold text-surface-900 dark:text-surface-50 mt-2">{{ computedStats.total }}</p>
+                        </div>
+                        <div class="p-3 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
+                            <LucideLink :size="24" class="text-blue-600 dark:text-blue-400" />
                         </div>
                     </div>
-                    <div class="flex gap-2">
-                        <Link
-                            :href="route('links.edit', link.id)"
-                            class="btn btn-sm btn-secondary flex items-center gap-1"
-                        >
-                            <LucideEdit class="w-4 h-4 mr-1" /> Modifica
-                        </Link>
-                        <Link
-                            :href="route('links.destroy', link.id)"
-                            method="delete"
-                            as="button"
-                            class="btn btn-sm btn-danger flex items-center gap-1"
-                        >
-                            <LucideTrash2 class="w-4 h-4 mr-1" /> Elimina
-                        </Link>
+                </div>
+
+                <div class="bg-white dark:bg-surface-900 rounded-xl p-6 shadow-sm border border-surface-200 dark:border-surface-800">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm font-medium text-surface-600 dark:text-surface-400">{{ t('links.stats.activeLinks') }}</p>
+                            <p class="text-3xl font-bold text-surface-900 dark:text-surface-50 mt-2">{{ computedStats.active }}</p>
+                        </div>
+                        <div class="p-3 bg-green-100 dark:bg-green-900/30 rounded-lg">
+                            <LucideTrendingUp :size="24" class="text-green-600 dark:text-green-400" />
+                        </div>
                     </div>
+                </div>
+
+                <div class="bg-white dark:bg-surface-900 rounded-xl p-6 shadow-sm border border-surface-200 dark:border-surface-800">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm font-medium text-surface-600 dark:text-surface-400">{{ t('links.stats.totalClicks') }}</p>
+                            <p class="text-3xl font-bold text-surface-900 dark:text-surface-50 mt-2">{{ computedStats.totalClicks }}</p>
+                        </div>
+                        <div class="p-3 bg-purple-100 dark:bg-purple-900/30 rounded-lg">
+                            <LucideMousePointerClick :size="24" class="text-purple-600 dark:text-purple-400" />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white dark:bg-surface-900 rounded-xl p-6 shadow-sm border border-surface-200 dark:border-surface-800">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm font-medium text-surface-600 dark:text-surface-400">{{ t('links.stats.avgClicks') }}</p>
+                            <p class="text-3xl font-bold text-surface-900 dark:text-surface-50 mt-2">{{ computedStats.avgClicksPerLink }}</p>
+                        </div>
+                        <div class="p-3 bg-orange-100 dark:bg-orange-900/30 rounded-lg">
+                            <LucideEye :size="24" class="text-orange-600 dark:text-orange-400" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Search and Filters -->
+            <div class="bg-white dark:bg-surface-900 rounded-xl p-4 shadow-sm border border-surface-200 dark:border-surface-800">
+                <div class="flex flex-col md:flex-row gap-4">
+                    <!-- Search -->
+                    <div class="flex-1">
+                        <div class="relative">
+                            <LucideSearch :size="20" class="absolute left-3 top-1/2 -translate-y-1/2 text-surface-400" />
+                            <InputText
+                                v-model="searchQuery"
+                                :placeholder="t('links.search')"
+                                class="pl-10 w-full"
+                            />
+                        </div>
+                    </div>
+
+                    <!-- Sort -->
+                    <div class="w-full md:w-48">
+                        <div class="flex items-center gap-2">
+                            <LucideArrowUpDown :size="20" class="text-surface-400" />
+                            <Select
+                                v-model="sortBy"
+                                :options="sortOptions"
+                                optionLabel="label"
+                                optionValue="value"
+                                :placeholder="t('links.sortBy')"
+                                class="w-full"
+                            />
+                        </div>
+                    </div>
+
+                    <!-- Filter -->
+                    <div class="w-full md:w-48">
+                        <div class="flex items-center gap-2">
+                            <LucideFilter :size="20" class="text-surface-400" />
+                            <Select
+                                v-model="filterStatus"
+                                :options="filterOptions"
+                                optionLabel="label"
+                                optionValue="value"
+                                :placeholder="t('links.filterBy')"
+                                class="w-full"
+                            />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Links Grid -->
+            <div class="grid grid-cols-1 gap-4">
+                <div
+                    v-for="link in filteredLinks"
+                    :key="link.id"
+                    class="bg-white dark:bg-surface-900 rounded-xl p-6 shadow-sm border border-surface-200 dark:border-surface-800 hover:shadow-md transition-all hover:scale-[1.01]"
+                >
+                    <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+                        <!-- Link Info -->
+                        <div class="flex-1 min-w-0">
+                            <div class="flex items-start gap-3">
+                                <div class="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-primary/20 to-primary/5 rounded-lg flex items-center justify-center">
+                                    <LucideLink :size="24" class="text-primary" />
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <h3 class="text-lg font-semibold text-surface-900 dark:text-surface-50 truncate">
+                                        {{ link.title }}
+                                    </h3>
+                                    <p class="text-sm text-surface-600 dark:text-surface-400 mt-1 line-clamp-2">
+                                        {{ link.description }}
+                                    </p>
+                                    
+                                    <!-- Link URL -->
+                                    <div class="flex items-center gap-2 mt-3 text-sm">
+                                        <span class="font-medium text-surface-700 dark:text-surface-300">{{ t('links.url') }}:</span>
+                                        <code class="px-2 py-1 bg-surface-100 dark:bg-surface-800 rounded text-primary font-mono text-xs">
+                                            /{{ link.slug }}
+                                        </code>
+                                        <button
+                                            @click="copyToClipboard(link.slug)"
+                                            class="p-1 hover:bg-surface-100 dark:hover:bg-surface-800 rounded transition-colors"
+                                            :title="t('links.copyLink')"
+                                        >
+                                            <LucideCopy :size="14" class="text-surface-500" />
+                                        </button>
+                                        <a
+                                            :href="`/links/${link.slug}`"
+                                            target="_blank"
+                                            class="p-1 hover:bg-surface-100 dark:hover:bg-surface-800 rounded transition-colors"
+                                            :title="t('links.openLink')"
+                                        >
+                                            <LucideExternalLink :size="14" class="text-surface-500" />
+                                        </a>
+                                    </div>
+
+                                    <!-- Meta Info -->
+                                    <div class="flex items-center gap-4 mt-3 text-xs text-surface-500 dark:text-surface-400">
+                                        <span class="flex items-center gap-1">
+                                            <LucideCalendar :size="14" />
+                                            {{ t('links.createdAt') }}: {{ formatDate(link.created_at) }}
+                                        </span>
+                                        <span class="flex items-center gap-1">
+                                            <LucideMousePointerClick :size="14" />
+                                            {{ link.clicks || 0 }} {{ t('links.clicks') }}
+                                        </span>
+                                        <span
+                                            class="px-2 py-1 rounded-full text-xs font-medium"
+                                            :class="link.is_active 
+                                                ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400' 
+                                                : 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400'"
+                                        >
+                                            {{ link.is_active ? t('qrcodes.active') : t('qrcodes.inactive') }}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Actions -->
+                        <div class="flex items-center gap-2 flex-shrink-0">
+                            <Link
+                                :href="route('links.edit', link.id)"
+                                class="px-4 py-2 bg-surface-100 dark:bg-surface-800 hover:bg-surface-200 dark:hover:bg-surface-700 text-surface-700 dark:text-surface-300 rounded-lg flex items-center gap-2 transition-colors"
+                            >
+                                <LucideEdit :size="16" />
+                                <span class="hidden sm:inline">{{ t('common.edit') }}</span>
+                            </Link>
+                            <Link
+                                :href="route('links.destroy', link.id)"
+                                method="delete"
+                                as="button"
+                                class="px-4 py-2 bg-red-100 dark:bg-red-900/30 hover:bg-red-200 dark:hover:bg-red-900/50 text-red-700 dark:text-red-400 rounded-lg flex items-center gap-2 transition-colors"
+                            >
+                                <LucideTrash2 :size="16" />
+                                <span class="hidden sm:inline">{{ t('common.delete') }}</span>
+                            </Link>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Empty State -->
+                <div
+                    v-if="filteredLinks.length === 0 && props.links.length > 0"
+                    class="text-center py-12"
+                >
+                    <LucideSearch class="w-16 h-16 mx-auto mb-4 text-surface-300 dark:text-surface-700" />
+                    <p class="text-lg font-medium text-surface-700 dark:text-surface-300">{{ t('common.noResults') }}</p>
+                    <p class="text-sm text-surface-500 dark:text-surface-400 mt-1">Try adjusting your search or filters</p>
+                </div>
+
+                <div
+                    v-if="props.links.length === 0"
+                    class="text-center py-16"
+                >
+                    <div class="inline-flex p-4 bg-surface-100 dark:bg-surface-800 rounded-full mb-4">
+                        <LucideLink class="w-16 h-16 text-surface-400 dark:text-surface-600" />
+                    </div>
+                    <p class="text-lg font-medium text-surface-700 dark:text-surface-300">{{ t('links.noLinks') }}</p>
+                    <p class="text-sm text-surface-500 dark:text-surface-400 mt-1 mb-4">{{ t('links.createFirst') }}</p>
+                    <Link
+                        :href="route('links.create')"
+                        class="button-primary inline-flex items-center gap-2"
+                    >
+                        <LucidePlus class="w-4 h-4" /> {{ t('links.addNew') }}
+                    </Link>
                 </div>
             </div>
         </div>

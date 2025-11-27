@@ -1,0 +1,205 @@
+{
+  "common": {
+    "welcome": "Bienvenido",
+    "logout": "Cerrar sesión",
+    "settings": "Configuración",
+    "profile": "Perfil",
+    "billing": "Facturación",
+    "help": "Ayuda y Soporte",
+    "darkMode": "Modo Oscuro",
+    "lightMode": "Modo Claro",
+    "search": "Buscar",
+    "actions": "Acciones",
+    "edit": "Editar",
+    "delete": "Eliminar",
+    "view": "Ver",
+    "create": "Crear",
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "back": "Atrás",
+    "next": "Siguiente",
+    "previous": "Anterior",
+    "loading": "Cargando...",
+    "noResults": "No se encontraron resultados"
+  },
+  "nav": {
+    "dashboard": "Panel",
+    "links": "Enlaces",
+    "qrcodes": "Códigos QR",
+    "pages": "Tu Página"
+  },
+  "dashboard": {
+    "title": "Panel",
+    "welcome": "Bienvenido a",
+    "subtitle": "Gestiona tus enlaces, códigos QR y páginas de forma fácil y moderna",
+    "newLink": "Nuevo Enlace",
+    "newQrCode": "Nuevo Código QR",
+    "stats": {
+      "linksCreated": "Enlaces creados",
+      "qrCodesGenerated": "Códigos QR generados",
+      "uniqueVisitors": "Visitantes únicos",
+      "pageStatus": "Página pública",
+      "online": "En línea"
+    },
+    "planStatus": {
+      "title": "Estado del plan",
+      "currentPlan": "Plan actual",
+      "linksAvailable": "Enlaces disponibles",
+      "qrCodesAvailable": "Códigos QR disponibles",
+      "upgradeToPro": "Actualizar a PRO"
+    },
+    "notifications": {
+      "title": "Notificaciones importantes",
+      "linkLimit": "Casi has alcanzado el límite máximo de enlaces",
+      "renewalDays": "días hasta la renovación"
+    },
+    "performance": {
+      "title": "Rendimiento de los últimos 7 días",
+      "demo": "Demo"
+    },
+    "recentLogins": {
+      "title": "Inicios de sesión recientes"
+    },
+    "latestContent": {
+      "links": "Últimos enlaces",
+      "qrCodes": "Últimos códigos QR",
+      "pageBlocks": "Últimos bloques de página"
+    }
+  },
+  "links": {
+    "title": "Enlaces",
+    "subtitle": "Gestiona todos tus enlaces abreviados",
+    "addNew": "Añadir nuevo enlace",
+    "createDescription": "Crea un nuevo enlace corto para compartir contenido",
+    "noLinks": "No se encontraron enlaces",
+    "createFirst": "¡Crea tu primer enlace para comenzar!",
+    "url": "URL",
+    "slug": "Slug",
+    "linkTitle": "Título",
+    "description": "Descripción",
+    "search": "Buscar enlaces...",
+    "sortBy": "Ordenar por",
+    "filterBy": "Filtrar por",
+    "stats": {
+      "totalLinks": "Enlaces Totales",
+      "activeLinks": "Enlaces Activos",
+      "totalClicks": "Clics Totales",
+      "avgClicks": "Prom. Clics/Enlace"
+    },
+    "sort": {
+      "newest": "Más recientes",
+      "oldest": "Más antiguos",
+      "mostClicks": "Más clics",
+      "leastClicks": "Menos clics",
+      "alphabetical": "Alfabético"
+    },
+    "filter": {
+      "all": "Todos los enlaces",
+      "active": "Solo activos",
+      "inactive": "Solo inactivos"
+    },
+    "copyLink": "Copiar enlace",
+    "openLink": "Abrir enlace",
+    "createdAt": "Creado",
+    "clicks": "clics"
+  },
+  "qrcodes": {
+    "title": "Códigos QR",
+    "subtitle": "Crea y gestiona tus códigos QR dinámicos",
+    "addNew": "Añadir nuevo código QR",
+    "createDescription": "Crea un nuevo código QR para compartir contenido",
+    "noQrCodes": "No se encontraron códigos QR",
+    "createFirst": "¡Crea tu primer código QR para comenzar!",
+    "format": "Formato",
+    "scans": "escaneos",
+    "active": "Activo",
+    "inactive": "Inactivo",
+    "static": "estático",
+    "dynamic": "dinámico",
+    "noName": "Código QR sin nombre",
+    "noDescription": "Sin descripción",
+    "search": "Buscar códigos QR por nombre, descripción o slug...",
+    "sortBy": "Ordenar por",
+    "filterBy": "Filtrar por",
+    "stats": {
+      "totalQrCodes": "Códigos QR Totales",
+      "activeQrCodes": "Códigos QR Activos",
+      "totalScans": "Escaneos Totales",
+      "avgScans": "Media de Escaneos"
+    },
+    "sort": {
+      "newest": "Más recientes",
+      "oldest": "Más antiguos",
+      "mostScans": "Más escaneados",
+      "leastScans": "Menos escaneados",
+      "alphabetical": "Alfabético"
+    },
+    "filter": {
+      "all": "Todos",
+      "active": "Activos",
+      "inactive": "Inactivos",
+      "static": "Estáticos",
+      "dynamic": "Dinámicos"
+    },
+    "createdAt": "Creado"
+  },
+  "pages": {
+    "title": "Tus Páginas",
+    "subtitle": "Crea páginas personalizadas con bloques componibles",
+    "addNew": "Añadir nueva página",
+    "noPages": "No se encontraron páginas",
+    "createFirst": "¡Crea tu primera página para comenzar!",
+    "search": "Buscar páginas por título, descripción o slug...",
+    "sortBy": "Ordenar por",
+    "filterBy": "Filtrar por",
+    "stats": {
+      "totalPages": "Páginas Totales",
+      "published": "Publicadas",
+      "totalBlocks": "Bloques Totales",
+      "avgBlocks": "Media de Bloques",
+      "activeBlocks": "Bloques Activos",
+      "views": "Visualizaciones de Página"
+    },
+    "sort": {
+      "newest": "Más recientes",
+      "oldest": "Más antiguas",
+      "alphabetical": "Alfabético",
+      "mostBlocks": "Más bloques"
+    },
+    "filter": {
+      "all": "Todas",
+      "published": "Publicadas",
+      "draft": "Borradores"
+    },
+    "url": "URL",
+    "viewPage": "Ver página",
+    "blocks": "bloques",
+    "published": "Publicada",
+    "draft": "Borrador",
+    "createdAt": "Creado",
+    "edit": "Editar Página",
+    "settings": "Configuración de Página",
+    "form": {
+      "title": "Título",
+      "description": "Descripción",
+      "published": "Publicada el",
+      "active": "Activa"
+    },
+    "update": "Actualizar Página",
+    "addBlock": "Añadir Bloque",
+    "blockEditor": "Editor de Bloques",
+    "dragAndDrop": "Arrastra para reordenar",
+    "noBlocks": "Aún no hay bloques",
+    "addFirstBlock": "Añade tu primer bloque",
+    "preview": "Vista previa",
+    "publicView": "Vista pública",
+    "addBlocksToPage": "Añade bloques para comenzar a construir tu página",
+    "editPage": "Editar Página"
+  },
+  "footer": {
+    "copyright": "Todos los derechos reservados.",
+    "privacy": "Privacidad",
+    "terms": "Términos",
+    "support": "Soporte"
+  }
+}

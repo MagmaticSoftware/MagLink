@@ -3,8 +3,8 @@ import { ref } from 'vue';
 import { Head, Link, router } from '@inertiajs/vue3'
 import MadeWithLove from '@/components/MadeWithLove.vue';
 import PageHeader from '@/components/admin/PageHeader.vue';
-import Menu from '@/../../src/volt/Menu.vue';
-import SecondaryButton from '@/../../src/volt/SecondaryButton.vue';
+import Menu from '@/components/volt/Menu.vue';
+import SecondaryButton from '@/components/volt/SecondaryButton.vue';
 import {
   Dialog,
   DialogPanel,

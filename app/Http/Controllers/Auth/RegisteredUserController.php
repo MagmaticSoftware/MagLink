@@ -49,7 +49,9 @@ class RegisteredUserController extends Controller
             'name' => $request->company_name,
         ]);
 
-        $tenant->run(function () use ($request, $tenant) {
+        $user = null;
+        
+        $tenant->run(function () use ($request, $tenant, &$user) {
             $user = User::create([
                 'first_name' => $request->first_name,
                 'last_name' => $request->last_name,
@@ -57,23 +59,27 @@ class RegisteredUserController extends Controller
                 'password' => Hash::make($request->password),
             ]);
 
-            $company = Company::create([
+            // Crea la Company SENZA triggare eventi Paddle
+            $company = new Company([
                 'name' => $request->company_name,
                 'slug' => $request->slug,
                 'email' => $request->company_email,
                 'industry' => $request->company_industry,
                 'size' => $request->company_size,
             ]);
+            $company->saveQuietly(); // Evita la sincronizzazione automatica con Paddle
 
             $user->companies()->attach($company->id, [
                 'is_company_admin' => true,
             ]);
 
-            BillingProfile::create([
+            // Crea il BillingProfile SENZA sincronizzazione Paddle
+            $billingProfile = new BillingProfile([
                 'company_id' => $company->id,
                 'company_name' => $request->company_name,
                 'phone' => $request->company_phone,
             ]);
+            $billingProfile->saveQuietly(); // Evita eventi che potrebbero triggare Paddle
 
             UserPreferences::create([
                 'user_id' => $user->id,
@@ -93,10 +99,11 @@ class RegisteredUserController extends Controller
             ]);
             
             event(new Registered($user));
-            
-            Auth::login($user);
-            return to_route('tenant.index', ['tenant' => $tenant->id]);
         });
 
+        // Login fuori dal contesto tenant
+        Auth::login($user);
+        
+        return redirect()->route('tenant.index', ['tenant' => $tenant->id]);
     }
 }

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import axios from 'axios';
-import { reactive, ref } from 'vue';
+import { reactive, ref, computed } from 'vue';
 import { type BreadcrumbItem } from '@/types';
 import { Head, useForm } from '@inertiajs/vue3';
 import AppLayout from '@/layouts/AppLayout.vue';
@@ -10,13 +10,23 @@ import TextBlock from '@/components/tenant/pageblocks/edit/Text.vue';
 import ImageBlock from '@/components/tenant/pageblocks/edit/Image.vue';
 import DefaultBlock from '@/components/tenant/pageblocks/edit/Default.vue';
 import VideoBlock from '@/components/tenant/pageblocks/edit/Video.vue';
-import Dialog from '@volt/Dialog.vue';
-import Button from '@volt/Button.vue';
+import Dialog from '@/components/volt/Dialog.vue';
+import Button from '@/components/volt/Button.vue';
 import CreateBlock from '../pageblocks/Create.vue';
-import InputText from '@volt/InputText.vue';
-import Label from '@volt/Label.vue';
-import { LucideSave } from 'lucide-vue-next';
+import InputText from '@/components/volt/InputText.vue';
+import { 
+    LucideSave, 
+    LucidePlus, 
+    LucideLayout, 
+    LucideEye, 
+    LucideCalendar,
+    LucideToggleLeft,
+    LucideToggleRight 
+} from 'lucide-vue-next';
 import { GridLayout, GridItem } from 'grid-layout-plus';
+import { useI18n } from 'vue-i18n';
+
+const { t } = useI18n();
 
 const blockComponents: Record<string, any> = {
     link: LinkBlock,
@@ -60,6 +70,7 @@ const props = defineProps<{
 
 const form = useForm({
     title: props.page.title,
+    slug: props.page.slug,
     description: props.page.description ?? '',
     style: props.page.style ?? {},
     settings: props.page.settings ?? {},
@@ -67,16 +78,68 @@ const form = useForm({
     published_at: props.page.published_at ?? '',
 });
 
+// Theme colors palette
+const themeColors = [
+    { name: 'Blue', value: 'blue', class: 'bg-blue-500', hover: 'hover:border-blue-400', border: 'border-blue-400' },
+    { name: 'Indigo', value: 'indigo', class: 'bg-indigo-500', hover: 'hover:border-indigo-400', border: 'border-indigo-400' },
+    { name: 'Purple', value: 'purple', class: 'bg-purple-500', hover: 'hover:border-purple-400', border: 'border-purple-400' },
+    { name: 'Pink', value: 'pink', class: 'bg-pink-500', hover: 'hover:border-pink-400', border: 'border-pink-400' },
+    { name: 'Red', value: 'red', class: 'bg-red-500', hover: 'hover:border-red-400', border: 'border-red-400' },
+    { name: 'Orange', value: 'orange', class: 'bg-orange-500', hover: 'hover:border-orange-400', border: 'border-orange-400' },
+    { name: 'Amber', value: 'amber', class: 'bg-amber-500', hover: 'hover:border-amber-400', border: 'border-amber-400' },
+    { name: 'Yellow', value: 'yellow', class: 'bg-yellow-500', hover: 'hover:border-yellow-400', border: 'border-yellow-400' },
+    { name: 'Lime', value: 'lime', class: 'bg-lime-500', hover: 'hover:border-lime-400', border: 'border-lime-400' },
+    { name: 'Green', value: 'green', class: 'bg-green-500', hover: 'hover:border-green-400', border: 'border-green-400' },
+    { name: 'Emerald', value: 'emerald', class: 'bg-emerald-500', hover: 'hover:border-emerald-400', border: 'border-emerald-400' },
+    { name: 'Teal', value: 'teal', class: 'bg-teal-500', hover: 'hover:border-teal-400', border: 'border-teal-400' },
+    { name: 'Cyan', value: 'cyan', class: 'bg-cyan-500', hover: 'hover:border-cyan-400', border: 'border-cyan-400' },
+    { name: 'Sky', value: 'sky', class: 'bg-sky-500', hover: 'hover:border-sky-400', border: 'border-sky-400' },
+];
+
+const selectedColor = ref(props.page.style?.primaryColor || 'blue');
+
+const selectColor = (color: string) => {
+    selectedColor.value = color;
+    form.style = { ...form.style, primaryColor: color };
+};
+
+const getColorClasses = (color: string) => {
+    const colorMap: Record<string, string> = {
+        blue: 'border-blue-400 dark:border-blue-500',
+        indigo: 'border-indigo-400 dark:border-indigo-500',
+        purple: 'border-purple-400 dark:border-purple-500',
+        pink: 'border-pink-400 dark:border-pink-500',
+        red: 'border-red-400 dark:border-red-500',
+        orange: 'border-orange-400 dark:border-orange-500',
+        amber: 'border-amber-400 dark:border-amber-500',
+        yellow: 'border-yellow-400 dark:border-yellow-500',
+        lime: 'border-lime-400 dark:border-lime-500',
+        green: 'border-green-400 dark:border-green-500',
+        emerald: 'border-emerald-400 dark:border-emerald-500',
+        teal: 'border-teal-400 dark:border-teal-500',
+        cyan: 'border-cyan-400 dark:border-cyan-500',
+        sky: 'border-sky-400 dark:border-sky-500',
+    };
+    return colorMap[color] || colorMap.blue;
+};
+
 const breadcrumbs: BreadcrumbItem[] = [
     {
-        title: 'Pagine',
+        title: t('pages.title'),
         href: route('pages.index'),
     },
     {
-        title: 'Modifica',
+        title: t('pages.edit'),
         href: route('pages.edit', props.page.id),
     },
 ];
+
+// Compute stats
+const pageStats = computed(() => ({
+    totalBlocks: layout.length,
+    publishedBlocks: layout.filter((b: any) => b.is_active).length,
+    views: props.page.views || 0,
+}));
 
 const submitForm = () => {
     form.put(route('pages.update', props.page.slug), {
@@ -89,15 +152,15 @@ const submitForm = () => {
     });
 };
 
-const layout = reactive(
+let layout = reactive(
     Array.isArray(props.blocks)
-        ? props.blocks.map(block => {
-            const x = block.position?.x ?? 0;
-            const y = block.position?.y ?? 0;
+        ? props.blocks.map((block, index) => {
+            const x = block.position?.x ?? (index % 2);
+            const y = block.position?.y ?? Math.floor(index / 2);
             return {
                 x,
                 y,
-                w: block.size?.width ?? 2,
+                w: block.size?.width ?? 1,
                 h: block.size?.height ?? 2,
                 i: String(block.id),
                 id: block.id,
@@ -106,7 +169,7 @@ const layout = reactive(
                 title: block.title,
                 content: block.content,
                 position: { x, y },
-                size: block.size,
+                size: block.size ?? { width: 1, height: 2 },
                 style: block.style,
                 settings: block.settings,
                 is_active: block.is_active,
@@ -147,14 +210,16 @@ const updateSize = (item: any) => {
 const visible = ref(false);
 
 function handleBlockCreated(newBlock: any) {
-    // Costruisci l'oggetto layout come per gli altri blocchi
-    const position = newBlock.position ?? {};
-    const size = newBlock.size ?? {};
+    // Find next available position
+    const maxY = layout.length > 0 ? Math.max(...layout.map(item => item.y + item.h)) : 0;
+    const position = newBlock.position ?? { x: 0, y: maxY };
+    const size = newBlock.size ?? { width: 1, height: 2 };
+    
     const item = {
-        x: position.x ?? 0,
-        y: position.y ?? 0,
-        w: size.width ?? 2,
-        h: size.height ?? 2,
+        x: position.x,
+        y: position.y,
+        w: size.width,
+        h: size.height,
         i: String(newBlock.id),
         id: newBlock.id,
         page_id: newBlock.page_id,
@@ -174,61 +239,250 @@ function handleBlockCreated(newBlock: any) {
 </script>
 
 <template>
-
-    <Head title="Modifica Pagina" />
+    <Head :title="t('pages.edit')" />
 
     <AppLayout :breadcrumbs="breadcrumbs">
-        <div class="flex flex-row flex-wrap justify-center items-start rounded-xl p-4">
-            <form class="flex w-1/4 flex-row flex-wrap gap-y-4 items-center justify-start" @submit.prevent="submitForm">
-                <div class="w-full">
-                    <Label label="Titolo" />
-                    <InputText v-model="form.title" required />
+        <div class="flex h-full flex-1 flex-col gap-6 p-6">
+            <!-- Page Header -->
+            <div class="flex items-center justify-between">
+                <div>
+                    <h1 class="text-3xl font-bold text-surface-900 dark:text-surface-50">{{ t('pages.edit') }}</h1>
+                    <p class="text-surface-600 dark:text-surface-400 mt-1">{{ props.page.title }}</p>
                 </div>
-                <div class="w-full">
-                    <Label label="Descrizione" />
-                    <InputText v-model="form.description" />
-                </div>
-                <!-- Puoi aggiungere qui campi per style/settings se necessario -->
-                <div class="w-full">
-                    <Label label="Pubblicata il" />
-                    <InputText v-model="form.published_at" type="date" />
-                </div>
-                <div class="w-full">
-                    <Label label="Attiva" />
-                    <input type="checkbox" v-model="form.is_active" />
-                </div>
-                <div class="w-full">
-                    <Button type="submit">
-                        <LucideSave class="mr-2" />
-                        Aggiorna Pagina
-                    </Button>
-                    <Button type="button" class="ml-2" @click="visible = true">
-                        Aggiungi Blocco
+                <div class="flex gap-2">
+                    <Button 
+                        type="button" 
+                        severity="secondary"
+                        @click="visible = true"
+                        class="flex items-center gap-2"
+                    >
+                        <LucidePlus :size="16" />
+                        {{ t('pages.addBlock') }}
                     </Button>
                 </div>
-            </form>
-            <GridLayout v-model:layout="layout" :col-num="2" :row-height="100" is-draggable is-resizable
-                vertical-compact use-css-transforms class="w-3/4 h-full" :margin="[30,30]">
-                <template v-if="layout.length > 0">
-                    <GridItem v-for="item in layout" :key="item.i" :x="item.x" :y="item.y" :w="item.w" :h="item.h"
-                        :i="item.i" @resized="updateSize(item)"  @moved="updateAllPositions"
-                        class="bg-gray-50 p-3 overflow-hidden dark:bg-gray-800 shadow-md rounded-lg flex items-start justify-center text-gray-700 dark:text-gray-300">
-                        <component :is="blockComponents[item.type] ?? DefaultBlock" :id="item.id"
-                            :page-id="item.page_id" :type="item.type" :title="item.title" :content="item.content"
-                            :position="item.position" :size="item.size.width" :style="item.style"
-                            :settings="item.settings" :is-active="item.is_active" />
-                    </GridItem>
-                </template>
-                <template v-else>
-                    <GridItem :key="1" :x="0" :y="0" :w="1" :h="1" :i="1">
-                        <Button type="button" class="ml-2" @click="visible = true">
-                            Aggiungi Blocco
-                        </Button>
-                    </GridItem>
-                </template>
-            </GridLayout>
+            </div>
+
+            <!-- Statistics Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="bg-white dark:bg-surface-900 rounded-xl p-6 shadow-sm border border-surface-200 dark:border-surface-800">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm font-medium text-surface-600 dark:text-surface-400">{{ t('pages.stats.totalBlocks') }}</p>
+                            <p class="text-3xl font-bold text-surface-900 dark:text-surface-50 mt-2">{{ pageStats.totalBlocks }}</p>
+                        </div>
+                        <div class="p-3 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
+                            <LucideLayout :size="24" class="text-blue-600 dark:text-blue-400" />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white dark:bg-surface-900 rounded-xl p-6 shadow-sm border border-surface-200 dark:border-surface-800">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm font-medium text-surface-600 dark:text-surface-400">{{ t('pages.stats.activeBlocks') }}</p>
+                            <p class="text-3xl font-bold text-surface-900 dark:text-surface-50 mt-2">{{ pageStats.publishedBlocks }}</p>
+                        </div>
+                        <div class="p-3 bg-green-100 dark:bg-green-900/30 rounded-lg">
+                            <component :is="form.is_active ? LucideToggleRight : LucideToggleLeft" :size="24" class="text-green-600 dark:text-green-400" />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white dark:bg-surface-900 rounded-xl p-6 shadow-sm border border-surface-200 dark:border-surface-800">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm font-medium text-surface-600 dark:text-surface-400">{{ t('pages.stats.views') }}</p>
+                            <p class="text-3xl font-bold text-surface-900 dark:text-surface-50 mt-2">{{ pageStats.views }}</p>
+                        </div>
+                        <div class="p-3 bg-purple-100 dark:bg-purple-900/30 rounded-lg">
+                            <LucideEye :size="24" class="text-purple-600 dark:text-purple-400" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Content -->
+            <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+                <!-- Settings Sidebar -->
+                <div class="lg:col-span-1">
+                    <div class="bg-white dark:bg-surface-900 rounded-xl p-6 shadow-sm border border-surface-200 dark:border-surface-800 sticky top-6">
+                        <h3 class="text-lg font-semibold text-surface-900 dark:text-surface-50 mb-4">
+                            {{ t('pages.settings') }}
+                        </h3>
+                        
+                        <form @submit.prevent="submitForm" class="space-y-4">
+                            <div>
+                                <label class="text-sm font-medium text-surface-700 dark:text-surface-300 block mb-2">
+                                    {{ t('pages.form.title') }}
+                                </label>
+                                <InputText v-model="form.title" required class="w-full" />
+                            </div>
+
+                            <div>
+                                <label class="text-sm font-medium text-surface-700 dark:text-surface-300 block mb-2">
+                                    Slug (URL)
+                                </label>
+                                <InputText v-model="form.slug" required class="w-full font-mono text-sm" />
+                                <p class="text-xs text-surface-500 dark:text-surface-400 mt-1">
+                                    Public URL: /{{ form.slug }}
+                                </p>
+                            </div>
+
+                            <div>
+                                <label class="text-sm font-medium text-surface-700 dark:text-surface-300 block mb-2">
+                                    {{ t('pages.form.description') }}
+                                </label>
+                                <InputText v-model="form.description" class="w-full" />
+                            </div>
+
+                            <div>
+                                <label class="text-sm font-medium text-surface-700 dark:text-surface-300 block mb-2">
+                                    {{ t('pages.form.published') }}
+                                </label>
+                                <InputText v-model="form.published_at" type="date" class="w-full" />
+                            </div>
+
+                            <div class="flex items-center gap-2">
+                                <input 
+                                    type="checkbox" 
+                                    v-model="form.is_active" 
+                                    id="is_active"
+                                    class="w-4 h-4 text-blue-600 rounded border-surface-300 dark:border-surface-700 focus:ring-blue-500"
+                                />
+                                <label 
+                                    for="is_active" 
+                                    class="text-sm font-medium text-surface-700 dark:text-surface-300 cursor-pointer"
+                                >
+                                    {{ t('pages.form.active') }}
+                                </label>
+                            </div>
+
+                            <div class="pt-4 border-t border-surface-200 dark:border-surface-800">
+                                <label class="text-sm font-medium text-surface-700 dark:text-surface-300 block mb-3">
+                                    Colore Tema
+                                </label>
+                                <div class="grid grid-cols-7 gap-2">
+                                    <button
+                                        v-for="color in themeColors"
+                                        :key="color.value"
+                                        type="button"
+                                        @click="selectColor(color.value)"
+                                        :title="color.name"
+                                        :class="[
+                                            'w-8 h-8 rounded-lg transition-all duration-200',
+                                            color.class,
+                                            'hover:scale-110 active:scale-95',
+                                            'border-2',
+                                            selectedColor === color.value
+                                                ? 'border-surface-900 dark:border-surface-100 ring-2 ring-offset-2 ring-surface-400 dark:ring-surface-600 scale-110'
+                                                : 'border-transparent hover:border-surface-300 dark:hover:border-surface-600'
+                                        ]"
+                                    />
+                                </div>
+                            </div>
+
+                            <div class="pt-4 border-t border-surface-200 dark:border-surface-800">
+                                <Button 
+                                    type="submit" 
+                                    class="w-full flex items-center justify-center gap-2"
+                                >
+                                    <LucideSave :size="16" />
+                                    {{ t('pages.update') }}
+                                </Button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Block Editor -->
+                <div class="lg:col-span-3">
+                    <div class="bg-white dark:bg-surface-900 rounded-xl p-6 shadow-sm border border-surface-200 dark:border-surface-800">
+                        <div class="flex items-center justify-between mb-6">
+                            <h3 class="text-lg font-semibold text-surface-900 dark:text-surface-50">
+                                {{ t('pages.blockEditor') }}
+                            </h3>
+                            <span class="text-sm text-surface-500 dark:text-surface-400">
+                                {{ t('pages.dragAndDrop') }}
+                            </span>
+                        </div>
+
+                        <div class="min-h-[600px] relative">
+                            <GridLayout 
+                                v-model:layout="layout" 
+                                :col-num="2" 
+                                :row-height="120" 
+                                :is-draggable="true"
+                                :is-resizable="true"
+                                :vertical-compact="false"
+                                :prevent-collision="true"
+                                :use-css-transforms="true"
+                                :margin="[16, 16]"
+                                class="w-full"
+                            >
+                                <GridItem 
+                                    v-for="item in layout" 
+                                    :key="item.i" 
+                                    :x="item.x" 
+                                    :y="item.y" 
+                                    :w="item.w" 
+                                    :h="item.h"
+                                    :i="item.i" 
+                                    @resized="updateSize(item)"  
+                                    @moved="updateAllPositions"
+                                    :class="[
+                                        'bg-gradient-to-br from-surface-50 to-surface-100 dark:from-surface-800 dark:to-surface-900 p-4 overflow-auto shadow-md hover:shadow-lg rounded-xl border-2 border-surface-200 dark:border-surface-700 transition-all duration-200',
+                                        'hover:' + getColorClasses(selectedColor)
+                                    ]"
+                                >
+                                    <component 
+                                        :is="blockComponents[item.type] ?? DefaultBlock" 
+                                        :id="item.id"
+                                        :page-id="item.page_id" 
+                                        :type="item.type" 
+                                        :title="item.title" 
+                                        :content="item.content"
+                                        :position="item.position" 
+                                        :size="item.size?.width ?? item.w" 
+                                        :style="item.style"
+                                        :settings="item.settings" 
+                                        :is-active="item.is_active" 
+                                    />
+                                </GridItem>
+                            </GridLayout>
+
+                            <!-- Empty State -->
+                            <div 
+                                v-if="layout.length === 0" 
+                                class="absolute inset-0 flex items-center justify-center"
+                            >
+                                <div class="text-center">
+                                    <LucideLayout :size="48" class="mx-auto text-surface-400 mb-4" />
+                                    <p class="text-surface-600 dark:text-surface-400 mb-4">
+                                        {{ t('pages.noBlocks') }}
+                                    </p>
+                                    <Button 
+                                        type="button" 
+                                        @click="visible = true"
+                                        class="flex items-center gap-2 mx-auto"
+                                    >
+                                        <LucidePlus :size="16" />
+                                        {{ t('pages.addFirstBlock') }}
+                                    </Button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-        <Dialog v-model:visible="visible" modal header="Aggiungi blocco" class="sm:w-100 w-9/10">
+
+        <!-- Add Block Dialog -->
+        <Dialog 
+            v-model:visible="visible" 
+            modal 
+            :header="t('pages.addBlock')" 
+            class="max-w-2xl"
+        >
             <CreateBlock :page="props.page" @created="handleBlockCreated" />
         </Dialog>
     </AppLayout>
@@ -236,23 +490,71 @@ function handleBlockCreated(newBlock: any) {
 
 <style scoped>
 .vgl-layout {
-  background-color: #fff;
+  background-color: transparent;
+  position: relative;
+  min-height: 600px;
 }
 
+/* Grid background pattern */
 .vgl-layout::before {
   position: absolute;
-  width: calc(100% - 5px);
-  height: calc(100% - 5px);
-  margin: 15px;
+  inset: 0;
   content: '';
-  background-image: linear-gradient(to right, lightgrey 1px, transparent 1px),
-    linear-gradient(to bottom, lightgrey 1px, transparent 1px);
+  background-image: 
+    linear-gradient(to right, rgba(148, 163, 184, 0.1) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(148, 163, 184, 0.1) 1px, transparent 1px);
   background-repeat: repeat;
-  background-size: calc(calc(100% - 30px) / 2) 130px;
+  background-size: calc(50% - 8px) 136px;
+  pointer-events: none;
+  z-index: 0;
 }
 
+:root.dark .vgl-layout::before {
+  background-image: 
+    linear-gradient(to right, rgba(71, 85, 105, 0.2) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(71, 85, 105, 0.2) 1px, transparent 1px);
+}
+
+/* Resize handle styling */
 :deep(.vgl-item__resizer) {
-    right: 0.5em;
-    bottom: 0.5em;
+  right: 0.5rem;
+  bottom: 0.5rem;
+  width: 16px;
+  height: 16px;
+  background-image: none;
+  background: linear-gradient(135deg, transparent 50%, rgb(59, 130, 246) 50%);
+  border-radius: 0 0 0.75rem 0;
+  opacity: 0.6;
+  transition: opacity 0.2s;
+}
+
+:deep(.vgl-item:hover .vgl-item__resizer) {
+  opacity: 1;
+}
+
+/* Dragging state */
+:deep(.vgl-item.dragging) {
+  opacity: 0.8;
+  transform: rotate(2deg);
+  z-index: 1000;
+}
+
+:deep(.vgl-item.resizing) {
+  opacity: 0.9;
+  z-index: 1000;
+}
+
+/* Placeholder styling */
+:deep(.vgl-item.placeholder) {
+  background: rgb(59, 130, 246, 0.2) !important;
+  border: 2px dashed rgb(59, 130, 246) !important;
+  border-radius: 0.75rem;
+}
+
+/* Ensure items have proper z-index */
+:deep(.vgl-item) {
+  position: absolute;
+  z-index: 1;
+  transition: all 0.2s ease;
 }
 </style>

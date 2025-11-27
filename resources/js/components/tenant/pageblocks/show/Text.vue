@@ -1,25 +1,44 @@
 <script setup lang="ts">
-import { LetterText } from 'lucide-vue-next';
+import { computed } from 'vue';
 
-defineProps<{
+const props = defineProps<{
   id: number;
-  title: string;
+  title?: string;
   content: string;
-    position: {
-        x: number;
-        y: number;
-    };
+  position?: {
+    x: number;
+    y: number;
+  };
 }>();
+
+// Parse content as markdown-like or plain text
+const formattedContent = computed(() => {
+  if (!props.content) return '';
+  // Simple formatting: support line breaks
+  return props.content.replace(/\n/g, '<br>');
+});
 </script>
 
 <template>
-  <div class="flex flex-row flex-wrap items-center justify-start gap-2 w-full">
-    <div class="p-4">
-        <LetterText class="text-gray-400 dark:text-gray-400" :size="30"></LetterText>
-    </div>
-    <div class="flex-1 flex flex-col gap-2">
-        <div class="font-semibold text-gray-700 dark:text-gray-400 w-full">{{ title }} | position: {{ position.x }} - {{ position.y }}</div>
-        <div class="w-full">{{ content }}</div>
+  <div class="h-full w-full flex flex-col justify-between p-0">
+    <div class="flex-1 overflow-y-auto">
+      <h3 v-if="title" class="text-lg font-semibold text-slate-900 dark:text-slate-50 mb-3">
+        {{ title }}
+      </h3>
+      <div 
+        class="text-slate-700 dark:text-slate-300 leading-relaxed prose prose-sm dark:prose-invert max-w-none"
+        v-html="formattedContent"
+      />
     </div>
   </div>
 </template>
+
+<style scoped>
+.prose :deep(p) {
+  margin-bottom: 0.75rem;
+}
+
+.prose :deep(p:last-child) {
+  margin-bottom: 0;
+}
+</style>

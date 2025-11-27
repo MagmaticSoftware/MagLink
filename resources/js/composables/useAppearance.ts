@@ -40,7 +40,14 @@ const getStoredAppearance = () => {
         return null;
     }
 
-    return localStorage.getItem('appearance') as Appearance | null;
+    const stored = localStorage.getItem('appearance');
+    
+    // Handle both string values and legacy system
+    if (stored === 'dark' || stored === 'light' || stored === 'system') {
+        return stored as Appearance;
+    }
+    
+    return null;
 };
 
 const handleSystemThemeChange = () => {

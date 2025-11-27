@@ -21,8 +21,11 @@ class UpdatePageRequest extends FormRequest
      */
     public function rules(): array
     {
+        $pageId = $this->route('page')->id;
+        
         return [
             'title' => 'required|string|max:255',
+            'slug' => 'required|string|max:255|regex:/^[a-z0-9]+(?:-[a-z0-9]+)*$/|unique:pages,slug,' . $pageId,
             'description' => 'nullable|string',
             'style' => 'nullable|array',
             'settings' => 'nullable|array',

@@ -1,0 +1,205 @@
+{
+  "common": {
+    "welcome": "Willkommen",
+    "logout": "Abmelden",
+    "settings": "Einstellungen",
+    "profile": "Profil",
+    "billing": "Abrechnung",
+    "help": "Hilfe & Support",
+    "darkMode": "Dunkler Modus",
+    "lightMode": "Heller Modus",
+    "search": "Suchen",
+    "actions": "Aktionen",
+    "edit": "Bearbeiten",
+    "delete": "Löschen",
+    "view": "Ansehen",
+    "create": "Erstellen",
+    "save": "Speichern",
+    "cancel": "Abbrechen",
+    "back": "Zurück",
+    "next": "Weiter",
+    "previous": "Vorherige",
+    "loading": "Laden...",
+    "noResults": "Keine Ergebnisse gefunden"
+  },
+  "nav": {
+    "dashboard": "Dashboard",
+    "links": "Links",
+    "qrcodes": "QR-Codes",
+    "pages": "Deine Seite"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "welcome": "Willkommen bei",
+    "subtitle": "Verwalte deine Links, QR-Codes und Seiten einfach und modern",
+    "newLink": "Neuer Link",
+    "newQrCode": "Neuer QR-Code",
+    "stats": {
+      "linksCreated": "Links erstellt",
+      "qrCodesGenerated": "QR-Codes generiert",
+      "uniqueVisitors": "Eindeutige Besucher",
+      "pageStatus": "Öffentliche Seite",
+      "online": "Online"
+    },
+    "planStatus": {
+      "title": "Plan-Status",
+      "currentPlan": "Aktueller Plan",
+      "linksAvailable": "Links verfügbar",
+      "qrCodesAvailable": "QR-Codes verfügbar",
+      "upgradeToPro": "Auf PRO upgraden"
+    },
+    "notifications": {
+      "title": "Wichtige Benachrichtigungen",
+      "linkLimit": "Du hast fast das maximale Link-Limit erreicht",
+      "renewalDays": "Tage bis zur Verlängerung"
+    },
+    "performance": {
+      "title": "Leistung der letzten 7 Tage",
+      "demo": "Demo"
+    },
+    "recentLogins": {
+      "title": "Letzte Anmeldungen"
+    },
+    "latestContent": {
+      "links": "Neueste Links",
+      "qrCodes": "Neueste QR-Codes",
+      "pageBlocks": "Neueste Seitenblöcke"
+    }
+  },
+  "links": {
+    "title": "Links",
+    "subtitle": "Verwalte alle deine gekürzten Links",
+    "addNew": "Neuen Link hinzufügen",
+    "createDescription": "Erstelle einen neuen Kurzlink zum Teilen von Inhalten",
+    "noLinks": "Keine Links gefunden",
+    "createFirst": "Erstelle deinen ersten Link, um loszulegen!",
+    "url": "URL",
+    "slug": "Slug",
+    "linkTitle": "Titel",
+    "description": "Beschreibung",
+    "search": "Links suchen...",
+    "sortBy": "Sortieren nach",
+    "filterBy": "Filtern nach",
+    "stats": {
+      "totalLinks": "Gesamte Links",
+      "activeLinks": "Aktive Links",
+      "totalClicks": "Gesamte Klicks",
+      "avgClicks": "Durchschn. Klicks/Link"
+    },
+    "sort": {
+      "newest": "Neueste zuerst",
+      "oldest": "Älteste zuerst",
+      "mostClicks": "Meiste Klicks",
+      "leastClicks": "Wenigste Klicks",
+      "alphabetical": "Alphabetisch"
+    },
+    "filter": {
+      "all": "Alle Links",
+      "active": "Nur aktive",
+      "inactive": "Nur inaktive"
+    },
+    "copyLink": "Link kopieren",
+    "openLink": "Link öffnen",
+    "createdAt": "Erstellt",
+    "clicks": "Klicks"
+  },
+  "qrcodes": {
+    "title": "QR-Codes",
+    "subtitle": "Erstelle und verwalte deine dynamischen QR-Codes",
+    "addNew": "Neuen QR-Code hinzufügen",
+    "createDescription": "Erstelle einen neuen QR-Code zum Teilen von Inhalten",
+    "noQrCodes": "Keine QR-Codes gefunden",
+    "createFirst": "Erstelle deinen ersten QR-Code, um loszulegen!",
+    "format": "Format",
+    "scans": "Scans",
+    "active": "Aktiv",
+    "inactive": "Inaktiv",
+    "static": "statisch",
+    "dynamic": "dynamisch",
+    "noName": "QR-Code ohne Namen",
+    "noDescription": "Keine Beschreibung",
+    "search": "QR-Codes nach Name, Beschreibung oder Slug suchen...",
+    "sortBy": "Sortieren nach",
+    "filterBy": "Filtern nach",
+    "stats": {
+      "totalQrCodes": "Gesamte QR-Codes",
+      "activeQrCodes": "Aktive QR-Codes",
+      "totalScans": "Gesamte Scans",
+      "avgScans": "Durchschn. Scans"
+    },
+    "sort": {
+      "newest": "Neueste",
+      "oldest": "Älteste",
+      "mostScans": "Meist gescannt",
+      "leastScans": "Wenig gescannt",
+      "alphabetical": "Alphabetisch"
+    },
+    "filter": {
+      "all": "Alle",
+      "active": "Aktiv",
+      "inactive": "Inaktiv",
+      "static": "Statisch",
+      "dynamic": "Dynamisch"
+    },
+    "createdAt": "Erstellt"
+  },
+  "pages": {
+    "title": "Deine Seiten",
+    "subtitle": "Erstelle benutzerdefinierte Seiten mit zusammensetzbaren Blöcken",
+    "addNew": "Neue Seite hinzufügen",
+    "noPages": "Keine Seiten gefunden",
+    "createFirst": "Erstelle deine erste Seite, um loszulegen!",
+    "search": "Seiten nach Titel, Beschreibung oder Slug suchen...",
+    "sortBy": "Sortieren nach",
+    "filterBy": "Filtern nach",
+    "stats": {
+      "totalPages": "Gesamte Seiten",
+      "published": "Veröffentlicht",
+      "totalBlocks": "Gesamte Blöcke",
+      "avgBlocks": "Durchschnittliche Blöcke",
+      "activeBlocks": "Aktive Blöcke",
+      "views": "Seitenaufrufe"
+    },
+    "sort": {
+      "newest": "Neueste",
+      "oldest": "Älteste",
+      "alphabetical": "Alphabetisch",
+      "mostBlocks": "Meiste Blöcke"
+    },
+    "filter": {
+      "all": "Alle",
+      "published": "Veröffentlicht",
+      "draft": "Entwurf"
+    },
+    "url": "URL",
+    "viewPage": "Seite anzeigen",
+    "blocks": "blöcke",
+    "published": "Veröffentlicht",
+    "draft": "Entwurf",
+    "createdAt": "Erstellt",
+    "edit": "Seite Bearbeiten",
+    "settings": "Seiteneinstellungen",
+    "form": {
+      "title": "Titel",
+      "description": "Beschreibung",
+      "published": "Veröffentlicht am",
+      "active": "Aktiv"
+    },
+    "update": "Seite Aktualisieren",
+    "addBlock": "Block Hinzufügen",
+    "blockEditor": "Block-Editor",
+    "dragAndDrop": "Ziehen zum Neuanordnen",
+    "noBlocks": "Noch keine Blöcke",
+    "addFirstBlock": "Füge deinen ersten Block hinzu",
+    "preview": "Vorschau",
+    "publicView": "Öffentliche Ansicht",
+    "addBlocksToPage": "Füge Blöcke hinzu, um deine Seite zu erstellen",
+    "editPage": "Seite Bearbeiten"
+  },
+  "footer": {
+    "copyright": "Alle Rechte vorbehalten.",
+    "privacy": "Datenschutz",
+    "terms": "Bedingungen",
+    "support": "Support"
+  }
+}

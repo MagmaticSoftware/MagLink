@@ -1,25 +1,46 @@
 <script setup lang="ts">
-import { Code } from 'lucide-vue-next';
-
-defineProps<{
+const props = defineProps<{
   id: number;
-  title: string;
+  title?: string;
   content: string;
-    position: {
-        x: number;
-        y: number;
-    };
+  position?: {
+    x: number;
+    y: number;
+  };
 }>();
 </script>
 
 <template>
-  <div class="flex flex-row flex-wrap items-center justify-start gap-2 w-full">
-    <div class="p-4">
-       <Code class="text-gray-400 dark:text-gray-400" :size="30"></Code>
+  <div class="h-full w-full flex flex-col p-0 overflow-hidden">
+    <div v-if="title" class="mb-3">
+      <h3 class="text-base font-semibold text-slate-900 dark:text-slate-50">
+        {{ title }}
+      </h3>
     </div>
-    <div class="flex-1 flex flex-col gap-2">
-        <div class="font-semibold text-gray-700 dark:text-gray-400 w-full">{{ title }} | position: {{ position.x }} - {{ position.y }}</div>
-        <div class="w-full">{{ content }}</div>
+    
+    <div class="flex-1 overflow-y-auto prose prose-sm dark:prose-invert max-w-none">
+      <div v-html="content" class="html-content" />
     </div>
   </div>
 </template>
+
+<style scoped>
+.html-content :deep(*) {
+  max-width: 100%;
+}
+
+.html-content :deep(img) {
+  border-radius: 0.5rem;
+  max-height: 300px;
+  object-fit: cover;
+}
+
+.html-content :deep(a) {
+  color: rgb(59, 130, 246);
+  text-decoration: underline;
+}
+
+.html-content :deep(a:hover) {
+  color: rgb(37, 99, 235);
+}
+</style>

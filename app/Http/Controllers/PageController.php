@@ -45,6 +45,7 @@ class PageController extends Controller
     {
         return Inertia::render('tenant/pages/Show', [
             'page' => $page,
+            'blocks' => $page->blocks()->orderBy('position')->get(),
         ]);
     }
 

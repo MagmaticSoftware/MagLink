@@ -1,0 +1,207 @@
+{
+  "common": {
+    "welcome": "Welcome",
+    "logout": "Logout",
+    "settings": "Settings",
+    "profile": "Profile",
+    "billing": "Billing",
+    "help": "Help & Support",
+    "darkMode": "Dark Mode",
+    "lightMode": "Light Mode",
+    "search": "Search",
+    "actions": "Actions",
+    "edit": "Edit",
+    "delete": "Delete",
+    "view": "View",
+    "create": "Create",
+    "save": "Save",
+    "cancel": "Cancel",
+    "back": "Back",
+    "next": "Next",
+    "previous": "Previous",
+    "loading": "Loading...",
+    "noResults": "No results found"
+  },
+  "nav": {
+    "dashboard": "Dashboard",
+    "links": "Links",
+    "qrcodes": "QR Codes",
+    "pages": "Your Page"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "welcome": "Welcome to",
+    "subtitle": "Manage your links, QR Codes and pages easily and modernly",
+    "newLink": "New Link",
+    "newQrCode": "New QR Code",
+    "stats": {
+      "linksCreated": "Links created",
+      "qrCodesGenerated": "QR Code generated",
+      "uniqueVisitors": "Unique visitors",
+      "pageStatus": "Public page",
+      "online": "Online"
+    },
+    "planStatus": {
+      "title": "Plan Status",
+      "currentPlan": "Current plan",
+      "linksAvailable": "Links available",
+      "qrCodesAvailable": "QR Codes available",
+      "upgradeToPro": "Upgrade to PRO"
+    },
+    "notifications": {
+      "title": "Important Notifications",
+      "linkLimit": "You have almost reached the maximum link limit",
+      "renewalDays": "days until renewal"
+    },
+    "performance": {
+      "title": "Last 7 days performance",
+      "demo": "Demo"
+    },
+    "recentLogins": {
+      "title": "Recent Logins"
+    },
+    "latestContent": {
+      "links": "Latest links",
+      "qrCodes": "Latest QR Codes",
+      "pageBlocks": "Latest page blocks"
+    }
+  },
+  "links": {
+    "title": "Links",
+    "subtitle": "Manage all your shortened links",
+    "addNew": "Add new link",
+    "createDescription": "Create a new short link to share content",
+    "noLinks": "No links found",
+    "createFirst": "Create your first link to get started!",
+    "url": "URL",
+    "slug": "Slug",
+    "linkTitle": "Title",
+    "description": "Description",
+    "search": "Search links...",
+    "sortBy": "Sort by",
+    "filterBy": "Filter by",
+    "stats": {
+      "totalLinks": "Total Links",
+      "activeLinks": "Active Links",
+      "totalClicks": "Total Clicks",
+      "avgClicks": "Avg. Clicks/Link"
+    },
+    "sort": {
+      "newest": "Newest first",
+      "oldest": "Oldest first",
+      "mostClicks": "Most clicks",
+      "leastClicks": "Least clicks",
+      "alphabetical": "Alphabetical"
+    },
+    "filter": {
+      "all": "All links",
+      "active": "Active only",
+      "inactive": "Inactive only"
+    },
+    "copyLink": "Copy link",
+    "openLink": "Open link",
+    "createdAt": "Created",
+    "clicks": "clicks"
+  },
+  "qrcodes": {
+    "title": "QR Codes",
+    "subtitle": "Create and manage your dynamic QR Codes",
+    "addNew": "Add new QR Code",
+    "createDescription": "Create a new QR Code to share content",
+    "noQrCodes": "No QR Codes found",
+    "createFirst": "Create your first QR Code to get started!",
+    "format": "Format",
+    "scans": "scans",
+    "active": "Active",
+    "inactive": "Inactive",
+    "static": "static",
+    "dynamic": "dynamic",
+    "noName": "QR Code without name",
+    "noDescription": "No description",
+    "search": "Search QR codes...",
+    "sortBy": "Sort by",
+    "filterBy": "Filter by",
+    "stats": {
+      "totalQrCodes": "Total QR Codes",
+      "activeQrCodes": "Active QR Codes",
+      "totalScans": "Total Scans",
+      "avgScans": "Avg. Scans/Code"
+    },
+    "sort": {
+      "newest": "Newest first",
+      "oldest": "Oldest first",
+      "mostScans": "Most scans",
+      "leastScans": "Least scans",
+      "alphabetical": "Alphabetical"
+    },
+    "filter": {
+      "all": "All QR codes",
+      "active": "Active only",
+      "inactive": "Inactive only",
+      "static": "Static only",
+      "dynamic": "Dynamic only"
+    },
+    "createdAt": "Created"
+  },
+  "pages": {
+    "title": "Your Pages",
+    "subtitle": "Create custom pages with composable blocks",
+    "addNew": "Add new page",
+    "noPages": "No pages found",
+    "createFirst": "Create your first page to get started!",
+    "search": "Search pages...",
+    "sortBy": "Sort by",
+    "filterBy": "Filter by",
+    "stats": {
+      "totalPages": "Total Pages",
+      "published": "Published",
+      "totalBlocks": "Total Blocks",
+      "avgBlocks": "Avg. Blocks/Page",
+      "activeBlocks": "Active Blocks",
+      "views": "Page Views"
+    },
+    "sort": {
+      "newest": "Newest first",
+      "oldest": "Oldest first",
+      "alphabetical": "Alphabetical",
+      "mostBlocks": "Most blocks"
+    },
+    "filter": {
+      "all": "All pages",
+      "published": "Published only",
+      "draft": "Draft only"
+    },
+    "viewPage": "View page",
+    "blocks": "blocks",
+    "createdAt": "Created",
+    "edit": "Edit Page",
+    "settings": "Page Settings",
+    "form": {
+      "title": "Title",
+      "description": "Description",
+      "published": "Published at",
+      "active": "Active"
+    },
+    "update": "Update Page",
+    "addBlock": "Add Block",
+    "blockEditor": "Block Editor",
+    "dragAndDrop": "Drag and drop to rearrange",
+    "noBlocks": "No blocks yet",
+    "addFirstBlock": "Add your first block",
+    "preview": "Preview",
+    "publicView": "Public view",
+    "addBlocksToPage": "Add blocks to start building your page",
+    "editPage": "Edit Page",
+    "stats": {
+      "totalBlocks": "Total Blocks",
+      "activeBlocks": "Active Blocks",
+      "views": "Page Views"
+    }
+  },
+  "footer": {
+    "copyright": "All rights reserved.",
+    "privacy": "Privacy",
+    "terms": "Terms",
+    "support": "Support"
+  }
+}
