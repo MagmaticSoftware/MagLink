@@ -54,7 +54,17 @@ NEXT_VERSION="$MAJOR.$MINOR.$PATCH"
 echo "📦 Suggested next version: v$NEXT_VERSION ($SUGGESTED)"
 
 read -p "Enter release version [v$NEXT_VERSION]: " INPUT
-VERSION=${INPUT:-v$NEXT_VERSION}
+# Se l'input è vuoto, usa la versione suggerita, altrimenti usa l'input (che potrebbe già avere la v)
+if [ -z "$INPUT" ]; then
+  VERSION="v$NEXT_VERSION"
+else
+  # Se l'input non inizia con 'v', aggiungila
+  if [[ "$INPUT" != v* ]]; then
+    VERSION="v$INPUT"
+  else
+    VERSION="$INPUT"
+  fi
+fi
 
 read -p "⚠️ Confirm release of $VERSION? [y/N]: " CONFIRM
 if [[ "$CONFIRM" != "y" && "$CONFIRM" != "Y" ]]; then
@@ -112,19 +122,19 @@ fi
 
 # Esegui commit, tag e push
 git add .
-git commit -m "Release v$VERSION"
-git tag -a "v$VERSION" -m "Release v$VERSION"
-git push origin main
-git push origin "v$VERSION"
+git commit -m "Release $VERSION"
+git tag -a "$VERSION" -m "Release $VERSION"
+git push origin develop
+git push origin "$VERSION"
 
-echo "✅ Released v$VERSION and updated CHANGELOG.md"
+echo "✅ Released $VERSION and updated CHANGELOG.md"
 
 # 🪄 Opzionale: creare un branch release dalla tag
-read -p "📦 Vuoi creare anche il branch release/v$VERSION? [y/N]: " CREATE_BRANCH
+read -p "📦 Vuoi creare anche il branch release/$VERSION? [y/N]: " CREATE_BRANCH
 if [[ "$CREATE_BRANCH" == "y" || "$CREATE_BRANCH" == "Y" ]]; then
-  BRANCH_VERSION=${VERSION#v}
-  git checkout -b "release/v$BRANCH_VERSION" "v$BRANCH_VERSION"
-  git push -u origin "release/v$BRANCH_VERSION"
-  echo "✅ Branch release/v$BRANCH_VERSION creato e pushato."
-  git checkout main
+  # Crea il branch dal commit corrente (HEAD)
+  git checkout -b "release/$VERSION"
+  git push -u origin "release/$VERSION"
+  echo "✅ Branch release/$VERSION creato e pushato."
+  git checkout develop
 fi
