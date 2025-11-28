@@ -3,35 +3,35 @@ import { Link } from '@inertiajs/vue3';
 import { LayoutGrid, LayoutTemplate, Link as LinkIcon, QrCode, Settings, HelpCircle } from 'lucide-vue-next';
 import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
-import AppLogo from './AppLogo.vue';
+import ApplicationLogo from './ApplicationLogo.vue';
 
 const { t } = useI18n();
 
 const mainNavItems = computed(() => [
     {
         label: t('nav.dashboard'),
-        href: route('tenant.index'),
+        href: 'tenant.index',
         icon: LayoutGrid,
     },
     {
         label: t('nav.links'),
-        href: route('links.index'),
+        href: 'links.index',
         icon: LinkIcon,
     },
     {
         label: t('nav.qrcodes'),
-        href: route('qrcodes.index'),
+        href: 'qrcodes.index',
         icon: QrCode,
     },
     {
         label: t('nav.pages'),
-        href: route('pages.index'),
+        href: 'pages.index',
         icon: LayoutTemplate,
     },
 ]);
 
 const isActive = (href: string) => {
-    return route().current(href);
+    return route().current(href.split('.')[0] + '.*');
 };
 </script>
 
@@ -39,8 +39,8 @@ const isActive = (href: string) => {
     <aside class="fixed inset-y-0 left-0 z-10 hidden w-64 flex-col bg-gradient-to-b from-surface-50 to-surface-100 dark:from-surface-900 dark:to-surface-950 md:flex shadow-lg">
         <!-- Header con Logo -->
         <div class="flex h-16 items-center px-6">
-            <Link :href="route('tenant.index')" class="flex items-center gap-3 group">
-                <AppLogo />
+            <Link :href="route('tenant.index')">
+                <ApplicationLogo class="h-12"/>
             </Link>
         </div>
 
@@ -49,10 +49,10 @@ const isActive = (href: string) => {
             <ul class="space-y-1">
                 <li v-for="item in mainNavItems" :key="item.href">
                     <Link 
-                        :href="item.href"
-                        class="flex items-center gap-3 rounded-xl px-4 py-3 text-surface-700 dark:text-surface-200 transition-all duration-200 hover:bg-white/60 dark:hover:bg-surface-800/60 hover:shadow-sm hover:translate-x-1"
+                        :href="route().has(item.href) ? route(item.href) : item.href"
+                        class="flex items-center gap-3 rounded-xl px-4 py-3 text-surface-700 dark:text-surface-200 transition-all duration-200 hover:bg-primary-100 dark:hover:bg-primary-900"
                         :class="{
-                            'bg-primary text-primary-contrast shadow-md scale-105': isActive(item.href)
+                            'bg-primary dark:bg-primary-800 dark:hover:bg-primary-600 text-white hover:bg-primary-600': isActive(item.href)
                         }"
                     >
                         <component :is="item.icon" :size="20" :stroke-width="isActive(item.href) ? 2.5 : 2" />

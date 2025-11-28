@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import InputError from '@/components/InputError.vue';
 import TextLink from '@/components/TextLink.vue';
-import { Button } from '@/components/ui/button';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Input } from '@/components/ui/input';
+import Button from '@/components/volt/Button.vue';
+import Checkbox from '@/components/volt/Checkbox.vue';
+import InputText from '@/components/volt/InputText.vue';
 import { Label } from '@/components/ui/label';
 import AuthBase from '@/layouts/AuthLayout.vue';
 import { Head, useForm } from '@inertiajs/vue3';
-import { LoaderCircle } from 'lucide-vue-next';
+import { LoaderCircle, LogIn } from 'lucide-vue-next';
 
 defineProps<{
     status?: string;
@@ -39,7 +39,7 @@ const submit = () => {
             <div class="grid gap-6">
                 <div class="grid gap-2">
                     <Label for="email">Email address</Label>
-                    <Input
+                    <InputText
                         id="email"
                         type="email"
                         required
@@ -59,7 +59,7 @@ const submit = () => {
                             Forgot password?
                         </TextLink>
                     </div>
-                    <Input
+                    <InputText
                         id="password"
                         type="password"
                         required
@@ -79,6 +79,7 @@ const submit = () => {
                 </div>
 
                 <Button type="submit" class="mt-4 w-full" :tabindex="4" :disabled="form.processing">
+                    <LogIn v-if="!form.processing" class="h-4 w-4" />
                     <LoaderCircle v-if="form.processing" class="h-4 w-4 animate-spin" />
                     Log in
                 </Button>

@@ -35,15 +35,8 @@ Route::domain(config('app.tenant_url'))->middleware([
     SetDefaultTenantForUrls::class
 ])->prefix('/{tenant}')->group(function () {
     
-    Route::get('/dashboard', function () {
-        Log::info('Accessing tenant dashboard', [
-            'tenant' => tenant(),
-            'tenant_id' => tenant('id'),
-            'request_path' => request()->path(),
-            'url' => request()->url(),
-        ]);
-        return Inertia::render('tenant/Dashboard');
-    })->name('tenant.index');
+    Route::get('/dashboard', [App\Http\Controllers\DashboardController::class, 'index'])
+        ->name('tenant.index');
 
     Route::resource('links', LinkController::class)->names('links');
     Route::resource('qrcodes', QrCodeController::class)->names('qrcodes');

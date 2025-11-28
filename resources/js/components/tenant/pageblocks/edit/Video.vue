@@ -1,8 +1,11 @@
 <script setup lang="ts">
 import { ref, watch, computed } from 'vue';
 import axios from 'axios';
+import { useConfirm } from 'primevue/useconfirm';
 import { LucideSave, LucidePlay, LucideTrash2, LucideYoutube } from 'lucide-vue-next';
 import InputText from '@/components/volt/InputText.vue';
+
+const confirm = useConfirm();
 
 const props = defineProps<{
   id: number;
@@ -69,14 +72,25 @@ const saveBlock = async () => {
   }
 };
 
-const deleteBlock = async () => {
-  if (!confirm('Sei sicuro di voler eliminare questo blocco?')) return;
-  try {
-    await axios.delete(route('page-blocks.destroy', props.id));
-    window.location.reload();
-  } catch (error) {
-    console.error('Failed to delete block:', error);
-  }
+const deleteBlock = () => {
+  confirm.require({
+    message: 'Questa azione eliminerà definitivamente il blocco. Continuare?',
+    header: 'Conferma eliminazione',
+    acceptProps: {
+      label: 'Elimina'
+    },
+    rejectProps: {
+      label: 'Annulla'
+    },
+    accept: async () => {
+      try {
+        await axios.delete(route('page-blocks.destroy', props.id));
+        window.location.reload();
+      } catch (error) {
+        console.error('Failed to delete block:', error);
+      }
+    }
+  });
 };
 </script>
 

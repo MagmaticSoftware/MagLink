@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { usePage } from '@inertiajs/vue3';
-import { Moon, Sun, ChevronRight } from 'lucide-vue-next';
+import { usePage, Link } from '@inertiajs/vue3';
+import { Moon, Sun, ChevronRight, Home } from 'lucide-vue-next';
 import { computed, ref } from 'vue';
 import { useDark, useToggle } from '@vueuse/core';
 import { useI18n } from 'vue-i18n';
@@ -102,11 +102,15 @@ const getUserInitials = () => {
 <template>
     <header class="sticky top-0 z-20 flex h-16 items-center justify-between gap-4 bg-white/80 dark:bg-surface-950/80 backdrop-blur-md shadow-sm px-6">
         <!-- Breadcrumbs -->
-        <div class="flex-1">
+        <div class="flex-1 flex flex-row justify-start items-center">
+            <Link :href="route('tenant.index')" class="inline-flex items-center mr-3">
+                <Home :size="18" class="text-surface-400 dark:text-surface-400 hover:text-primary dark:hover:text-primary transition-colors" />
+            </Link>
+            <ChevronRight :size="16" class="text-surface-400 dark:text-surface-500" />
             <Breadcrumb 
                 v-if="voltBreadcrumbs && voltBreadcrumbs.length > 0" 
                 :model="voltBreadcrumbs"
-                class="bg-transparent p-0"
+                class="bg-transparent px-2"
             >
                 <template #separator>
                     <ChevronRight :size="16" class="text-surface-400 dark:text-surface-500" />

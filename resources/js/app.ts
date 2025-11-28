@@ -7,6 +7,7 @@ import { createApp, h } from 'vue';
 import { ZiggyVue } from 'ziggy-js';
 import { initializeTheme } from './composables/useAppearance';
 import PrimeVue from 'primevue/config';
+import ConfirmationService from 'primevue/confirmationservice';
 import { i18n } from './i18n';
 
 // Extend ImportMeta interface for Vite...
@@ -35,6 +36,7 @@ createInertiaApp({
             .use(PrimeVue, {
                 unstyled: true
             })
+            .use(ConfirmationService)
             .mount(el);
     },
     progress: {

@@ -11,6 +11,7 @@ import ImageBlock from '@/components/tenant/pageblocks/edit/Image.vue';
 import DefaultBlock from '@/components/tenant/pageblocks/edit/Default.vue';
 import VideoBlock from '@/components/tenant/pageblocks/edit/Video.vue';
 import Dialog from '@/components/volt/Dialog.vue';
+import ConfirmDialog from '@/components/volt/ConfirmDialog.vue';
 import Button from '@/components/volt/Button.vue';
 import CreateBlock from '../pageblocks/Create.vue';
 import InputText from '@/components/volt/InputText.vue';
@@ -485,6 +486,9 @@ function handleBlockCreated(newBlock: any) {
         >
             <CreateBlock :page="props.page" @created="handleBlockCreated" />
         </Dialog>
+
+        <!-- Confirm Dialog -->
+        <ConfirmDialog />
     </AppLayout>
 </template>
 

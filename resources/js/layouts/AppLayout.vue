@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import AppSidebar from '@/components/AppSidebar.vue';
 import AppTopBar from '@/components/AppTopBar.vue';
+import MadeWithLove from '@/components/MadeWithLove.vue';
 import { useI18n } from 'vue-i18n';
 import type { BreadcrumbItemType } from '@/types';
 interface Props {
@@ -29,16 +30,9 @@ const { t } = useI18n();
                 <slot />
             </main>
 
-            <!-- Footer (optional) -->
-            <footer class="bg-transparent px-6 py-6">
-                <div class="flex items-center justify-between text-sm text-surface-500 dark:text-surface-400">
-                    <p>&copy; {{ new Date().getFullYear() }} MagLink. {{ t('footer.copyright') }}</p>
-                    <div class="flex gap-6">
-                        <a href="#" class="hover:text-primary transition-colors">{{ t('footer.privacy') }}</a>
-                        <a href="#" class="hover:text-primary transition-colors">{{ t('footer.terms') }}</a>
-                        <a href="#" class="hover:text-primary transition-colors">{{ t('footer.support') }}</a>
-                    </div>
-                </div>
+            <!-- Footer -->
+            <footer class="bg-transparent">
+                <MadeWithLove />
             </footer>
         </div>
     </div>
