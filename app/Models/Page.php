@@ -44,8 +44,23 @@ class Page extends Model
         'settings' => 'array',
         'is_active' => 'boolean',
         'last_viewed_at' => 'datetime',
-        'published_at' => 'datetime',
+        'published_at' => 'date',
     ];
+
+    /**
+     * The accessors to append to the model's array form.
+     *
+     * @var array<int, string>
+     */
+    protected $appends = ['is_published'];
+
+    /**
+     * Check if the page is published (active and has a published date).
+     */
+    public function getIsPublishedAttribute(): bool
+    {
+        return $this->is_active && $this->published_at !== null;
+    }
 
     /**
      * Get the route key name for the model.

@@ -12,6 +12,10 @@ const props = defineProps<{
   content: any;
 }>();
 
+const emit = defineEmits<{
+  deleted: [id: number];
+}>();
+
 const deleteBlock = () => {
   confirm.require({
     message: 'Questa azione eliminerà definitivamente il blocco. Continuare?',
@@ -25,7 +29,7 @@ const deleteBlock = () => {
     accept: async () => {
       try {
         await axios.delete(route('page-blocks.destroy', props.id));
-        window.location.reload();
+        emit('deleted', props.id);
       } catch (error) {
         console.error('Failed to delete block:', error);
       }

@@ -20,6 +20,7 @@
     "next": "Avanti",
     "previous": "Precedente",
     "loading": "Caricamento...",
+    "saving": "Salvataggio...",
     "noResults": "Nessun risultato trovato"
   },
   "nav": {
@@ -178,12 +179,24 @@
     "draft": "Bozza",
     "createdAt": "Creato",
     "edit": "Modifica Pagina",
+    "create": "Crea Pagina",
+    "createDescription": "Crea una nuova pagina personalizzata con blocchi componibili",
+    "createPage": "Crea Pagina",
+    "pageInfo": "Informazioni Pagina",
+    "pageInfoDescription": "Inserisci le informazioni di base della tua pagina",
     "settings": "Impostazioni Pagina",
     "form": {
       "title": "Titolo",
+      "titlePlaceholder": "Inserisci il titolo della pagina",
       "description": "Descrizione",
-      "published": "Pubblicata il",
-      "active": "Attiva"
+      "descriptionPlaceholder": "Descrivi brevemente la tua pagina",
+      "published": "Data di pubblicazione",
+      "publishedHint": "Lascia vuoto per pubblicare immediatamente",
+      "active": "Pagina Attiva",
+      "activeHint": "La pagina è visibile al pubblico",
+      "inactiveHint": "La pagina è nascosta",
+      "themeColor": "Colore Tema",
+      "slugHint": "URL pubblico"
     },
     "update": "Aggiorna Pagina",
     "addBlock": "Aggiungi Blocco",

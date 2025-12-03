@@ -14,9 +14,19 @@ class PageController extends Controller
      */
     public function index()
     {
-        $pages = Page::orderBy('created_at', 'desc')->get();
+        $pages = Page::withCount('blocks')->orderBy('created_at', 'desc')->get();
+        
+        $totalBlocks = $pages->sum('blocks_count');
+        $stats = [
+            'total' => $pages->count(),
+            'published' => $pages->where('is_active', true)->count(),
+            'totalBlocks' => $totalBlocks,
+            'avgBlocksPerPage' => $pages->count() > 0 ? round($totalBlocks / $pages->count()) : 0,
+        ];
+        
         return Inertia::render('tenant/pages/Index', [
             'pages' => $pages,
+            'stats' => $stats,
         ]);
     }
 

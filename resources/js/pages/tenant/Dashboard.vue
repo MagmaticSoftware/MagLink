@@ -92,6 +92,7 @@ const formatNumber = (num: number) => {
     <AppLayout :breadcrumbs="breadcrumbs">
         <div
             class="flex h-full flex-1 flex-col gap-4 rounded-2xl p-0 bg-[url('/grid.svg')] bg-repeat bg-[length:32px_32px]">
+            
             <!-- Welcome Banner nella griglia -->
             <div class="p-8 space-y-8">
                 <!-- Welcome + Stato piano + Notifiche -->

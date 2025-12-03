@@ -5,13 +5,12 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Spark\Billable;
 use Stancl\Tenancy\Database\Concerns\BelongsToTenant;
 
 class Company extends Model
 {
     /** @use HasFactory<\Database\Factories\CompanyFactory> */
-    use HasFactory, BelongsToTenant, SoftDeletes, Billable;
+    use HasFactory, BelongsToTenant, SoftDeletes;
 
     /**
      * The attributes that are mass assignable.
@@ -35,10 +34,5 @@ class Company extends Model
     public function users()
     {
         return $this->belongsToMany(User::class);
-    }
-
-    public function paddleEmail(): string|null
-    {
-        return $this->email;
     }
 }

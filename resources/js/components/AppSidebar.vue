@@ -1,11 +1,30 @@
 <script setup lang="ts">
-import { Link } from '@inertiajs/vue3';
+import { Link, usePage } from '@inertiajs/vue3';
 import { LayoutGrid, LayoutTemplate, Link as LinkIcon, QrCode, Settings, HelpCircle } from 'lucide-vue-next';
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import ApplicationLogo from './ApplicationLogo.vue';
+import SidebarTrialBanner from './SidebarTrialBanner.vue';
+import PlanSelectionModal from './PlanSelectionModal.vue';
+import type { PageProps } from '@/types/inertia';
 
 const { t } = useI18n();
+const page = usePage<PageProps>();
+
+// Trial data from shared props
+const trial = computed(() => page.props.trial);
+
+// Plan modal visibility
+const showPlanModal = ref(false);
+
+// Dati per la modal dei piani
+const planModalData = computed(() => ({
+    plans: page.props.plans || {},
+    isNewUser: page.props.billing?.isNewUser || false,
+    hasActiveTrial: page.props.billing?.hasActiveTrial || false,
+    canStartTrial: page.props.billing?.canStartTrial || false,
+    isSubscribed: page.props.billing?.isSubscribed || false,
+}));
 
 const mainNavItems = computed(() => [
     {
@@ -64,6 +83,13 @@ const isActive = (href: string) => {
 
         <!-- Footer con Links Secondari -->
         <div class="border-t border-surface-200/50 dark:border-surface-700/50 p-3">
+            <!-- Trial Banner -->
+            <SidebarTrialBanner 
+                v-if="trial && trial.active" 
+                :trial="trial" 
+                @show-plan-modal="showPlanModal = true" 
+            />
+            
             <div class="space-y-1">
                 <Link 
                     :href="route('profile.edit')"
@@ -81,5 +107,15 @@ const isActive = (href: string) => {
                 </Link>
             </div>
         </div>
+
+        <!-- Plan Selection Modal -->
+        <PlanSelectionModal 
+            v-model:visible="showPlanModal" 
+            :plans="planModalData.plans"
+            :is-new-user="planModalData.isNewUser" 
+            :has-active-trial="planModalData.hasActiveTrial"
+            :can-start-trial="planModalData.canStartTrial" 
+            :is-subscribed="planModalData.isSubscribed" 
+        />
     </aside>
 </template>

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import axios from 'axios';
-import { reactive, ref, computed } from 'vue';
+import { reactive, ref, computed, watch } from 'vue';
 import { type BreadcrumbItem } from '@/types';
 import { Head, useForm } from '@inertiajs/vue3';
 import AppLayout from '@/layouts/AppLayout.vue';
@@ -15,6 +15,8 @@ import ConfirmDialog from '@/components/volt/ConfirmDialog.vue';
 import Button from '@/components/volt/Button.vue';
 import CreateBlock from '../pageblocks/Create.vue';
 import InputText from '@/components/volt/InputText.vue';
+import ToggleSwitch from '@/components/volt/ToggleSwitch.vue';
+import { useConfirm } from 'primevue/useconfirm';
 import { 
     LucideSave, 
     LucidePlus, 
@@ -22,12 +24,13 @@ import {
     LucideEye, 
     LucideCalendar,
     LucideToggleLeft,
-    LucideToggleRight 
+    LucideToggleRight
 } from 'lucide-vue-next';
 import { GridLayout, GridItem } from 'grid-layout-plus';
 import { useI18n } from 'vue-i18n';
 
 const { t } = useI18n();
+const confirm = useConfirm();
 
 const blockComponents: Record<string, any> = {
     link: LinkBlock,
@@ -69,6 +72,12 @@ const props = defineProps<{
     }>;
 }>();
 
+// Helper per estrarre solo la data (YYYY-MM-DD) da una stringa ISO datetime
+const extractDate = (dateString: string | null): string => {
+    if (!dateString) return '';
+    return dateString.split('T')[0];
+};
+
 const form = useForm({
     title: props.page.title,
     slug: props.page.slug,
@@ -76,7 +85,7 @@ const form = useForm({
     style: props.page.style ?? {},
     settings: props.page.settings ?? {},
     is_active: props.page.is_active,
-    published_at: props.page.published_at ?? '',
+    published_at: extractDate(props.page.published_at),
 });
 
 // Theme colors palette
@@ -103,6 +112,22 @@ const selectColor = (color: string) => {
     selectedColor.value = color;
     form.style = { ...form.style, primaryColor: color };
 };
+
+// Helper per formattare la data in formato YYYY-MM-DD
+const formatDate = (date: Date): string => {
+    return date.toISOString().split('T')[0];
+};
+
+// Watch per gestire la data di pubblicazione quando si attiva/disattiva la pagina
+watch(() => form.is_active, (isActive, oldValue) => {
+    if (isActive && !form.published_at) {
+        // Se viene attivata e non c'è data, imposta la data odierna
+        form.published_at = formatDate(new Date());
+    } else if (!isActive && oldValue === true) {
+        // Se viene disattivata, cancella la data di pubblicazione
+        form.published_at = '';
+    }
+}, { immediate: true });
 
 const getColorClasses = (color: string) => {
     const colorMap: Record<string, string> = {
@@ -142,7 +167,20 @@ const pageStats = computed(() => ({
     views: props.page.views || 0,
 }));
 
-const submitForm = () => {
+// Track dirty blocks (blocks with unsaved changes)
+const dirtyBlocks = ref(new Set<number>());
+
+const handleDirtyChange = (blockId: number, isDirty: boolean) => {
+    if (isDirty) {
+        dirtyBlocks.value.add(blockId);
+    } else {
+        dirtyBlocks.value.delete(blockId);
+    }
+};
+
+const hasDirtyBlocks = computed(() => dirtyBlocks.value.size > 0);
+
+const doSubmitForm = () => {
     form.put(route('pages.update', props.page.slug), {
         onSuccess: () => {
             form.reset();
@@ -151,6 +189,27 @@ const submitForm = () => {
             console.error('Form submission errors:', errors);
         },
     });
+};
+
+const submitForm = () => {
+    if (hasDirtyBlocks.value) {
+        confirm.require({
+            message: `Hai ${dirtyBlocks.value.size} blocco/i con modifiche non salvate. Vuoi procedere a salvare la pagina senza salvare i blocchi?`,
+            header: 'Modifiche non salvate',
+            acceptProps: {
+                label: 'Salva comunque',
+                severity: 'warn'
+            },
+            rejectProps: {
+                label: 'Annulla'
+            },
+            accept: () => {
+                doSubmitForm();
+            }
+        });
+    } else {
+        doSubmitForm();
+    }
 };
 
 let layout = reactive(
@@ -236,6 +295,13 @@ function handleBlockCreated(newBlock: any) {
     };
     layout.push(item);
     visible.value = false;
+}
+
+function handleBlockDeleted(blockId: number) {
+    const index = layout.findIndex(item => item.id === blockId);
+    if (index !== -1) {
+        layout.splice(index, 1);
+    }
 }
 </script>
 
@@ -340,22 +406,30 @@ function handleBlockCreated(newBlock: any) {
                                 <label class="text-sm font-medium text-surface-700 dark:text-surface-300 block mb-2">
                                     {{ t('pages.form.published') }}
                                 </label>
-                                <InputText v-model="form.published_at" type="date" class="w-full" />
+                                <input 
+                                    v-model="form.published_at" 
+                                    type="date" 
+                                    class="w-full rounded-md border border-surface-300 dark:border-surface-700 bg-surface-0 dark:bg-surface-950 text-surface-700 dark:text-surface-0 px-3 py-2 text-sm focus:border-primary focus:outline-none"
+                                />
                             </div>
 
-                            <div class="flex items-center gap-2">
-                                <input 
-                                    type="checkbox" 
-                                    v-model="form.is_active" 
-                                    id="is_active"
-                                    class="w-4 h-4 text-blue-600 rounded border-surface-300 dark:border-surface-700 focus:ring-blue-500"
-                                />
-                                <label 
-                                    for="is_active" 
-                                    class="text-sm font-medium text-surface-700 dark:text-surface-300 cursor-pointer"
-                                >
-                                    {{ t('pages.form.active') }}
-                                </label>
+                            <div class="flex items-center justify-between p-3 bg-surface-50 dark:bg-surface-800 rounded-lg">
+                                <div class="flex items-center gap-2">
+                                    <component 
+                                        :is="form.is_active ? LucideToggleRight : LucideToggleLeft" 
+                                        :size="18" 
+                                        :class="form.is_active ? 'text-green-500' : 'text-surface-400'"
+                                    />
+                                    <div>
+                                        <p class="text-sm font-medium text-surface-700 dark:text-surface-300">
+                                            {{ t('pages.form.active') }}
+                                        </p>
+                                        <p class="text-xs text-surface-500 dark:text-surface-400">
+                                            {{ form.is_active ? t('pages.form.activeHint') : t('pages.form.inactiveHint') }}
+                                        </p>
+                                    </div>
+                                </div>
+                                <ToggleSwitch v-model="form.is_active" />
                             </div>
 
                             <div class="pt-4 border-t border-surface-200 dark:border-surface-800">
@@ -446,7 +520,9 @@ function handleBlockCreated(newBlock: any) {
                                         :size="item.size?.width ?? item.w" 
                                         :style="item.style"
                                         :settings="item.settings" 
-                                        :is-active="item.is_active" 
+                                        :is-active="item.is_active"
+                                        @deleted="handleBlockDeleted"
+                                        @dirty-change="handleDirtyChange"
                                     />
                                 </GridItem>
                             </GridLayout>
@@ -487,7 +563,7 @@ function handleBlockCreated(newBlock: any) {
             <CreateBlock :page="props.page" @created="handleBlockCreated" />
         </Dialog>
 
-        <!-- Confirm Dialog -->
+        <!-- Confirm Dialog for unsaved changes -->
         <ConfirmDialog />
     </AppLayout>
 </template>

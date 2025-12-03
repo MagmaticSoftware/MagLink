@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue';
+import { ref, watch, computed } from 'vue';
 import axios from 'axios';
 import { useConfirm } from 'primevue/useconfirm';
 import { LucideSave, LucideCode, LucideTrash2, LucideEye, LucideEyeOff } from 'lucide-vue-next';
@@ -20,13 +20,34 @@ const props = defineProps<{
   isActive: boolean;
 }>();
 
+const emit = defineEmits<{
+  deleted: [id: number];
+  dirtyChange: [id: number, isDirty: boolean];
+}>();
+
 const localTitle = ref(props.title || '');
 const localContent = ref(props.content || '');
 const isSaving = ref(false);
 const showPreview = ref(false);
+const savedTitle = ref(props.title || '');
+const savedContent = ref(props.content || '');
 
-watch(() => props.title, (newVal) => { localTitle.value = newVal || ''; });
-watch(() => props.content, (newVal) => { localContent.value = newVal || ''; });
+const hasChanges = computed(() => {
+  return localTitle.value !== savedTitle.value || localContent.value !== savedContent.value;
+});
+
+watch(hasChanges, (isDirty) => {
+  emit('dirtyChange', props.id, isDirty);
+});
+
+watch(() => props.title, (newVal) => { 
+  localTitle.value = newVal || ''; 
+  savedTitle.value = newVal || '';
+});
+watch(() => props.content, (newVal) => { 
+  localContent.value = newVal || ''; 
+  savedContent.value = newVal || '';
+});
 
 const saveBlock = async () => {
   isSaving.value = true;
@@ -35,6 +56,8 @@ const saveBlock = async () => {
       title: localTitle.value,
       content: localContent.value,
     });
+    savedTitle.value = localTitle.value;
+    savedContent.value = localContent.value;
   } catch (error) {
     console.error('Failed to save block:', error);
   } finally {
@@ -55,7 +78,7 @@ const deleteBlock = () => {
     accept: async () => {
       try {
         await axios.delete(route('page-blocks.destroy', props.id));
-        window.location.reload();
+        emit('deleted', props.id);
       } catch (error) {
         console.error('Failed to delete block:', error);
       }
@@ -86,10 +109,11 @@ const deleteBlock = () => {
         <button
           @click="saveBlock"
           :disabled="isSaving"
-          class="p-1.5 rounded-lg hover:bg-green-100 dark:hover:bg-green-900/30 transition-colors disabled:opacity-50"
-          title="Save changes"
+          class="p-1.5 rounded-lg transition-colors disabled:opacity-50"
+          :class="hasChanges ? 'bg-green-500 hover:bg-green-600 animate-pulse' : 'hover:bg-green-100 dark:hover:bg-green-900/30'"
+          :title="hasChanges ? 'Save pending changes' : 'No changes to save'"
         >
-          <LucideSave :size="14" class="text-green-600 dark:text-green-400" />
+          <LucideSave :size="14" :class="hasChanges ? 'text-white' : 'text-green-600 dark:text-green-400'" />
         </button>
         <button
           @click="deleteBlock"

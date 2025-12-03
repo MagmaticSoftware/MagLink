@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StorePageBlockRequest;
 use App\Http\Requests\UpdatePageBlockRequest;
+use App\Models\Page;
 use App\Models\PageBlock;
 use Illuminate\Http\Request;
 
@@ -66,7 +67,21 @@ class PageBlockController extends Controller
      */
     public function destroy(PageBlock $pageBlock)
     {
-        //
+        $pageBlock->delete();
+        return response()->json(['success' => true]);
+    }
+
+    /**
+     * Remove all blocks for a specific page.
+     */
+    public function deleteAllForPage(Page $page)
+    {
+        $deleted = PageBlock::where('page_id', $page->id)->delete();
+        
+        return response()->json([
+            'success' => true, 
+            'deleted_count' => $deleted
+        ]);
     }
 
     /**

@@ -22,6 +22,7 @@ class UpdatePageBlockRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'title' => 'nullable|string|max:255',
             'content' => 'nullable|string',
             'position' => 'nullable|array',
             'size' => 'nullable|array',

@@ -20,12 +20,45 @@ export interface NavItem {
     isActive?: boolean;
 }
 
+export interface Trial {
+    active: boolean;
+    expired: boolean;
+    days_left: number;
+    ends_at: string | null;
+}
+
+export interface Subscription {
+    name: string | null;
+    key: string | null;
+    billing_type: 'monthly' | 'yearly' | null;
+    active: boolean;
+    ends_at: string | null;
+    created_at: string | null;
+    stripe_price: string | null;
+    on_grace_period: boolean;
+    cancelled: boolean;
+}
+
+export interface Billing {
+    isNewUser: boolean;
+    hasActiveTrial: boolean;
+    canStartTrial: boolean;
+    isSubscribed: boolean;
+    onFreePlan: boolean;
+    currentPlanName: string | null;
+    hasAccess: boolean;
+}
+
 export interface SharedData extends PageProps {
     name: string;
     quote: { message: string; author: string };
     auth: Auth;
     ziggy: Config & { location: string };
     sidebarOpen: boolean;
+    trial: Trial;
+    subscription: Subscription | null;
+    billing: Billing;
+    plans: Record<string, any>;
 }
 
 export interface User {
@@ -37,6 +70,7 @@ export interface User {
     email_verified_at: string | null;
     created_at: string;
     updated_at: string;
+    trial_ends_at?: string | null;
 }
 
 export type BreadcrumbItemType = BreadcrumbItem;

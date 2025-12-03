@@ -20,6 +20,7 @@
     "next": "Next",
     "previous": "Previous",
     "loading": "Loading...",
+    "saving": "Saving...",
     "noResults": "No results found"
   },
   "nav": {
@@ -175,12 +176,24 @@
     "blocks": "blocks",
     "createdAt": "Created",
     "edit": "Edit Page",
+    "create": "Create Page",
+    "createDescription": "Create a new custom page with composable blocks",
+    "createPage": "Create Page",
+    "pageInfo": "Page Information",
+    "pageInfoDescription": "Enter the basic information for your page",
     "settings": "Page Settings",
     "form": {
       "title": "Title",
+      "titlePlaceholder": "Enter page title",
       "description": "Description",
-      "published": "Published at",
-      "active": "Active"
+      "descriptionPlaceholder": "Briefly describe your page",
+      "published": "Publication Date",
+      "publishedHint": "Leave empty to publish immediately",
+      "active": "Page Active",
+      "activeHint": "The page is visible to the public",
+      "inactiveHint": "The page is hidden",
+      "themeColor": "Theme Color",
+      "slugHint": "Public URL"
     },
     "update": "Update Page",
     "addBlock": "Add Block",
