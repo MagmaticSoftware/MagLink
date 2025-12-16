@@ -54,7 +54,8 @@ return [
 
     'url' => env('APP_URL', 'http://localhost'),
     'admin_url' => env('ADMIN_URL', 'http://admin.maglink.localhost'),
-    'tenant_url' => env('TENANT_URL', 'http://app.maglink.local'),
+    'tenant_url' => env('TENANT_URL', 'http://app.maglink.localhost'),
+    'short_url' => env('SHORT_URL', 'http://mg0.localhost'),
 
     /*
     |--------------------------------------------------------------------------

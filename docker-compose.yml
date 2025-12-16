@@ -23,7 +23,7 @@ services:
             - sail
         labels:
             - traefik.enable=true
-            - 'traefik.http.routers.maglink.rule=HostRegexp(`{subdomain:[a-z0-9-]+}.maglink.localhost`) || Host(`maglink.localhost`)'
+            - 'traefik.http.routers.maglink.rule=HostRegexp(`{subdomain:[a-z0-9-]+}.maglink.localhost`) || Host(`maglink.localhost`) || Host(`mg0.localhost`)'
             - traefik.http.routers.maglink.entrypoints=web
             - traefik.http.services.maglink.loadbalancer.server.port=80
         depends_on:

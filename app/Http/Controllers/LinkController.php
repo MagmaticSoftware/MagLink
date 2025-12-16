@@ -85,9 +85,19 @@ class LinkController extends Controller
     private function generateRandomSlug(): string
     {
         do {
-            $slug = Str::random(8);
+            $slug = strtolower(Str::random(3)."-".Str::random(3));
         } while (Link::where('slug', $slug)->exists());
 
         return $slug;
+    }
+
+    /**
+     * Handle public short link redirection.
+     */
+    public function showPublicShort(Link $link)
+    {
+        //TODO REDIRECT O PAGINA DI ACCETTAZIONE
+        //RECUPERA INFORMAZIONI UTENTE AI FINI STATISTICI
+        return redirect($link->url);
     }
 }
