@@ -77,7 +77,7 @@ Route::domain(config('app.tenant_url'))->middleware('web')->group(function () {
         }
         // Se loggato, redirigi alla dashboard del tenant
         return redirect()->route('tenant.index', ['tenant' => Auth::user()->tenant_id]);
-    })->name('home');
+    })->name('tenant.home');
     require __DIR__.'/auth.php';
     require __DIR__.'/settings.php';
 });
