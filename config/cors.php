@@ -19,9 +19,11 @@ return [
 
     'allowed_methods' => ['*'],
 
-    'allowed_origins' => ['*'],
+    'allowed_origins' => env('CORS_ALLOWED_ORIGINS') 
+        ? explode(',', env('CORS_ALLOWED_ORIGINS')) 
+        : ['https://maglink.it', 'https://app.maglink.it'],
 
-    'allowed_origins_patterns' => [],
+    'allowed_origins_patterns' => ['/^https:\/\/(.*\.)?maglink\.it$/'],
 
     'allowed_headers' => ['*'],
 
@@ -29,6 +31,6 @@ return [
 
     'max_age' => 0,
 
-    'supports_credentials' => false,
+    'supports_credentials' => true,
 
 ];
