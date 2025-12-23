@@ -79,8 +79,11 @@
     "description": "Beschreibung",
     "search": "Links suchen...",
     "sortBy": "Sortieren nach",
-    "filterBy": "Filtern nach",
-    "stats": {
+    "filterBy": "Filtern nach",    "placeholders": {
+      "title": "Mein toller Link",
+      "description": "Fügen Sie eine Beschreibung für diesen Link hinzu...",
+      "url": "https://beispiel.de"
+    },    "stats": {
       "totalLinks": "Gesamte Links",
       "activeLinks": "Aktive Links",
       "totalClicks": "Gesamte Klicks",
@@ -121,6 +124,23 @@
     "search": "QR-Codes nach Name, Beschreibung oder Slug suchen...",
     "sortBy": "Sortieren nach",
     "filterBy": "Filtern nach",
+    "shortUrl": "Kurz-URL",
+    "content": "Inhalt",
+    "downloadQr": "QR-Code herunterladen:",
+    "preview": "Vorschau",
+    "howItAppears": "So wird dein QR-Code aussehen",
+    "currentQrCode": "Aktueller QR-Code",
+    "dynamicQr": "Dynamischer QR-Code",
+    "staticQr": "Statischer QR-Code",
+    "canBeChanged": "Inhalt kann später ohne Neuausdruck geändert werden",
+    "canBeUpdated": "Inhalt kann ohne Neuausdruck aktualisiert werden",
+    "cannotBeChanged": "Inhalt kann nicht ohne Neuausdruck geändert werden",
+    "worksOffline": "Funktioniert offline, kann aber nicht geändert werden",
+    "embeddedDirectly": "Inhalt direkt eingebettet",
+    "cannotBeModified": "Kann nicht geändert werden",
+    "staticCannotEdit": "Statische QR-Codes können nach der Erstellung nicht bearbeitet werden",
+    "formatCannotChange": "Format kann für statische QR-Codes nicht geändert werden",
+    "contentCannotChange": "Inhalt kann für statische QR-Codes nicht geändert werden",
     "stats": {
       "totalQrCodes": "Gesamte QR-Codes",
       "activeQrCodes": "Aktive QR-Codes",
@@ -185,6 +205,9 @@
       "published": "Veröffentlicht am",
       "active": "Aktiv"
     },
+    "placeholders": {
+      "slug": "meine-seiten-url"
+    },
     "update": "Seite Aktualisieren",
     "addBlock": "Block Hinzufügen",
     "blockEditor": "Block-Editor",
@@ -201,5 +224,32 @@
     "privacy": "Datenschutz",
     "terms": "Bedingungen",
     "support": "Support"
+  },
+  "auth": {
+    "features": {
+      "linkShortening": {
+        "title": "Intelligentes Link-Kürzen",
+        "description": "Erstelle leistungsstarke, nachverfolgbare Kurzlinks in Sekunden"
+      },
+      "qrCodes": {
+        "title": "Dynamische QR-Codes",
+        "description": "Generiere QR-Codes, die du ohne Neuausdruck aktualisieren kannst"
+      },
+      "analytics": {
+        "title": "Echtzeit-Analysen",
+        "description": "Verfolge Klicks, Standorte und Geräte mit detaillierten Einblicken"
+      },
+      "blockPages": {
+        "title": "Blockbasierte Seiten",
+        "description": "Erstelle benutzerdefinierte Landingpages mit Drag-and-Drop-Blöcken"
+      }
+    },
+    "tagline": {
+      "part1": "Kürzen, Verfolgen und",
+      "highlight": "Optimieren",
+      "part2": "Deine Links"
+    },
+    "subtitle": "Der moderne URL-Kürzer für Unternehmen und Creators",
+    "copyright": "© 2025 MagLink. Alle Rechte vorbehalten."
   }
 }

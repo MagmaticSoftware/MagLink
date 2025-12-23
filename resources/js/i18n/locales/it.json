@@ -81,6 +81,11 @@
     "search": "Cerca link...",
     "sortBy": "Ordina per",
     "filterBy": "Filtra per",
+    "placeholders": {
+      "title": "Il mio fantastico link",
+      "description": "Aggiungi una descrizione per questo link...",
+      "url": "https://esempio.it"
+    },
     "stats": {
       "totalLinks": "Link Totali",
       "activeLinks": "Link Attivi",
@@ -122,6 +127,23 @@
     "search": "Cerca QR Code per nome, descrizione o slug...",
     "sortBy": "Ordina per",
     "filterBy": "Filtra per",
+    "shortUrl": "URL breve",
+    "content": "Contenuto",
+    "downloadQr": "Scarica QR Code:",
+    "preview": "Anteprima",
+    "howItAppears": "Come apparirà il tuo QR code",
+    "currentQrCode": "QR Code Attuale",
+    "dynamicQr": "QR Code Dinamico",
+    "staticQr": "QR Code Statico",
+    "canBeChanged": "Il contenuto può essere modificato in seguito senza ristampare",
+    "canBeUpdated": "Il contenuto può essere aggiornato senza ristampare",
+    "cannotBeChanged": "Il contenuto non può essere modificato senza ristampare",
+    "worksOffline": "Funziona offline, ma non può essere modificato",
+    "embeddedDirectly": "Contenuto incorporato direttamente",
+    "cannotBeModified": "Non può essere modificato",
+    "staticCannotEdit": "I QR Code statici non possono essere modificati dopo la creazione",
+    "formatCannotChange": "Il formato non può essere modificato per i QR Code statici",
+    "contentCannotChange": "Il contenuto non può essere modificato per i QR Code statici",
     "stats": {
       "totalQrCodes": "Totale QR Code",
       "activeQrCodes": "QR Code Attivi",
@@ -197,8 +219,9 @@
       "inactiveHint": "La pagina è nascosta",
       "themeColor": "Colore Tema",
       "slugHint": "URL pubblico"
-    },
-    "update": "Aggiorna Pagina",
+    },    "placeholders": {
+      "slug": "url-mia-pagina"
+    },    "update": "Aggiorna Pagina",
     "addBlock": "Aggiungi Blocco",
     "blockEditor": "Editor Blocchi",
     "dragAndDrop": "Trascina per riordinare",
@@ -214,5 +237,32 @@
     "privacy": "Privacy",
     "terms": "Termini",
     "support": "Supporto"
+  },
+  "auth": {
+    "features": {
+      "linkShortening": {
+        "title": "Abbreviazione Link Intelligente",
+        "description": "Crea link brevi potenti e tracciabili in pochi secondi"
+      },
+      "qrCodes": {
+        "title": "QR Code Dinamici",
+        "description": "Genera QR code che puoi aggiornare senza ristampare"
+      },
+      "analytics": {
+        "title": "Analytics in Tempo Reale",
+        "description": "Traccia click, posizioni e dispositivi con insight dettagliati"
+      },
+      "blockPages": {
+        "title": "Pagine a Blocchi",
+        "description": "Costruisci landing page personalizzate con blocchi drag-and-drop"
+      }
+    },
+    "tagline": {
+      "part1": "Abbrevia, Traccia e",
+      "highlight": "Ottimizza",
+      "part2": "I Tuoi Link"
+    },
+    "subtitle": "Il moderno abbreviatore di URL creato per aziende e creatori",
+    "copyright": "© 2025 MagLink. Tutti i diritti riservati."
   }
 }

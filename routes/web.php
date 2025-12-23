@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\LinkController;
 use App\Http\Controllers\PageController;
+use App\Http\Controllers\QrCodeController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -25,5 +26,15 @@ Route::domain(config('app.short_url'))->middleware('web')->group(function () {
         dd('short domain');
     })->name('home.short');
 
-    Route::get('{link:slug}', [LinkController::class, 'showPublicShort'])->name('pages.show.public.short');
+    // Slug-based routing: 6 chars = Link, 8 chars = QR Code
+    Route::get('{slug}', function ($slug) {
+        // QR codes have 8 characters, Links have 6 characters
+        if (strlen($slug) === 8) {
+            $qrcode = \App\Models\QrCode::where('slug', $slug)->firstOrFail();
+            return app(\App\Http\Controllers\QrCodeController::class)->showPublicQr($qrcode);
+        } else {
+            $link = \App\Models\Link::where('slug', $slug)->firstOrFail();
+            return app(\App\Http\Controllers\LinkController::class)->showPublicShort($link);
+        }
+    })->where('slug', '[a-z0-9]{6,8}');
 });

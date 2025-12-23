@@ -80,6 +80,11 @@
     "search": "Buscar enlaces...",
     "sortBy": "Ordenar por",
     "filterBy": "Filtrar por",
+    "placeholders": {
+      "title": "Mi Enlace Increíble",
+      "description": "Añade una descripción para este enlace...",
+      "url": "https://ejemplo.com"
+    },
     "stats": {
       "totalLinks": "Enlaces Totales",
       "activeLinks": "Enlaces Activos",
@@ -121,6 +126,23 @@
     "search": "Buscar códigos QR por nombre, descripción o slug...",
     "sortBy": "Ordenar por",
     "filterBy": "Filtrar por",
+    "shortUrl": "URL corta",
+    "content": "Contenido",
+    "downloadQr": "Descargar código QR:",
+    "preview": "Vista previa",
+    "howItAppears": "Cómo aparecerá tu código QR",
+    "currentQrCode": "Código QR Actual",
+    "dynamicQr": "Código QR Dinámico",
+    "staticQr": "Código QR Estático",
+    "canBeChanged": "El contenido se puede cambiar más tarde sin reimprimir",
+    "canBeUpdated": "El contenido se puede actualizar sin reimprimir",
+    "cannotBeChanged": "El contenido no se puede cambiar sin reimprimir",
+    "worksOffline": "Funciona sin conexión, pero no se puede modificar",
+    "embeddedDirectly": "Contenido incrustado directamente",
+    "cannotBeModified": "No se puede modificar",
+    "staticCannotEdit": "Los códigos QR estáticos no se pueden editar después de la creación",
+    "formatCannotChange": "El formato no se puede cambiar para códigos QR estáticos",
+    "contentCannotChange": "El contenido no se puede cambiar para códigos QR estáticos",
     "stats": {
       "totalQrCodes": "Códigos QR Totales",
       "activeQrCodes": "Códigos QR Activos",
@@ -185,6 +207,9 @@
       "published": "Publicada el",
       "active": "Activa"
     },
+    "placeholders": {
+      "slug": "url-mi-pagina"
+    },
     "update": "Actualizar Página",
     "addBlock": "Añadir Bloque",
     "blockEditor": "Editor de Bloques",
@@ -201,5 +226,32 @@
     "privacy": "Privacidad",
     "terms": "Términos",
     "support": "Soporte"
+  },
+  "auth": {
+    "features": {
+      "linkShortening": {
+        "title": "Acortamiento Inteligente de Enlaces",
+        "description": "Crea enlaces cortos potentes y rastreables en segundos"
+      },
+      "qrCodes": {
+        "title": "Códigos QR Dinámicos",
+        "description": "Genera códigos QR que puedes actualizar sin reimprimir"
+      },
+      "analytics": {
+        "title": "Análisis en Tiempo Real",
+        "description": "Rastrea clics, ubicaciones y dispositivos con información detallada"
+      },
+      "blockPages": {
+        "title": "Páginas con Bloques",
+        "description": "Construye páginas de destino personalizadas con bloques de arrastrar y soltar"
+      }
+    },
+    "tagline": {
+      "part1": "Acorta, Rastrea y",
+      "highlight": "Optimiza",
+      "part2": "Tus Enlaces"
+    },
+    "subtitle": "El acortador de URL moderno creado para empresas y creadores",
+    "copyright": "© 2025 MagLink. Todos los derechos reservados."
   }
 }

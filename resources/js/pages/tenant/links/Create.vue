@@ -25,6 +25,7 @@ const page = usePage<PageProps>();
 
 const props = defineProps<{
     slug: string;
+    shortUrl: string;
 }>();
 
 const baseUrl = computed(() => window.location.origin);
@@ -109,7 +110,7 @@ const submitForm = () => {
                                 </label>
                                 <InputText
                                     v-model="form.title"
-                                    placeholder="My Awesome Link"
+                                    :placeholder="t('links.placeholders.title')"
                                     required
                                     class="w-full"
                                 />
@@ -125,7 +126,7 @@ const submitForm = () => {
                                 </label>
                                 <Textarea
                                     v-model="form.description"
-                                    placeholder="Add a description for this link..."
+                                    :placeholder="t('links.placeholders.description')"
                                     rows="3"
                                     class="w-full"
                                 />
@@ -144,7 +145,7 @@ const submitForm = () => {
                                     <InputText
                                         v-model="form.url"
                                         type="url"
-                                        placeholder="https://example.com"
+                                        :placeholder="t('links.placeholders.url')"
                                         required
                                         class="w-full pl-10"
                                     />
@@ -172,7 +173,7 @@ const submitForm = () => {
                                 </label>
                                 <div class="flex items-center gap-2">
                                     <code class="flex-1 px-3 py-2 bg-white dark:bg-surface-900 rounded text-sm text-primary font-mono border border-surface-200 dark:border-surface-700">
-                                        {{ baseUrl }}/{{ props.slug }}
+                                        {{ props.shortUrl }}/{{ props.slug }}
                                     </code>
                                 </div>
                                 <p class="text-xs text-surface-500 dark:text-surface-400 mt-2">
@@ -252,8 +253,11 @@ const submitForm = () => {
                                         <div class="text-sm text-surface-600 dark:text-surface-400 truncate mt-1">
                                             {{ form.description || 'Link description will appear here' }}
                                         </div>
+                                        <div class="text-xs text-surface-500 dark:text-surface-400 mt-1 truncate">
+                                            Short URL: <span class="text-primary font-mono">{{ props.shortUrl }}/{{ props.slug }}</span>
+                                        </div>
                                         <div class="text-xs text-primary mt-2 truncate">
-                                            {{ form.url || 'https://example.com' }}
+                                            Destination: {{ form.url || 'https://example.com' }}
                                         </div>
                                     </div>
                                 </div>

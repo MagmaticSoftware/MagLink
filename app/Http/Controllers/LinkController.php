@@ -18,6 +18,7 @@ class LinkController extends Controller
         $links = Link::orderBy('created_at', 'desc')->get();
         return Inertia::render('tenant/links/Index', [
             'links' => $links,
+            'shortUrl' => config('app.short_url'),
         ]);
     }
 
@@ -29,6 +30,7 @@ class LinkController extends Controller
         $slug = $this->generateRandomSlug();
         return Inertia::render('tenant/links/Create', [
             'slug' => $slug,
+            'shortUrl' => config('app.short_url'),
         ]);
     }
 
@@ -57,6 +59,7 @@ class LinkController extends Controller
     {
         return Inertia::render('tenant/links/Edit', [
             'link' => $link,
+            'shortUrl' => config('app.short_url'),
         ]);
     }
 
@@ -85,7 +88,7 @@ class LinkController extends Controller
     private function generateRandomSlug(): string
     {
         do {
-            $slug = strtolower(Str::random(3)."-".Str::random(3));
+            $slug = strtolower(Str::random(6)); // 6 caratteri alfanumerici
         } while (Link::where('slug', $slug)->exists());
 
         return $slug;

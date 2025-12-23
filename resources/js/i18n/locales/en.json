@@ -81,6 +81,11 @@
     "search": "Search links...",
     "sortBy": "Sort by",
     "filterBy": "Filter by",
+    "placeholders": {
+      "title": "My Awesome Link",
+      "description": "Add a description for this link...",
+      "url": "https://example.com"
+    },
     "stats": {
       "totalLinks": "Total Links",
       "activeLinks": "Active Links",
@@ -122,6 +127,27 @@
     "search": "Search QR codes...",
     "sortBy": "Sort by",
     "filterBy": "Filter by",
+    "shortUrl": "Short URL",
+    "content": "Content",
+    "downloadQr": "Download QR Code:",
+    "preview": "Preview",
+    "howItAppears": "How your QR code will appear",
+    "currentQrCode": "Current QR Code",
+    "dynamicQr": "Dynamic QR Code",
+    "staticQr": "Static QR Code",
+    "canBeChanged": "Content can be changed later without reprinting",
+    "canBeUpdated": "Content can be updated without reprinting",
+    "cannotBeChanged": "Content cannot be changed without reprinting",
+    "worksOffline": "Works offline, but cannot be modified",
+    "embeddedDirectly": "Content embedded directly",
+    "cannotBeModified": "Cannot be modified",
+    "staticCannotEdit": "Static QR codes cannot be edited after creation",
+    "formatCannotChange": "Format cannot be changed for static QR codes",
+    "contentCannotChange": "Content cannot be changed for static QR codes",
+    "placeholders": {
+      "title": "My QR Code",
+      "description": "Add a description for this QR Code..."
+    },
     "stats": {
       "totalQrCodes": "Total QR Codes",
       "activeQrCodes": "Active QR Codes",
@@ -152,8 +178,11 @@
     "createFirst": "Create your first page to get started!",
     "search": "Search pages...",
     "sortBy": "Sort by",
-    "filterBy": "Filter by",
-    "stats": {
+    "filterBy": "Filter by",    "placeholders": {
+      "title": "My Awesome Link",
+      "description": "Add a description for this link...",
+      "url": "https://example.com"
+    },    "stats": {
       "totalPages": "Total Pages",
       "published": "Published",
       "totalBlocks": "Total Blocks",
@@ -195,6 +224,9 @@
       "themeColor": "Theme Color",
       "slugHint": "Public URL"
     },
+    "placeholders": {
+      "slug": "my-page-url"
+    },
     "update": "Update Page",
     "addBlock": "Add Block",
     "blockEditor": "Block Editor",
@@ -216,5 +248,32 @@
     "privacy": "Privacy",
     "terms": "Terms",
     "support": "Support"
+  },
+  "auth": {
+    "features": {
+      "linkShortening": {
+        "title": "Smart Link Shortening",
+        "description": "Create powerful, trackable short links in seconds"
+      },
+      "qrCodes": {
+        "title": "Dynamic QR Codes",
+        "description": "Generate QR codes that you can update without reprinting"
+      },
+      "analytics": {
+        "title": "Real-time Analytics",
+        "description": "Track clicks, locations, and devices with detailed insights"
+      },
+      "blockPages": {
+        "title": "Block-based Pages",
+        "description": "Build custom landing pages with drag-and-drop blocks"
+      }
+    },
+    "tagline": {
+      "part1": "Shorten, Track, and",
+      "highlight": "Optimize",
+      "part2": "Your Links"
+    },
+    "subtitle": "The modern URL shortener built for businesses and creators",
+    "copyright": "© 2025 MagLink. All rights reserved."
   }
 }

@@ -30,6 +30,7 @@ const page = usePage<PageProps>();
 
 const props = defineProps<{
     slug: string;
+    shortUrl: string;
 }>();
 
 const form = useForm({
@@ -80,6 +81,20 @@ const currentFormat = computed(() =>
 
 // Payload content helper
 const payloadContent = ref('');
+
+// QR Code preview URL
+const qrPreviewUrl = computed(() => {
+    if (!payloadContent.value && form.format !== 'url') return null;
+    
+    const params = new URLSearchParams({
+        slug: props.slug,
+        format: form.format,
+        content: payloadContent.value || '',
+        type: form.type // dynamic or static
+    });
+    
+    return `/api/qrcode/preview?${params.toString()}`;
+});
 
 // Update payload when content changes
 const updatePayload = () => {
@@ -144,7 +159,7 @@ const submitForm = () => {
                                 </label>
                                 <InputText
                                     v-model="form.name"
-                                    placeholder="My QR Code"
+                                    :placeholder="t('qrcodes.placeholders.title')"
                                     required
                                     class="w-full"
                                 />
@@ -160,7 +175,7 @@ const submitForm = () => {
                                 </label>
                                 <Textarea
                                     v-model="form.description"
-                                    placeholder="Add a description for this QR Code..."
+                                    :placeholder="t('qrcodes.placeholders.description')"
                                     rows="3"
                                     class="w-full"
                                 />
@@ -248,7 +263,7 @@ const submitForm = () => {
                                     class="w-full"
                                 />
                                 <p class="text-xs text-surface-500 dark:text-surface-400 mt-1">
-                                    Static QR codes cannot be edited after creation
+                                    {{ t('qrcodes.staticCannotEdit') }}
                                 </p>
                             </div>
 
@@ -280,18 +295,65 @@ const submitForm = () => {
                         </div>
                     </div>
 
-                    <!-- QR Code Preview (Placeholder) -->
+                    <!-- QR Code Preview -->
                     <div class="bg-white dark:bg-surface-900 rounded-xl p-6 shadow-sm border border-surface-200 dark:border-surface-800">
                         <h2 class="text-lg font-semibold text-surface-900 dark:text-surface-50 mb-4">
                             Preview
                         </h2>
-                        <div class="aspect-square bg-surface-50 dark:bg-surface-800 rounded-lg border-2 border-dashed border-surface-300 dark:border-surface-700 flex items-center justify-center">
-                            <div class="text-center p-4">
-                                <LucideQrCode :size="80" class="mx-auto text-surface-300 dark:text-surface-600 mb-2" />
-                                <p class="text-xs text-surface-500 dark:text-surface-400">
-                                    Preview will appear after creation
+                        <div class="space-y-3">
+                            <div class="aspect-square bg-surface-50 dark:bg-surface-800 rounded-lg border-2 border-dashed border-surface-300 dark:border-surface-700 flex items-center justify-center">
+                                <div v-if="!qrPreviewUrl" class="text-center p-4">
+                                    <LucideQrCode :size="80" class="mx-auto text-surface-300 dark:text-surface-600 mb-2" />
+                                    <p class="text-xs text-surface-500 dark:text-surface-400">
+                                        {{ t('qrcodes.preview') }}
+                                    </p>
+                                </div>
+                                <img 
+                                    v-else
+                                    :src="qrPreviewUrl" 
+                                    alt="QR Code Preview" 
+                                    class="w-full h-full object-contain p-4"
+                                />
+                            </div>
+                            
+                            <!-- QR URL Display (only for dynamic) -->
+                            <div v-if="form.type === 'dynamic'" class="p-4 bg-surface-50 dark:bg-surface-800 rounded-lg border border-surface-200 dark:border-surface-700">
+                                <div class="flex items-start gap-3">
+                                    <div class="flex-shrink-0 w-10 h-10 bg-gradient-to-br from-primary/20 to-primary/5 rounded-lg flex items-center justify-center">
+                                        <LucideQrCode :size="20" class="text-primary" />
+                                    </div>
+                                    <div class="flex-1 min-w-0">
+                                        <div class="text-xs text-surface-500 dark:text-surface-400 mt-1 truncate">
+                                            {{ t('qrcodes.shortUrl') }}: <span class="text-primary font-mono">{{ shortUrl }}/{{ props.slug }}</span>
+                                        </div>
+                                        <div class="text-xs text-primary mt-2 truncate">
+                                            {{ payloadContent ? `${t('qrcodes.content')}: ${payloadContent}` : t('qrcodes.preview') }}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Type Info -->
+                            <div v-if="form.type === 'dynamic'" class="p-2 bg-blue-50 dark:bg-blue-900/20 rounded border border-blue-200 dark:border-blue-800">
+                                <p class="text-xs text-blue-700 dark:text-blue-400">
+                                    <span class="font-medium">📍 {{ t('qrcodes.dynamicQr') }}</span>
+                                </p>
+                                <p class="text-xs text-blue-600 dark:text-blue-500 mt-1">
+                                    {{ t('qrcodes.canBeChanged') }}
                                 </p>
                             </div>
+                            <div v-else class="p-2 bg-green-50 dark:bg-green-900/20 rounded border border-green-200 dark:border-green-800">
+                                <p class="text-xs text-green-700 dark:text-green-400">
+                                    <span class="font-medium">🔒 {{ t('qrcodes.staticQr') }}</span>
+                                </p>
+                                <p class="text-xs text-green-600 dark:text-green-500 mt-1">
+                                    {{ t('qrcodes.embeddedDirectly') }}. {{ t('qrcodes.worksOffline') }}.
+                                </p>
+                            </div>
+                            
+                            <p class="text-xs text-surface-500 dark:text-surface-400 text-center">
+                                {{ t('qrcodes.howItAppears') }}
+                            </p>
                         </div>
                     </div>
 

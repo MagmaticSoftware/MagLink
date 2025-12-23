@@ -170,7 +170,7 @@ watch(() => form.is_active, (isActive, oldValue) => {
                                     </div>
                                 </label>
                                 <InputText v-model="form.slug" class="w-full font-mono text-sm"
-                                    placeholder="my-page-url" />
+                                    :placeholder="t('pages.placeholders.slug')" />
                                 <p class="text-xs text-surface-500 dark:text-surface-400 mt-1">
                                     {{ t('pages.form.slugHint') }}: /{{ form.slug || 'your-page-url' }}
                                 </p>

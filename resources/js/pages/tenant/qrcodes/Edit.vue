@@ -17,7 +17,8 @@ import {
     LucideEye,
     LucideEyeOff,
     LucideClock,
-    LucideScan
+    LucideScan,
+    LucideDownload
 } from 'lucide-vue-next';
 import Button from '@/components/volt/Button.vue';
 import InputText from '@/components/volt/InputText.vue';
@@ -47,6 +48,7 @@ const props = defineProps<{
         created_at: string;
         updated_at: string;
     };
+    shortUrl: string;
 }>();
 
 const form = useForm({
@@ -98,6 +100,22 @@ const currentFormat = computed(() =>
 
 // Payload content helper
 const payloadContent = ref(props.qrcode.payload?.content || '');
+
+// QR Code image URL
+const qrImageUrl = computed(() => {
+    const params = new URLSearchParams({
+        slug: props.qrcode.slug,
+        format: props.qrcode.format,
+        content: payloadContent.value || '',
+        type: props.qrcode.type // dynamic or static
+    });
+    return `/api/qrcode/preview?${params.toString()}`;
+});
+
+// Download QR Code
+const downloadQr = (format: 'png' | 'jpg' | 'svg') => {
+    window.open(`/api/qrcode/${props.qrcode.slug}/download/${format}`, '_blank');
+};
 
 // Update payload when content changes
 const updatePayload = () => {
@@ -170,7 +188,7 @@ const submitForm = () => {
                                 </label>
                                 <InputText
                                     v-model="form.name"
-                                    placeholder="My QR Code"
+                                    :placeholder="t('qrcodes.placeholders.title')"
                                     required
                                     class="w-full"
                                 />
@@ -186,7 +204,7 @@ const submitForm = () => {
                                 </label>
                                 <Textarea
                                     v-model="form.description"
-                                    placeholder="Add a description for this QR Code..."
+                                    :placeholder="t('qrcodes.placeholders.description')"
                                     rows="3"
                                     class="w-full"
                                 />
@@ -228,7 +246,7 @@ const submitForm = () => {
                                     </button>
                                 </div>
                                 <p v-if="qrcode.type === 'static'" class="text-xs text-orange-600 dark:text-orange-400 mt-2">
-                                    ⚠️ Format cannot be changed for static QR codes
+                                    ⚠️ {{ t('qrcodes.formatCannotChange') }}
                                 </p>
                             </div>
 
@@ -255,7 +273,7 @@ const submitForm = () => {
                                     {{ currentFormat.description }}
                                 </p>
                                 <p v-if="qrcode.type === 'static'" class="text-xs text-orange-600 dark:text-orange-400 mt-1">
-                                    ⚠️ Content cannot be changed for static QR codes
+                                    ⚠️ {{ t('qrcodes.contentCannotChange') }}
                                 </p>
                             </div>
                         </div>
@@ -314,8 +332,8 @@ const submitForm = () => {
                                 </p>
                             </div>
 
-                            <!-- Slug (Read-only) -->
-                            <div>
+                            <!-- Slug (Read-only, only for dynamic) -->
+                            <div v-if="qrcode.type === 'dynamic'">
                                 <label class="text-sm font-medium text-surface-700 dark:text-surface-300 block mb-2">
                                     Slug
                                 </label>
@@ -352,16 +370,86 @@ const submitForm = () => {
                         </div>
                     </div>
 
-                    <!-- QR Code Preview (Placeholder) -->
+                    <!-- QR Code Preview & Download -->
                     <div class="bg-white dark:bg-surface-900 rounded-xl p-6 shadow-sm border border-surface-200 dark:border-surface-800">
                         <h2 class="text-lg font-semibold text-surface-900 dark:text-surface-50 mb-4">
                             Current QR Code
                         </h2>
-                        <div class="aspect-square bg-surface-50 dark:bg-surface-800 rounded-lg border-2 border-dashed border-surface-300 dark:border-surface-700 flex items-center justify-center">
-                            <div class="text-center p-4">
-                                <LucideQrCode :size="80" class="mx-auto text-surface-300 dark:text-surface-600 mb-2" />
-                                <p class="text-xs text-surface-500 dark:text-surface-400">
-                                    QR Code preview
+                        <div class="space-y-3">
+                            <div class="aspect-square bg-surface-50 dark:bg-surface-800 rounded-lg border-2 border-surface-200 dark:border-surface-700 flex items-center justify-center">
+                                <img 
+                                    :src="qrImageUrl" 
+                                    alt="QR Code" 
+                                    class="w-full h-full object-contain p-4"
+                                />
+                            </div>
+                            
+                            <!-- Download Buttons -->
+                            <div>
+                                <p class="text-xs text-surface-600 dark:text-surface-400 mb-2">{{ t('qrcodes.downloadQr') }}</p>
+                                <div class="grid grid-cols-3 gap-2">
+                                    <Button 
+                                        variant="outline"
+                                        type="button"
+                                        @click="downloadQr('png')"
+                                        class="w-full justify-center text-sm"
+                                    >
+                                        <LucideDownload :size="14" class="mr-1" />
+                                        PNG
+                                    </Button>
+                                    <Button 
+                                        variant="outline"
+                                        type="button"
+                                        @click="downloadQr('jpg')"
+                                        class="w-full justify-center text-sm"
+                                    >
+                                        <LucideDownload :size="14" class="mr-1" />
+                                        JPG
+                                    </Button>
+                                    <Button 
+                                        variant="outline"
+                                        type="button"
+                                        @click="downloadQr('svg')"
+                                        class="w-full justify-center text-sm"
+                                    >
+                                        <LucideDownload :size="14" class="mr-1" />
+                                        SVG
+                                    </Button>
+                                </div>
+                            </div>
+                            
+                            <!-- QR URL Display (only for dynamic) -->
+                            <div v-if="qrcode.type === 'dynamic'" class="p-4 bg-surface-50 dark:bg-surface-800 rounded-lg border border-surface-200 dark:border-surface-700">
+                                <div class="flex items-start gap-3">
+                                    <div class="flex-shrink-0 w-10 h-10 bg-gradient-to-br from-primary/20 to-primary/5 rounded-lg flex items-center justify-center">
+                                        <LucideQrCode :size="20" class="text-primary" />
+                                    </div>
+                                    <div class="flex-1 min-w-0">
+                                        <div class="text-xs text-surface-500 dark:text-surface-400 mt-1 truncate">
+                                            {{ t('qrcodes.shortUrl') }}: <span class="text-primary font-mono">{{ shortUrl }}/{{ qrcode.slug }}</span>
+                                        </div>
+                                        <div class="text-xs text-primary mt-2 truncate">
+                                            {{ t('qrcodes.content') }}: {{ payloadContent || t('qrcodes.preview') }}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Type Info -->
+                            <div v-if="qrcode.type === 'dynamic'" class="p-2 bg-blue-50 dark:bg-blue-900/20 rounded border border-blue-200 dark:border-blue-800">
+                                <p class="text-xs text-blue-700 dark:text-blue-400">
+                                    <span class="font-medium">📍 {{ t('qrcodes.dynamicQr') }}</span>
+                                </p>
+                                <p class="text-xs text-blue-600 dark:text-blue-500 mt-1">
+                                    {{ t('qrcodes.canBeUpdated') }}
+                                </p>
+                            </div>
+                            <div v-else class="p-2 bg-green-50 dark:bg-green-900/20 rounded border border-green-200 dark:border-green-800">
+                                <p class="text-xs text-green-700 dark:text-green-400">
+                                    <span class="font-medium">🔒 {{ t('qrcodes.staticQr') }}</span>
+                                </p>
+                                <p class="text-xs text-green-600 dark:text-green-500 mt-1">
+                                    {{ t('qrcodes.embeddedDirectly') }}. {{ t('qrcodes.cannotBeModified') }}.
                                 </p>
                             </div>
                         </div>

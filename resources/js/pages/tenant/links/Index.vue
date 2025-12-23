@@ -26,6 +26,7 @@ const { t } = useI18n();
 
 const props = defineProps<{
     links: any[];
+    shortUrl: string;
     stats?: {
         total: number;
         active: number;
@@ -119,7 +120,7 @@ const filteredLinks = computed(() => {
 
 // Copy link to clipboard
 const copyToClipboard = (slug: string) => {
-    const url = `${window.location.origin}/links/${slug}`;
+    const url = `${props.shortUrl}/${slug}`;
     navigator.clipboard.writeText(url);
     // TODO: Add toast notification
 };
@@ -279,7 +280,7 @@ const formatDate = (date: string) => {
                                     <div class="flex items-center gap-2 mt-3 text-sm">
                                         <span class="font-medium text-surface-700 dark:text-surface-300">{{ t('links.url') }}:</span>
                                         <code class="px-2 py-1 bg-surface-100 dark:bg-surface-800 rounded text-primary font-mono text-xs">
-                                            /{{ link.slug }}
+                                            {{ shortUrl }}/{{ link.slug }}
                                         </code>
                                         <button
                                             @click="copyToClipboard(link.slug)"
@@ -289,7 +290,7 @@ const formatDate = (date: string) => {
                                             <LucideCopy :size="14" class="text-surface-500" />
                                         </button>
                                         <a
-                                            :href="`/links/${link.slug}`"
+                                            :href="`${shortUrl}/${link.slug}`"
                                             target="_blank"
                                             class="p-1 hover:bg-surface-100 dark:hover:bg-surface-800 rounded transition-colors"
                                             :title="t('links.openLink')"

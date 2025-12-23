@@ -23,8 +23,6 @@ import { computed } from 'vue';
 
 const { t } = useI18n();
 
-const baseUrl = computed(() => window.location.origin);
-
 const props = defineProps<{
     link: { 
         id: number;
@@ -41,6 +39,7 @@ const props = defineProps<{
         created_at: string;
         updated_at: string;
     };
+    shortUrl: string;
 }>();
 
 const form = useForm({
@@ -129,7 +128,7 @@ const submitForm = () => {
                                 </label>
                                 <InputText
                                     v-model="form.title"
-                                    placeholder="My Awesome Link"
+                                    :placeholder="t('links.placeholders.title')"
                                     required
                                     class="w-full"
                                 />
@@ -145,7 +144,7 @@ const submitForm = () => {
                                 </label>
                                 <Textarea
                                     v-model="form.description"
-                                    placeholder="Add a description for this link..."
+                                    :placeholder="t('links.placeholders.description')"
                                     rows="3"
                                     class="w-full"
                                 />
@@ -164,7 +163,7 @@ const submitForm = () => {
                                     <InputText
                                         v-model="form.url"
                                         type="url"
-                                        placeholder="https://example.com"
+                                        :placeholder="t('links.placeholders.url')"
                                         required
                                         class="w-full pl-10"
                                     />
@@ -192,7 +191,7 @@ const submitForm = () => {
                                 </label>
                                 <div class="flex items-center gap-2">
                                     <code class="flex-1 px-3 py-2 bg-white dark:bg-surface-900 rounded text-sm text-primary font-mono border border-surface-200 dark:border-surface-700">
-                                        {{ baseUrl }}/{{ link.slug }}
+                                        {{ props.shortUrl }}/{{ link.slug }}
                                     </code>
                                 </div>
                                 <p class="text-xs text-surface-500 dark:text-surface-400 mt-2">

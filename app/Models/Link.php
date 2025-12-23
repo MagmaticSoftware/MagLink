@@ -29,6 +29,21 @@ class Link extends Model
         'type',
     ];
 
+    /**
+     * The accessors to append to the model's array form.
+     *
+     * @var array<int, string>
+     */
+    protected $appends = ['short_url'];
+
+    /**
+     * Get the shortened URL for the link.
+     */
+    public function getShortUrlAttribute(): string
+    {
+        return config('app.short_url') . '/' . $this->slug;
+    }
+
     public function user()
     {
         return $this->belongsTo(User::class);

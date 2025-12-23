@@ -45,6 +45,7 @@ const props = defineProps<{
         created_at: string;
         updated_at: string;
     };
+    shortUrl: string;
 }>();
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -118,11 +119,22 @@ const getFormatColor = (format: string) => {
     }
 };
 
-// Download QR code (placeholder - would need backend implementation)
-const downloadQrCode = () => {
-    // This would trigger a download endpoint
-    window.open(`/api/qrcodes/${props.qrcode.slug}/download`, '_blank');
+// Download QR code
+const downloadQrCode = (format: 'png' | 'jpg' | 'svg' = 'png') => {
+    window.open(`/api/qrcode/${props.qrcode.slug}/download/${format}`, '_blank');
 };
+
+// QR Code image URL
+const qrImageUrl = computed(() => {
+    const content = props.qrcode.payload?.content || props.qrcode.payload?.url || '';
+    const params = new URLSearchParams({
+        slug: props.qrcode.slug,
+        format: props.qrcode.format,
+        content: content,
+        type: props.qrcode.type // dynamic or static
+    });
+    return `/api/qrcode/preview?${params.toString()}`;
+});
 
 // Share QR code
 const shareQrCode = async () => {
@@ -228,41 +240,76 @@ const shareQrCode = async () => {
                             QR Code Preview
                         </h2>
                         
-                        <!-- QR Code Image Placeholder -->
-                        <div class="aspect-square bg-surface-50 dark:bg-surface-800 rounded-lg border-2 border-dashed border-surface-300 dark:border-surface-700 flex items-center justify-center mb-4">
-                            <div class="text-center p-8">
-                                <LucideQrCode :size="120" class="mx-auto text-surface-400 dark:text-surface-600 mb-4" />
-                                <p class="text-sm text-surface-600 dark:text-surface-400">
-                                    QR Code will be generated here
-                                </p>
+                        <!-- QR Code Image -->
+                        <div class="aspect-square bg-surface-50 dark:bg-surface-800 rounded-lg border-2 border-surface-200 dark:border-surface-700 flex items-center justify-center mb-4">
+                            <img 
+                                :src="qrImageUrl" 
+                                alt="QR Code" 
+                                class="w-full h-full object-contain p-4"
+                            />
+                        </div>
+
+                        <!-- Download Actions -->
+                        <div class="space-y-2 mb-4">
+                            <p class="text-xs text-surface-600 dark:text-surface-400 mb-2">{{ t('qrcodes.downloadQr') }}</p>
+                            <div class="grid grid-cols-3 gap-2">
+                                <button
+                                    @click="downloadQrCode('png')"
+                                    class="px-3 py-2 bg-surface-100 dark:bg-surface-800 hover:bg-surface-200 dark:hover:bg-surface-700 text-surface-700 dark:text-surface-300 rounded-lg flex items-center justify-center gap-2 transition-colors text-sm"
+                                >
+                                    <LucideDownload :size="14" />
+                                    PNG
+                                </button>
+                                <button
+                                    @click="downloadQrCode('jpg')"
+                                    class="px-3 py-2 bg-surface-100 dark:bg-surface-800 hover:bg-surface-200 dark:hover:bg-surface-700 text-surface-700 dark:text-surface-300 rounded-lg flex items-center justify-center gap-2 transition-colors text-sm"
+                                >
+                                    <LucideDownload :size="14" />
+                                    JPG
+                                </button>
+                                <button
+                                    @click="downloadQrCode('svg')"
+                                    class="px-3 py-2 bg-surface-100 dark:bg-surface-800 hover:bg-surface-200 dark:hover:bg-surface-700 text-surface-700 dark:text-surface-300 rounded-lg flex items-center justify-center gap-2 transition-colors text-sm"
+                                >
+                                    <LucideDownload :size="14" />
+                                    SVG
+                                </button>
                             </div>
                         </div>
 
-                        <!-- QR Code URL -->
-                        <div class="space-y-2">
-                            <label class="text-sm font-medium text-surface-700 dark:text-surface-300">
-                                QR Code URL
-                            </label>
-                            <div class="flex items-center gap-2">
-                                <code class="flex-1 px-3 py-2 bg-surface-100 dark:bg-surface-800 rounded text-sm text-primary font-mono truncate">
-                                    {{ qrCodeUrl }}
-                                </code>
-                                <button
-                                    @click="copyToClipboard(qrCodeUrl)"
-                                    class="p-2 hover:bg-surface-100 dark:hover:bg-surface-800 rounded transition-colors"
-                                    title="Copy URL"
-                                >
-                                    <LucideCopy :size="16" class="text-surface-500" />
-                                </button>
-                                <a
-                                    :href="qrCodeUrl"
-                                    target="_blank"
-                                    class="p-2 hover:bg-surface-100 dark:hover:bg-surface-800 rounded transition-colors"
-                                    title="Open URL"
-                                >
-                                    <LucideExternalLink :size="16" class="text-surface-500" />
-                                </a>
+                        <!-- QR URL Display (only for dynamic) -->
+                        <div v-if="qrcode.type === 'dynamic'" class="p-4 bg-surface-50 dark:bg-surface-800 rounded-lg border border-surface-200 dark:border-surface-700 mb-3">
+                            <div class="flex items-start gap-3">
+                                <div class="flex-shrink-0 w-10 h-10 bg-gradient-to-br from-primary/20 to-primary/5 rounded-lg flex items-center justify-center">
+                                    <LucideQrCode :size="20" class="text-primary" />
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <div class="text-xs text-surface-500 dark:text-surface-400 truncate">
+                                        {{ t('qrcodes.shortUrl') }}: <span class="text-primary font-mono">{{ shortUrl }}/{{ qrcode.slug }}</span>
+                                    </div>
+                                    <div class="text-xs text-primary mt-2 truncate">
+                                        {{ t('qrcodes.content') }}: {{ qrcode.payload?.content || qrcode.payload?.url || t('qrcodes.preview') }}
+                                    </div>
+                                </div>
                             </div>
+                        </div>
+
+                        <!-- QR Type Info -->
+                        <div v-if="qrcode.type === 'dynamic'" class="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
+                            <p class="text-sm font-medium text-blue-700 dark:text-blue-400 mb-1">
+                                📍 {{ t('qrcodes.dynamicQr') }}
+                            </p>
+                            <p class="text-xs text-blue-600 dark:text-blue-500">
+                                {{ t('qrcodes.canBeUpdated') }}
+                            </p>
+                        </div>
+                        <div v-else class="p-3 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-800">
+                            <p class="text-sm font-medium text-green-700 dark:text-green-400 mb-1">
+                                🔒 {{ t('qrcodes.staticQr') }}
+                            </p>
+                            <p class="text-xs text-green-600 dark:text-green-500">
+                                {{ t('qrcodes.embeddedDirectly') }}. {{ t('qrcodes.worksOffline') }}.
+                            </p>
                         </div>
                     </div>
                 </div>
@@ -386,7 +433,7 @@ const shareQrCode = async () => {
                                 </div>
                             </div>
 
-                            <div>
+                            <div v-if="qrcode.type === 'dynamic'">
                                 <label class="text-sm font-medium text-surface-600 dark:text-surface-400 block mb-1">
                                     Slug
                                 </label>
