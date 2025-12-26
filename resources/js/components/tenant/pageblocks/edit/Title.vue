@@ -2,7 +2,7 @@
 import { ref, watch, computed } from 'vue';
 import axios from 'axios';
 import { useConfirm } from 'primevue/useconfirm';
-import { LucideSave, LucidePlay, LucideTrash2, LucideYoutube } from 'lucide-vue-next';
+import { LucideSave, LucideHeading1, LucideTrash2 } from 'lucide-vue-next';
 import InputText from '@/components/volt/InputText.vue';
 
 const confirm = useConfirm();
@@ -24,69 +24,29 @@ const emit = defineEmits<{
   dirtyChange: [id: number, isDirty: boolean];
 }>();
 
-const localTitle = ref(props.title || '');
 const localContent = ref(props.content || '');
 const isSaving = ref(false);
-const savedTitle = ref(props.title || '');
 const savedContent = ref(props.content || '');
 
 const hasChanges = computed(() => {
-  return localTitle.value !== savedTitle.value || localContent.value !== savedContent.value;
+  return localContent.value !== savedContent.value;
 });
 
 watch(hasChanges, (isDirty) => {
   emit('dirtyChange', props.id, isDirty);
 });
 
-watch(() => props.title, (newVal) => { 
-  localTitle.value = newVal || ''; 
-  savedTitle.value = newVal || '';
-});
 watch(() => props.content, (newVal) => { 
   localContent.value = newVal || ''; 
   savedContent.value = newVal || '';
 });
 
-const videoUrl = computed(() => {
-  try {
-    const parsed = JSON.parse(localContent.value);
-    return parsed.url || localContent.value;
-  } catch {
-    return localContent.value;
-  }
-});
-
-const embedUrl = computed(() => {
-  const url = videoUrl.value;
-  
-  if (url.includes('youtube.com') || url.includes('youtu.be')) {
-    let videoId = '';
-    if (url.includes('youtu.be/')) {
-      videoId = url.split('youtu.be/')[1].split('?')[0];
-    } else if (url.includes('watch?v=')) {
-      videoId = url.split('watch?v=')[1].split('&')[0];
-    }
-    return `https://www.youtube.com/embed/${videoId}`;
-  }
-  
-  if (url.includes('vimeo.com')) {
-    const videoId = url.split('vimeo.com/')[1].split('?')[0];
-    return `https://player.vimeo.com/video/${videoId}`;
-  }
-  
-  return url;
-});
-
-const isYouTube = computed(() => videoUrl.value.includes('youtube') || videoUrl.value.includes('youtu.be'));
-
 const saveBlock = async () => {
   isSaving.value = true;
   try {
     await axios.put(route('page-blocks.update', props.id), {
-      title: localTitle.value,
       content: localContent.value,
     });
-    savedTitle.value = localTitle.value;
     savedContent.value = localContent.value;
   } catch (error) {
     console.error('Failed to save block:', error);
@@ -122,11 +82,10 @@ const deleteBlock = () => {
     <!-- Header with actions -->
     <div class="flex items-center justify-between mb-3 pb-2 border-b border-surface-200 dark:border-surface-700">
       <div class="flex items-center gap-2">
-        <div class="p-1.5 bg-red-100 dark:bg-red-900/30 rounded-lg">
-          <LucideYoutube v-if="isYouTube" :size="16" class="text-red-600 dark:text-red-400" />
-          <LucidePlay v-else :size="16" class="text-red-600 dark:text-red-400" />
+        <div class="p-1.5 bg-indigo-100 dark:bg-indigo-900/30 rounded-lg">
+          <LucideHeading1 :size="16" class="text-indigo-600 dark:text-indigo-400" />
         </div>
-        <span class="text-xs font-medium text-surface-600 dark:text-surface-400">Video Block</span>
+        <span class="text-xs font-medium text-surface-600 dark:text-surface-400">Titolo</span>
       </div>
       <div class="flex items-center gap-1">
         <button
@@ -148,45 +107,25 @@ const deleteBlock = () => {
       </div>
     </div>
 
-    <!-- Editable content -->
+    <!-- Content -->
     <div class="flex-1 flex flex-col gap-3 overflow-y-auto">
       <div>
-        <label class="text-xs font-medium text-surface-700 dark:text-surface-300 block mb-1">
-          Video Title (optional)
+        <label class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-1">
+          Testo del Titolo
         </label>
-        <InputText 
-          v-model="localTitle" 
-          placeholder="Video description..."
-          @blur="saveBlock"
-          class="w-full text-sm"
+        <InputText
+          v-model="localContent"
+          placeholder="Inserisci il titolo..."
+          class="w-full"
         />
       </div>
       
-      <div>
-        <label class="text-xs font-medium text-surface-700 dark:text-surface-300 block mb-1">
-          Video URL
-        </label>
-        <InputText 
-          v-model="localContent" 
-          placeholder="https://youtube.com/watch?v=..."
-          @blur="saveBlock"
-          type="url"
-          class="w-full text-sm font-mono"
-        />
-        <p class="text-xs text-surface-500 dark:text-surface-400 mt-1">
-          Supports YouTube and Vimeo URLs
-        </p>
-      </div>
-
-      <!-- Video Preview -->
-      <div v-if="embedUrl && videoUrl" class="flex-1 min-h-[150px] relative rounded-lg overflow-hidden bg-black">
-        <iframe 
-          :src="embedUrl"
-          class="w-full h-full"
-          frameborder="0"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-          allowfullscreen
-        />
+      <!-- Preview -->
+      <div class="flex-1 bg-surface-50 dark:bg-surface-900 rounded-lg p-4 border border-surface-200 dark:border-surface-700">
+        <p class="text-xs text-surface-500 dark:text-surface-400 mb-2">Anteprima:</p>
+        <h2 class="text-2xl font-bold text-surface-900 dark:text-surface-50 text-center">
+          {{ localContent || 'Titolo' }}
+        </h2>
       </div>
     </div>
   </div>

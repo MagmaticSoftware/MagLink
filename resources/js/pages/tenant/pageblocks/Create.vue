@@ -9,7 +9,10 @@ import {
     Video,
     CheckCircle2,
     ArrowRight,
-    ArrowLeft
+    ArrowLeft,
+    Heading,
+    Minus,
+    MapPin
 } from 'lucide-vue-next';
 
 const emit = defineEmits(['created']);
@@ -47,6 +50,20 @@ const blockTypes = [
         color: 'blue',
     },
     {
+        type: 'title',
+        name: 'Titolo',
+        description: 'Titolo di sezione per organizzare i contenuti',
+        icon: Heading,
+        color: 'indigo',
+    },
+    {
+        type: 'separator',
+        name: 'Separatore',
+        description: 'Linea divisoria per separare visivamente le sezioni',
+        icon: Minus,
+        color: 'slate',
+    },
+    {
         type: 'html',
         name: 'HTML',
         description: 'Codice HTML personalizzato',
@@ -74,25 +91,37 @@ const blockTypes = [
         icon: Video,
         color: 'red',
     },
+    {
+        type: 'map',
+        name: 'Mappa',
+        description: 'Mappa interattiva con OpenStreetMap',
+        icon: MapPin,
+        color: 'cyan',
+    },
 ];
 
 const selectBlockType = (blockType: string) => {
     type.value = blockType;
-    step.value = 'configure';
+    // Separator viene inserito direttamente senza configurazione
+    if (blockType === 'separator') {
+        createBlockDirect(blockType, '', '');
+    } else {
+        step.value = 'configure';
+    }
 };
 
 const goBack = () => {
     step.value = 'select';
 };
 
-const createBlock = async () => {
+const createBlockDirect = async (blockType: string, blockTitle: string, blockContent: string) => {
     loading.value = true;
     try {
         const response = await axios.post(route('page-blocks.store'), {
             page_id: props.page.id,
-            type: type.value,
-            title: title.value,
-            content: content.value,
+            type: blockType,
+            title: blockTitle,
+            content: blockContent,
             style: JSON.stringify({}),
             settings: JSON.stringify({}),
             is_active: true,
@@ -110,6 +139,10 @@ const createBlock = async () => {
     }
 };
 
+const createBlock = async () => {
+    await createBlockDirect(type.value, title.value, content.value);
+};
+
 const getColorClasses = (color: string) => {
     const colors: Record<string, { bg: string; border: string; text: string; hover: string }> = {
         blue: {
@@ -117,6 +150,18 @@ const getColorClasses = (color: string) => {
             border: 'border-blue-200 dark:border-blue-800',
             text: 'text-blue-600 dark:text-blue-400',
             hover: 'hover:border-blue-400 dark:hover:border-blue-600',
+        },
+        indigo: {
+            bg: 'bg-indigo-50 dark:bg-indigo-950/30',
+            border: 'border-indigo-200 dark:border-indigo-800',
+            text: 'text-indigo-600 dark:text-indigo-400',
+            hover: 'hover:border-indigo-400 dark:hover:border-indigo-600',
+        },
+        slate: {
+            bg: 'bg-slate-50 dark:bg-slate-950/30',
+            border: 'border-slate-200 dark:border-slate-800',
+            text: 'text-slate-600 dark:text-slate-400',
+            hover: 'hover:border-slate-400 dark:hover:border-slate-600',
         },
         purple: {
             bg: 'bg-purple-50 dark:bg-purple-950/30',
@@ -141,6 +186,12 @@ const getColorClasses = (color: string) => {
             border: 'border-red-200 dark:border-red-800',
             text: 'text-red-600 dark:text-red-400',
             hover: 'hover:border-red-400 dark:hover:border-red-600',
+        },
+        cyan: {
+            bg: 'bg-cyan-50 dark:bg-cyan-950/30',
+            border: 'border-cyan-200 dark:border-cyan-800',
+            text: 'text-cyan-600 dark:text-cyan-400',
+            hover: 'hover:border-cyan-400 dark:hover:border-cyan-600',
         },
     };
     return colors[color] || colors.blue;

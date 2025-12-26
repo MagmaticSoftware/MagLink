@@ -74,7 +74,9 @@ class ShareTrialData
                     'isSubscribed' => $user->subscribed('default'),
                     'onFreePlan' => $user->onFreePlan(),
                     'currentPlanName' => $user->currentPlanName(),
+                    'currentPlanKey' => $user->currentPlanKey(),
                     'hasAccess' => $user->hasAccess(),
+                    'limits' => $user->getPlanLimits(),
                 ],
             ]);
         } else {

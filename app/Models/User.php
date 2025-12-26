@@ -223,4 +223,123 @@ class User extends Authenticatable
 
         return null;
     }
+
+    /**
+     * Ottiene la chiave del piano corrente
+     */
+    public function currentPlanKey(): ?string
+    {
+        $subscription = $this->subscription('default');
+        
+        if (!$subscription) {
+            return 'free'; // Default to free plan
+        }
+
+        $plans = config('subscriptions.plans', []);
+        
+        foreach ($plans as $planKey => $planData) {
+            if (isset($planData['monthly']['price_id']) && $planData['monthly']['price_id'] === $subscription->stripe_price) {
+                return $planKey;
+            }
+            if (isset($planData['yearly']['price_id']) && $planData['yearly']['price_id'] === $subscription->stripe_price) {
+                return $planKey;
+            }
+        }
+
+        return 'free';
+    }
+
+    /**
+     * Ottiene i limiti del piano corrente
+     */
+    public function getPlanLimits(): array
+    {
+        $planKey = $this->currentPlanKey();
+        $plans = config('subscriptions.plans', []);
+        
+        return $plans[$planKey]['limits'] ?? [];
+    }
+
+    /**
+     * Verifica se l'utente può creare nuovi link
+     */
+    public function canCreateLink(): bool
+    {
+        $limits = $this->getPlanLimits();
+        $linkLimit = $limits['links'] ?? -1;
+        
+        // -1 significa illimitato
+        if ($linkLimit === -1) {
+            return true;
+        }
+
+        $currentCount = Link::where('user_id', $this->id)->count();
+        return $currentCount < $linkLimit;
+    }
+
+    /**
+     * Verifica se l'utente può creare nuovi QR Code
+     */
+    public function canCreateQrCode(string $type = 'static'): bool
+    {
+        $limits = $this->getPlanLimits();
+        
+        // Verifica limite totale QR Code
+        $qrcodeLimit = $limits['qrcodes'] ?? -1;
+        if ($qrcodeLimit === -1) {
+            return true;
+        }
+
+        $currentCount = QrCode::where('user_id', $this->id)->count();
+        if ($currentCount >= $qrcodeLimit) {
+            return false;
+        }
+
+        // Verifica limite QR Code dinamici
+        if ($type === 'dynamic') {
+            $dynamicLimit = $limits['qrcodes_dynamic'] ?? -1;
+            if ($dynamicLimit === -1) {
+                return true;
+            }
+
+            $dynamicCount = QrCode::where('user_id', $this->id)
+                ->where('type', 'dynamic')
+                ->count();
+            return $dynamicCount < $dynamicLimit;
+        }
+
+        return true;
+    }
+
+    /**
+     * Verifica se l'utente può creare nuove pagine
+     */
+    public function canCreatePage(): bool
+    {
+        $limits = $this->getPlanLimits();
+        $pageLimit = $limits['pages'] ?? -1;
+        
+        if ($pageLimit === -1) {
+            return true;
+        }
+
+        $currentCount = Page::where('user_id', $this->id)->count();
+        return $currentCount < $pageLimit;
+    }
+
+    /**
+     * Verifica se l'utente può aggiungere blocchi a una pagina
+     */
+    public function canAddBlockToPage(int $pageId): bool
+    {
+        $limits = $this->getPlanLimits();
+        $blockLimit = $limits['blocks_per_page'] ?? -1;
+        
+        if ($blockLimit === -1) {
+            return true;
+        }
+
+        $currentCount = PageBlock::where('page_id', $pageId)->count();
+        return $currentCount < $blockLimit;
+    }
 }

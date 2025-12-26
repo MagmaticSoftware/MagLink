@@ -2,7 +2,7 @@
 import { ref, watch, computed } from 'vue';
 import axios from 'axios';
 import { useConfirm } from 'primevue/useconfirm';
-import { LucideSave, LucideImage, LucideTrash2 } from 'lucide-vue-next';
+import { LucideSave, LucideImage, LucideTrash2, LucideLink2 } from 'lucide-vue-next';
 import InputText from '@/components/volt/InputText.vue';
 
 const confirm = useConfirm();
@@ -12,6 +12,7 @@ const props = defineProps<{
   pageId: number;
   title?: string;
   content: string;
+  settings?: any;
   position?: {
     x: number;
     y: number;
@@ -26,13 +27,17 @@ const emit = defineEmits<{
 
 const localTitle = ref(props.title || '');
 const localContent = ref(props.content || '');
+const localLinkUrl = ref(props.settings?.link || '');
 const isSaving = ref(false);
 const imageError = ref(false);
 const savedTitle = ref(props.title || '');
 const savedContent = ref(props.content || '');
+const savedLinkUrl = ref(props.settings?.link || '');
 
 const hasChanges = computed(() => {
-  return localTitle.value !== savedTitle.value || localContent.value !== savedContent.value;
+  return localTitle.value !== savedTitle.value || 
+         localContent.value !== savedContent.value ||
+         localLinkUrl.value !== savedLinkUrl.value;
 });
 
 watch(hasChanges, (isDirty) => {
@@ -47,6 +52,10 @@ watch(() => props.content, (newVal) => {
   localContent.value = newVal || ''; 
   savedContent.value = newVal || '';
   imageError.value = false;
+});
+watch(() => props.settings?.link, (newVal) => {
+  localLinkUrl.value = newVal || '';
+  savedLinkUrl.value = newVal || '';
 });
 
 const imageUrl = computed(() => {
@@ -64,9 +73,11 @@ const saveBlock = async () => {
     await axios.put(route('page-blocks.update', props.id), {
       title: localTitle.value,
       content: localContent.value,
+      settings: { link: localLinkUrl.value },
     });
     savedTitle.value = localTitle.value;
     savedContent.value = localContent.value;
+    savedLinkUrl.value = localLinkUrl.value;
   } catch (error) {
     console.error('Failed to save block:', error);
   } finally {
@@ -97,7 +108,7 @@ const deleteBlock = () => {
 </script>
 
 <template>
-  <div class="h-full w-full flex flex-col p-0">
+  <div class="h-full w-full flex flex-col p-2">
     <!-- Header with actions -->
     <div class="flex items-center justify-between mb-3 pb-2 border-b border-surface-200 dark:border-surface-700">
       <div class="flex items-center gap-2">
@@ -151,6 +162,23 @@ const deleteBlock = () => {
           type="url"
           class="w-full text-sm font-mono"
         />
+      </div>
+      
+      <div>
+        <label class="text-xs font-medium text-surface-700 dark:text-surface-300 block mb-1">
+          <LucideLink2 :size="12" class="inline mr-1" />
+          Link URL (opzionale)
+        </label>
+        <InputText 
+          v-model="localLinkUrl" 
+          placeholder="https://example.com"
+          @blur="saveBlock"
+          type="url"
+          class="w-full text-sm font-mono"
+        />
+        <p class="text-xs text-surface-500 dark:text-surface-400 mt-1">
+          L'immagine diventerà cliccabile se inserisci un link
+        </p>
       </div>
 
       <!-- Image Preview -->

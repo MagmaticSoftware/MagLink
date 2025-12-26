@@ -10,12 +10,19 @@ import TextBlock from '@/components/tenant/pageblocks/edit/Text.vue';
 import ImageBlock from '@/components/tenant/pageblocks/edit/Image.vue';
 import DefaultBlock from '@/components/tenant/pageblocks/edit/Default.vue';
 import VideoBlock from '@/components/tenant/pageblocks/edit/Video.vue';
+import TitleBlock from '@/components/tenant/pageblocks/edit/Title.vue';
+import SeparatorBlock from '@/components/tenant/pageblocks/edit/Separator.vue';
+import MapBlock from '@/components/tenant/pageblocks/edit/Map.vue';
 import Dialog from '@/components/volt/Dialog.vue';
 import ConfirmDialog from '@/components/volt/ConfirmDialog.vue';
 import Button from '@/components/volt/Button.vue';
 import CreateBlock from '../pageblocks/Create.vue';
 import InputText from '@/components/volt/InputText.vue';
+import Textarea from '@/components/volt/Textarea.vue';
 import ToggleSwitch from '@/components/volt/ToggleSwitch.vue';
+import LimitReachedDialog from '@/components/LimitReachedDialog.vue';
+import PlanSelectionModal from '@/components/PlanSelectionModal.vue';
+import { usePage } from '@inertiajs/vue3';
 import { useConfirm } from 'primevue/useconfirm';
 import { 
     LucideSave, 
@@ -24,13 +31,15 @@ import {
     LucideEye, 
     LucideCalendar,
     LucideToggleLeft,
-    LucideToggleRight
+    LucideToggleRight,
+    LucideTrash2
 } from 'lucide-vue-next';
 import { GridLayout, GridItem } from 'grid-layout-plus';
 import { useI18n } from 'vue-i18n';
 
 const { t } = useI18n();
 const confirm = useConfirm();
+const page = usePage();
 
 const blockComponents: Record<string, any> = {
     link: LinkBlock,
@@ -38,6 +47,9 @@ const blockComponents: Record<string, any> = {
     text: TextBlock,
     image: ImageBlock,
     video: VideoBlock,
+    title: TitleBlock,
+    separator: SeparatorBlock,
+    map: MapBlock,
 };
 
 const props = defineProps<{
@@ -180,10 +192,68 @@ const handleDirtyChange = (blockId: number, isDirty: boolean) => {
 
 const hasDirtyBlocks = computed(() => dirtyBlocks.value.size > 0);
 
+const handleProfileImageUpload = async (event: Event) => {
+    const target = event.target as HTMLInputElement;
+    const file = target.files?.[0];
+    
+    if (!file) return;
+    
+    const formData = new FormData();
+    formData.append('profile_image', file);
+    
+    try {
+        const response = await axios.post(route('pages.upload-profile-image', props.page.slug), formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            }
+        });
+        
+        // L'immagine è già stata salvata nel database dal backend
+        // Aggiorniamo solo il form per mostrare l'anteprima
+        form.settings = {
+            ...form.settings,
+            profile_image: response.data.url
+        };
+        
+        console.log('Profile image uploaded successfully:', response.data.url);
+    } catch (error) {
+        console.error('Failed to upload profile image:', error);
+    }
+};
+
+const handleDeleteProfileImage = async () => {
+    confirm.require({
+        message: 'Vuoi eliminare definitivamente l\'immagine del profilo?',
+        header: 'Conferma eliminazione',
+        acceptProps: {
+            label: 'Elimina',
+            severity: 'danger'
+        },
+        rejectProps: {
+            label: 'Annulla'
+        },
+        accept: async () => {
+            try {
+                await axios.delete(route('pages.delete-profile-image', props.page.slug));
+                
+                // Rimuovi l'immagine dal form
+                form.settings = {
+                    ...form.settings,
+                    profile_image: null
+                };
+                
+                console.log('Profile image deleted successfully');
+            } catch (error) {
+                console.error('Failed to delete profile image:', error);
+            }
+        }
+    });
+};
+
 const doSubmitForm = () => {
     form.put(route('pages.update', props.page.slug), {
         onSuccess: () => {
-            form.reset();
+            // Non resettiamo il form per mantenere le settings
         },
         onError: (errors: Record<string, any>) => {
             console.error('Form submission errors:', errors);
@@ -217,11 +287,13 @@ let layout = reactive(
         ? props.blocks.map((block, index) => {
             const x = block.position?.x ?? (index % 2);
             const y = block.position?.y ?? Math.floor(index / 2);
+            // Title e Separator hanno altezza 1 forzata
+            const height = (block.type === 'title' || block.type === 'separator') ? 1 : (block.size?.height ?? 2);
             return {
                 x,
                 y,
                 w: block.size?.width ?? 1,
-                h: block.size?.height ?? 2,
+                h: height,
                 i: String(block.id),
                 id: block.id,
                 page_id: block.page_id,
@@ -268,12 +340,92 @@ const updateSize = (item: any) => {
 };
 
 const visible = ref(false);
+const showLimitDialog = ref(false);
+const showPlanModal = ref(false);
+
+const handleShowPlans = () => {
+    showPlanModal.value = true;
+};
+
+// Computed per gestire i limiti
+const blockLimit = computed(() => {
+    return page.props.billing?.limits?.blocks_per_page || 0;
+});
+
+const getLimitStatus = (current: number, limit: number) => {
+    if (limit === 0) return 'normal';
+    if (current >= limit) return 'exceeded';
+    if (current >= limit - 1) return 'warning';
+    return 'normal';
+};
+
+const getLimitClasses = (status: string) => {
+    if (status === 'exceeded') return 'text-red-700 dark:text-red-400';
+    if (status === 'warning') return 'text-orange-600 dark:text-orange-400';
+    return 'text-surface-900 dark:text-surface-50';
+};
+
+const handleAddBlockClick = () => {
+    const limits = page.props.billing?.limits;
+    const currentBlockCount = layout.length;
+    const blockLimit = limits?.blocks_per_page || 0;
+    
+    if (limits && blockLimit > 0 && currentBlockCount >= blockLimit) {
+        showLimitDialog.value = true;
+    } else {
+        visible.value = true;
+    }
+};
+
+// Trova il primo spazio vuoto disponibile nella griglia
+function findFirstEmptySpace(blockWidth: number, blockHeight: number): { x: number; y: number } {
+    const gridCols = 4; // La griglia ha 4 colonne
+    
+    // Crea una mappa di occupazione della griglia
+    const occupiedCells = new Set<string>();
+    layout.forEach(item => {
+        for (let y = item.y; y < item.y + item.h; y++) {
+            for (let x = item.x; x < item.x + item.w; x++) {
+                occupiedCells.add(`${x},${y}`);
+            }
+        }
+    });
+    
+    // Trova il primo spazio libero che può contenere il blocco
+    let maxRow = 0;
+    if (layout.length > 0) {
+        maxRow = Math.max(...layout.map(item => item.y + item.h));
+    }
+    
+    // Cerca nelle righe esistenti e in quelle nuove (fino a maxRow + 10)
+    for (let y = 0; y < maxRow + 10; y++) {
+        for (let x = 0; x <= gridCols - blockWidth; x++) {
+            // Verifica se questo spazio è libero per l'intero blocco
+            let isFree = true;
+            for (let dy = 0; dy < blockHeight; dy++) {
+                for (let dx = 0; dx < blockWidth; dx++) {
+                    if (occupiedCells.has(`${x + dx},${y + dy}`)) {
+                        isFree = false;
+                        break;
+                    }
+                }
+                if (!isFree) break;
+            }
+            
+            if (isFree) {
+                return { x, y };
+            }
+        }
+    }
+    
+    // Se non trova spazio, metti in coda
+    return { x: 0, y: maxRow };
+}
 
 function handleBlockCreated(newBlock: any) {
-    // Find next available position
-    const maxY = layout.length > 0 ? Math.max(...layout.map(item => item.y + item.h)) : 0;
-    const position = newBlock.position ?? { x: 0, y: maxY };
+    // Trova il primo spazio vuoto disponibile
     const size = newBlock.size ?? { width: 1, height: 2 };
+    const position = findFirstEmptySpace(size.width, size.height);
     
     const item = {
         x: position.x,
@@ -294,6 +446,15 @@ function handleBlockCreated(newBlock: any) {
         static: false
     };
     layout.push(item);
+    
+    // Salva immediatamente la posizione calcolata nel database
+    axios.put(route('page-blocks.update', newBlock.id), {
+        position: position,
+        size: size
+    }).catch(error => {
+        console.error('Failed to save block position:', error);
+    });
+    
     visible.value = false;
 }
 
@@ -320,7 +481,7 @@ function handleBlockDeleted(blockId: number) {
                     <Button 
                         type="button" 
                         severity="secondary"
-                        @click="visible = true"
+                        @click="handleAddBlockClick"
                         class="flex items-center gap-2"
                     >
                         <LucidePlus :size="16" />
@@ -335,7 +496,20 @@ function handleBlockDeleted(blockId: number) {
                     <div class="flex items-center justify-between">
                         <div>
                             <p class="text-sm font-medium text-surface-600 dark:text-surface-400">{{ t('pages.stats.totalBlocks') }}</p>
-                            <p class="text-3xl font-bold text-surface-900 dark:text-surface-50 mt-2">{{ pageStats.totalBlocks }}</p>
+                            <p 
+                                :class="[
+                                    'text-3xl font-bold mt-2',
+                                    blockLimit > 0 ? getLimitClasses(getLimitStatus(pageStats.totalBlocks, blockLimit)) : 'text-surface-900 dark:text-surface-50'
+                                ]"
+                            >
+                                {{ pageStats.totalBlocks }}<span v-if="blockLimit > 0" class="text-lg"> / {{ blockLimit }}</span>
+                            </p>
+                            <p 
+                                v-if="blockLimit > 0 && getLimitStatus(pageStats.totalBlocks, blockLimit) === 'exceeded'"
+                                class="text-xs text-red-700 dark:text-red-400 mt-1"
+                            >
+                                Limite raggiunto per il piano free
+                            </p>
                         </div>
                         <div class="p-3 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
                             <LucideLayout :size="24" class="text-blue-600 dark:text-blue-400" />
@@ -369,10 +543,10 @@ function handleBlockDeleted(blockId: number) {
             </div>
 
             <!-- Main Content -->
-            <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+            <div class="grid grid-cols-1 lg:grid-cols-5 gap-6">
                 <!-- Settings Sidebar -->
                 <div class="lg:col-span-1">
-                    <div class="bg-white dark:bg-surface-900 rounded-xl p-6 shadow-sm border border-surface-200 dark:border-surface-800 sticky top-6">
+                    <div class="bg-white dark:bg-surface-900 rounded-xl p-4 shadow-sm border border-surface-200 dark:border-surface-800 sticky top-6">
                         <h3 class="text-lg font-semibold text-surface-900 dark:text-surface-50 mb-4">
                             {{ t('pages.settings') }}
                         </h3>
@@ -399,7 +573,40 @@ function handleBlockDeleted(blockId: number) {
                                 <label class="text-sm font-medium text-surface-700 dark:text-surface-300 block mb-2">
                                     {{ t('pages.form.description') }}
                                 </label>
-                                <InputText v-model="form.description" class="w-full" />
+                                <Textarea v-model="form.description" rows="3" class="w-full" />
+                            </div>
+
+                            <div>
+                                <label class="text-sm font-medium text-surface-700 dark:text-surface-300 block mb-2">
+                                    Immagine Profilo (opzionale)
+                                </label>
+                                <input 
+                                    type="file" 
+                                    accept="image/*"
+                                    @change="handleProfileImageUpload"
+                                    class="w-full text-sm text-surface-700 dark:text-surface-300
+                                        file:mr-4 file:py-2 file:px-4
+                                        file:rounded-lg file:border-0
+                                        file:text-sm file:font-semibold
+                                        file:bg-primary-50 file:text-primary-700
+                                        hover:file:bg-primary-100
+                                        dark:file:bg-primary-900/30 dark:file:text-primary-400"
+                                />
+                                <div v-if="form.settings?.profile_image" class="mt-3 relative inline-block">
+                                    <img 
+                                        :src="form.settings.profile_image"
+                                        alt="Profile preview"
+                                        class="w-24 h-24 rounded-full object-cover ring-2 ring-surface-200 dark:ring-surface-700"
+                                    />
+                                    <button
+                                        @click="handleDeleteProfileImage"
+                                        type="button"
+                                        class="absolute -top-1 -right-1 p-1.5 bg-red-500 hover:bg-red-600 rounded-full shadow-lg transition-colors"
+                                        title="Elimina immagine"
+                                    >
+                                        <LucideTrash2 :size="14" class="text-white" />
+                                    </button>
+                                </div>
                             </div>
 
                             <div>
@@ -470,7 +677,7 @@ function handleBlockDeleted(blockId: number) {
                 </div>
 
                 <!-- Block Editor -->
-                <div class="lg:col-span-3">
+                <div class="lg:col-span-4">
                     <div class="bg-white dark:bg-surface-900 rounded-xl p-6 shadow-sm border border-surface-200 dark:border-surface-800">
                         <div class="flex items-center justify-between mb-6">
                             <h3 class="text-lg font-semibold text-surface-900 dark:text-surface-50">
@@ -484,14 +691,14 @@ function handleBlockDeleted(blockId: number) {
                         <div class="min-h-[600px] relative">
                             <GridLayout 
                                 v-model:layout="layout" 
-                                :col-num="2" 
+                                :col-num="4" 
                                 :row-height="120" 
                                 :is-draggable="true"
                                 :is-resizable="true"
                                 :vertical-compact="false"
                                 :prevent-collision="true"
                                 :use-css-transforms="true"
-                                :margin="[16, 16]"
+                                :margin="[32, 32]"
                                 class="w-full"
                             >
                                 <GridItem 
@@ -505,7 +712,7 @@ function handleBlockDeleted(blockId: number) {
                                     @resized="updateSize(item)"  
                                     @moved="updateAllPositions"
                                     :class="[
-                                        'bg-gradient-to-br from-surface-50 to-surface-100 dark:from-surface-800 dark:to-surface-900 p-4 overflow-auto shadow-md hover:shadow-lg rounded-xl border-2 border-surface-200 dark:border-surface-700 transition-all duration-200',
+                                        'bg-gradient-to-br from-surface-50 to-surface-100 dark:from-surface-800 dark:to-surface-900 p-0 overflow-auto shadow-md hover:shadow-lg rounded-xl border-2 border-surface-200 dark:border-surface-700 transition-all duration-200',
                                         'hover:' + getColorClasses(selectedColor)
                                     ]"
                                 >
@@ -539,7 +746,7 @@ function handleBlockDeleted(blockId: number) {
                                     </p>
                                     <Button 
                                         type="button" 
-                                        @click="visible = true"
+                                        @click="handleAddBlockClick"
                                         class="flex items-center gap-2 mx-auto"
                                     >
                                         <LucidePlus :size="16" />
@@ -562,6 +769,23 @@ function handleBlockDeleted(blockId: number) {
         >
             <CreateBlock :page="props.page" @created="handleBlockCreated" />
         </Dialog>
+
+        <!-- Limit Reached Dialog -->
+        <LimitReachedDialog
+            v-model:visible="showLimitDialog"
+            type="blocks"
+            @show-plans="handleShowPlans"
+        />
+
+        <!-- Plan Selection Modal -->
+        <PlanSelectionModal
+            v-model:visible="showPlanModal"
+            :plans="page.props.plans || {}"
+            :is-new-user="page.props.billing?.isNewUser || false"
+            :has-active-trial="page.props.billing?.hasActiveTrial || false"
+            :can-start-trial="page.props.billing?.canStartTrial || false"
+            :is-subscribed="page.props.billing?.isSubscribed || false"
+        />
 
         <!-- Confirm Dialog for unsaved changes -->
         <ConfirmDialog />
@@ -597,19 +821,12 @@ function handleBlockDeleted(blockId: number) {
 
 /* Resize handle styling */
 :deep(.vgl-item__resizer) {
-  right: 0.5rem;
-  bottom: 0.5rem;
-  width: 16px;
-  height: 16px;
-  background-image: none;
-  background: linear-gradient(135deg, transparent 50%, rgb(59, 130, 246) 50%);
-  border-radius: 0 0 0.75rem 0;
-  opacity: 0.6;
-  transition: opacity 0.2s;
-}
-
-:deep(.vgl-item:hover .vgl-item__resizer) {
-  opacity: 1;
+  right: 0;
+  bottom: 0;
+  width: 20px;
+  height: 20px;
+  background-image: none !important;
+  background: transparent !important;
 }
 
 /* Dragging state */

@@ -16,6 +16,7 @@ import {
 import InputText from '@/components/volt/InputText.vue';
 import Button from '@/components/volt/Button.vue';
 import Textarea from '@/components/volt/Textarea.vue';
+import LimitWarning from '@/components/LimitWarning.vue';
 import { useI18n } from 'vue-i18n';
 import { type PageProps } from '@/types/inertia';
 import { computed } from 'vue';
@@ -26,6 +27,7 @@ const page = usePage<PageProps>();
 const props = defineProps<{
     slug: string;
     shortUrl: string;
+    linkCount: number;
 }>();
 
 const baseUrl = computed(() => window.location.origin);
@@ -70,6 +72,9 @@ const submitForm = () => {
 
     <AppLayout :breadcrumbs="breadcrumbs">
         <div class="flex h-full flex-1 flex-col gap-6 p-6">
+            <!-- Limit Warning -->
+            <LimitWarning type="links" :currentCount="linkCount" />
+            
             <!-- Header -->
             <div class="flex items-center justify-between">
                 <div class="flex items-center gap-4">

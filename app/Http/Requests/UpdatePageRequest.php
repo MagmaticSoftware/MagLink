@@ -29,6 +29,7 @@ class UpdatePageRequest extends FormRequest
             'description' => 'nullable|string',
             'style' => 'nullable|array',
             'settings' => 'nullable|array',
+            'settings.profile_image' => 'nullable|string',
             'is_active' => 'boolean',
             'published_at' => 'nullable|date',
         ];

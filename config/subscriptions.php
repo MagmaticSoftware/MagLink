@@ -31,16 +31,18 @@ return [
             'name' => 'Free',
             'description' => 'Piano gratuito per iniziare',
             'features' => [
-                'Fino a 10 link brevi',
-                '5 QR Code statici',
-                '1 Landing page',
+                'Fino a 5 link brevi',
+                '5 QR Code (1 dinamico)',
+                '1 Landing page (max 6 blocchi)',
                 'Statistiche base',
                 'Supporto community',
             ],
             'limits' => [
-                'links' => 10,
+                'links' => 5,
                 'qrcodes' => 5,
+                'qrcodes_dynamic' => 1,
                 'pages' => 1,
+                'blocks_per_page' => 6,
             ],
             'monthly' => [
                 'price' => 0, // gratuito

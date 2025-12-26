@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import AppLayout from '@/layouts/AppLayout.vue';
 import { type BreadcrumbItem } from '@/types';
-import { Head, Link } from '@inertiajs/vue3';
+import { Head, Link, router, usePage } from '@inertiajs/vue3';
 import { 
     LucideEdit, 
     LucideTrash2, 
@@ -21,8 +21,11 @@ import { useI18n } from 'vue-i18n';
 import { ref, computed } from 'vue';
 import InputText from '@/components/volt/InputText.vue';
 import Select from '@/components/volt/Select.vue';
+import LimitReachedDialog from '@/components/LimitReachedDialog.vue';
+import PlanSelectionModal from '@/components/PlanSelectionModal.vue';
 
 const { t } = useI18n();
+const page = usePage();
 
 const props = defineProps<{
     pages: any[];
@@ -41,6 +44,26 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
 ];
 
+// Dialog visibility state
+const showLimitDialog = ref(false);
+const showPlanModal = ref(false);
+
+const handleShowPlans = () => {
+    showPlanModal.value = true;
+};
+
+// Handle create click - check limits
+const handleCreateClick = () => {
+    const limits = page.props.billing?.limits;
+    const currentCount = computedStats.value.total;
+    
+    if (limits && currentCount >= limits.pages) {
+        showLimitDialog.value = true;
+    } else {
+        router.visit(route('pages.create'));
+    }
+};
+
 // Search and filter state
 const searchQuery = ref('');
 const sortBy = ref('created_desc');
@@ -58,6 +81,24 @@ const computedStats = computed(() => {
         avgBlocksPerPage: props.pages.length > 0 ? Math.round(totalBlocks / props.pages.length) : 0
     };
 });
+
+// Get limits from billing
+const limits = computed(() => page.props.billing?.limits || {});
+
+// Helper to get limit status (normal, warning, exceeded)
+const getLimitStatus = (current: number, limit: number) => {
+    if (limit === -1) return 'normal'; // unlimited
+    if (current >= limit) return 'exceeded';
+    if (current >= limit - 1) return 'warning';
+    return 'normal';
+};
+
+// Helper to get limit classes
+const getLimitClasses = (status: string) => {
+    if (status === 'exceeded') return 'text-red-700 dark:text-red-400';
+    if (status === 'warning') return 'text-orange-600 dark:text-orange-400';
+    return 'text-surface-900 dark:text-surface-50';
+};
 
 // Sort options
 const sortOptions = [
@@ -146,63 +187,79 @@ const getPublicUrl = (slug: string) => {
                     <p class="text-surface-600 dark:text-surface-400 mt-1">{{ t('pages.subtitle') }}</p>
                 </div>
                 <div>
-                    <Link
-                        :href="route('pages.create')"
+                    <button
+                        @click="handleCreateClick"
                         class="button-primary flex items-center gap-2"
                     >
                         <LucidePlus class="w-4 h-4" /> {{ t('pages.addNew') }}
-                    </Link>
+                    </button>
                 </div>
             </div>
 
             <!-- Statistics Cards -->
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <!-- Total Pages -->
                 <div class="bg-white dark:bg-surface-900 rounded-xl p-6 shadow-sm border border-surface-200 dark:border-surface-800">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-sm font-medium text-surface-600 dark:text-surface-400">{{ t('pages.stats.totalPages') }}</p>
-                            <p class="text-3xl font-bold text-surface-900 dark:text-surface-50 mt-2">{{ computedStats.total }}</p>
-                        </div>
+                    <div class="flex items-center justify-between mb-2">
+                        <p class="text-sm font-medium text-surface-600 dark:text-surface-400">{{ t('pages.stats.totalPages') }}</p>
                         <div class="p-3 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
                             <LucideFileText :size="24" class="text-blue-600 dark:text-blue-400" />
                         </div>
                     </div>
+                    <p 
+                        :class="['text-3xl font-bold mt-2', getLimitClasses(getLimitStatus(computedStats.total, limits.pages || -1))]"
+                    >
+                        {{ computedStats.total }}{{ limits.pages > 0 ? ` / ${limits.pages}` : '' }}
+                    </p>
+                    <p 
+                        v-if="getLimitStatus(computedStats.total, limits.pages || -1) === 'exceeded'"
+                        class="text-xs text-red-700 dark:text-red-400 mt-1"
+                    >
+                        Limite raggiunto per il piano free
+                    </p>
                 </div>
 
+                <!-- Published Pages -->
                 <div class="bg-white dark:bg-surface-900 rounded-xl p-6 shadow-sm border border-surface-200 dark:border-surface-800">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-sm font-medium text-surface-600 dark:text-surface-400">{{ t('pages.stats.published') }}</p>
-                            <p class="text-3xl font-bold text-surface-900 dark:text-surface-50 mt-2">{{ computedStats.published }}</p>
-                        </div>
+                    <div class="flex items-center justify-between mb-2">
+                        <p class="text-sm font-medium text-surface-600 dark:text-surface-400">{{ t('pages.stats.published') }}</p>
                         <div class="p-3 bg-green-100 dark:bg-green-900/30 rounded-lg">
                             <LucideCheckCircle :size="24" class="text-green-600 dark:text-green-400" />
                         </div>
                     </div>
+                    <p class="text-3xl font-bold text-surface-900 dark:text-surface-50 mt-2">{{ computedStats.published }}</p>
                 </div>
 
+                <!-- Total Blocks -->
                 <div class="bg-white dark:bg-surface-900 rounded-xl p-6 shadow-sm border border-surface-200 dark:border-surface-800">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-sm font-medium text-surface-600 dark:text-surface-400">{{ t('pages.stats.totalBlocks') }}</p>
-                            <p class="text-3xl font-bold text-surface-900 dark:text-surface-50 mt-2">{{ computedStats.totalBlocks }}</p>
-                        </div>
+                    <div class="flex items-center justify-between mb-2">
+                        <p class="text-sm font-medium text-surface-600 dark:text-surface-400">{{ t('pages.stats.totalBlocks') }}</p>
                         <div class="p-3 bg-purple-100 dark:bg-purple-900/30 rounded-lg">
                             <LucideLayout :size="24" class="text-purple-600 dark:text-purple-400" />
                         </div>
                     </div>
+                    <p 
+                        :class="['text-3xl font-bold mt-2', getLimitClasses(getLimitStatus(computedStats.totalBlocks, limits.blocks_per_page || -1))]"
+                    >
+                        {{ computedStats.totalBlocks }}{{ limits.blocks_per_page > 0 ? ` / ${limits.blocks_per_page * computedStats.total}` : '' }}
+                    </p>
+                    <p 
+                        v-if="getLimitStatus(computedStats.totalBlocks, limits.blocks_per_page * computedStats.total || -1) === 'exceeded'"
+                        class="text-xs text-red-700 dark:text-red-400 mt-1"
+                    >
+                        Limite raggiunto per il piano free
+                    </p>
                 </div>
 
+                <!-- Average Blocks Per Page -->
                 <div class="bg-white dark:bg-surface-900 rounded-xl p-6 shadow-sm border border-surface-200 dark:border-surface-800">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-sm font-medium text-surface-600 dark:text-surface-400">{{ t('pages.stats.avgBlocks') }}</p>
-                            <p class="text-3xl font-bold text-surface-900 dark:text-surface-50 mt-2">{{ computedStats.avgBlocksPerPage }}</p>
-                        </div>
+                    <div class="flex items-center justify-between mb-2">
+                        <p class="text-sm font-medium text-surface-600 dark:text-surface-400">{{ t('pages.stats.avgBlocks') }}</p>
                         <div class="p-3 bg-orange-100 dark:bg-orange-900/30 rounded-lg">
                             <LucideTrendingUp :size="24" class="text-orange-600 dark:text-orange-400" />
                         </div>
                     </div>
+                    <p class="text-3xl font-bold text-surface-900 dark:text-surface-50 mt-2">{{ computedStats.avgBlocksPerPage }}</p>
                 </div>
             </div>
 
@@ -381,5 +438,21 @@ const getPublicUrl = (slug: string) => {
                 </div>
             </div>
         </div>
+
+        <!-- Limit Reached Dialog -->
+        <LimitReachedDialog
+            v-model:visible="showLimitDialog"
+            type="pages"
+            @show-plans="handleShowPlans"
+        />
+
+        <PlanSelectionModal
+            v-model:visible="showPlanModal"
+            :plans="page.props.plans || {}"
+            :is-new-user="page.props.billing?.isNewUser || false"
+            :has-active-trial="page.props.billing?.hasActiveTrial || false"
+            :can-start-trial="page.props.billing?.canStartTrial || false"
+            :is-subscribed="page.props.billing?.isSubscribed || false"
+        />
     </AppLayout>
 </template>

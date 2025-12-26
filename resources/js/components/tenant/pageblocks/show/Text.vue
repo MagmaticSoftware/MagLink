@@ -20,13 +20,13 @@ const formattedContent = computed(() => {
 </script>
 
 <template>
-  <div class="h-full w-full flex flex-col justify-between p-0">
+  <div class="h-full w-full flex flex-col justify-between px-6 py-4">
     <div class="flex-1 overflow-y-auto">
-      <h3 v-if="title" class="text-lg font-semibold text-slate-900 dark:text-slate-50 mb-3">
+      <h3 v-if="title" class="text-base font-semibold text-slate-900 dark:text-slate-50 mb-2">
         {{ title }}
       </h3>
       <div 
-        class="text-slate-700 dark:text-slate-300 leading-relaxed prose prose-sm dark:prose-invert max-w-none"
+        class="text-slate-700 dark:text-slate-300 leading-relaxed text-base prose prose-sm dark:prose-invert max-w-none"
         v-html="formattedContent"
       />
     </div>

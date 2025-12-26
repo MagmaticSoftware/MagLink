@@ -9,6 +9,9 @@ import TextBlock from '@/components/tenant/pageblocks/show/Text.vue';
 import ImageBlock from '@/components/tenant/pageblocks/show/Image.vue';
 import DefaultBlock from '@/components/tenant/pageblocks/show/Default.vue';
 import VideoBlock from '@/components/tenant/pageblocks/show/Video.vue';
+import TitleBlock from '@/components/tenant/pageblocks/show/Title.vue';
+import SeparatorBlock from '@/components/tenant/pageblocks/show/Separator.vue';
+import MapBlock from '@/components/tenant/pageblocks/show/Map.vue';
 import { GridLayout, GridItem } from 'grid-layout-plus';
 import { 
     LucideEye, 
@@ -28,6 +31,9 @@ const blockComponents: Record<string, any> = {
     text: TextBlock,
     image: ImageBlock,
     video: VideoBlock,
+    title: TitleBlock,
+    separator: SeparatorBlock,
+    map: MapBlock,
 };
 
 const props = defineProps<{
@@ -153,7 +159,7 @@ const pageStats = computed(() => ({
                                 {{ t('pages.draft') }}
                             </span>
                         </div>
-                        <p v-if="props.page.description" class="text-surface-600 dark:text-surface-400 mt-2">
+                        <p v-if="props.page.description" class="text-surface-600 dark:text-surface-400 mt-2 whitespace-pre-line">
                             {{ props.page.description }}
                         </p>
                         
@@ -211,7 +217,7 @@ const pageStats = computed(() => ({
                     <div v-if="layout.length > 0" class="min-h-[600px]">
                         <GridLayout 
                             v-model:layout="layout" 
-                            :col-num="2" 
+                            :col-num="4" 
                             :row-height="120" 
                             :is-draggable="false"
                             :is-resizable="false"
@@ -230,7 +236,12 @@ const pageStats = computed(() => ({
                                 :h="item.h"
                                 :i="item.i"
                                 :static="true"
-                                class="bg-gradient-to-br from-surface-50 to-surface-100 dark:from-surface-800 dark:to-surface-900 p-6 overflow-auto shadow-md rounded-xl border border-surface-200 dark:border-surface-700 transition-all duration-200"
+                                :class="[
+                                    'overflow-auto transition-all duration-200',
+                                    item.type === 'title' || item.type === 'separator'
+                                        ? ''
+                                        : 'bg-gradient-to-br from-surface-50 to-surface-100 dark:from-surface-800 dark:to-surface-900 p-6 shadow-md rounded-xl border border-surface-200 dark:border-surface-700'
+                                ]"
                             >
                                 <component 
                                     :is="blockComponents[item.type] ?? DefaultBlock" 

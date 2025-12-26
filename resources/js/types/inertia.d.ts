@@ -39,7 +39,15 @@ export interface PageProps {
         isSubscribed: boolean;
         onFreePlan: boolean;
         currentPlanName: string | null;
+        currentPlanKey: string | null;
         hasAccess: boolean;
+        limits: {
+            links: number;
+            qrcodes: number;
+            qrcodes_dynamic?: number;
+            pages: number;
+            blocks_per_page?: number;
+        };
     };
     plans?: Record<string, any>;
     [key: string]: any;

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreQrCodeRequest;
 use App\Http\Requests\UpdateQrCodeRequest;
 use App\Models\QrCode;
+use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 use Illuminate\Support\Str;
 
@@ -26,10 +27,32 @@ class QrCodeController extends Controller
      */
     public function create()
     {
+        $user = Auth::user();
+        
+        // Verifica se l'utente può creare nuovi QR code
+        if (!$user->canCreateQrCode()) {
+            $limits = $user->getPlanLimits();
+            $qrcodeLimit = $limits['qrcodes'] ?? 0;
+            
+            return redirect()->route('qrcodes.index')
+                ->with('error', "Hai raggiunto il limite di {$qrcodeLimit} QR Code del piano gratuito. Effettua l'upgrade per continuare.")
+                ->with('showUpgradeBanner', true);
+        }
+        
+        // Conta i QR code dinamici esistenti
+        $dynamicCount = QrCode::where('user_id', $user->id)
+            ->where('type', 'dynamic')
+            ->count();
+        
+        // Conta tutti i QR code
+        $totalCount = QrCode::where('user_id', $user->id)->count();
+        
         $slug = $this->generateRandomSlug();
         return Inertia::render('tenant/qrcodes/Create', [
             'slug' => $slug,
             'shortUrl' => config('app.short_url'),
+            'dynamicQrCodeCount' => $dynamicCount,
+            'totalQrCodeCount' => $totalCount,
         ]);
     }
 
@@ -38,6 +61,26 @@ class QrCodeController extends Controller
      */
     public function store(StoreQrCodeRequest $request)
     {
+        $user = $request->user();
+        $type = $request->input('type', 'static');
+        
+        // Verifica se l'utente può creare nuovi QR code
+        if (!$user->canCreateQrCode($type)) {
+            $limits = $user->getPlanLimits();
+            
+            if ($type === 'dynamic') {
+                $dynamicLimit = $limits['qrcodes_dynamic'] ?? 0;
+                return redirect()->back()
+                    ->with('error', "Hai raggiunto il limite di {$dynamicLimit} QR Code dinamici del piano gratuito. Effettua l'upgrade per continuare.")
+                    ->with('showUpgradeBanner', true);
+            } else {
+                $qrcodeLimit = $limits['qrcodes'] ?? 0;
+                return redirect()->back()
+                    ->with('error', "Hai raggiunto il limite di {$qrcodeLimit} QR Code del piano gratuito. Effettua l'upgrade per continuare.")
+                    ->with('showUpgradeBanner', true);
+            }
+        }
+        
         $validated = $request->validated();
         $qrcode = QrCode::create($validated);
         return redirect()->route('qrcodes.index')->with('success', 'QR Code created successfully.');

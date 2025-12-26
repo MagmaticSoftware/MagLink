@@ -4,6 +4,7 @@ import AppLayout from '@/layouts/AppLayout.vue';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link } from '@inertiajs/vue3';
 import { Link2, QrCode, BarChart2, Zap, Gem, Plus, Box, TrendingUp, FileText } from 'lucide-vue-next';
+import PlanLimitsCard from '@/components/PlanLimitsCard.vue';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -125,40 +126,7 @@ const formatNumber = (num: number) => {
                         </div>
                     </div>
                     <!-- Stato piano -->
-                    <div
-                        class="rounded-xl bg-white dark:bg-gray-900 shadow-sm p-7 flex flex-col gap-4 border border-gray-200 dark:border-gray-800">
-                        <div class="flex items-center gap-2 font-semibold mb-3 text-lg">
-                            <Gem class="w-5 h-5 text-yellow-500" /> Stato piano
-                        </div>
-                        <div class="text-base mb-2 text-gray-700 dark:text-gray-300 space-y-2">
-                            <div class="flex items-center justify-between">
-                                <span>Piano attuale:</span>
-                                <strong class="text-green-600 dark:text-green-400">Free</strong>
-                            </div>
-                            <div class="space-y-1">
-                                <div class="flex items-center justify-between text-sm">
-                                    <span>Link creati:</span>
-                                    <span class="font-semibold">{{ stats.links_count }} / ∞</span>
-                                </div>
-                                <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
-                                    <div class="bg-blue-500 h-2 rounded-full" :style="{ width: Math.min((stats.links_count / 100) * 100, 100) + '%' }"></div>
-                                </div>
-                            </div>
-                            <div class="space-y-1">
-                                <div class="flex items-center justify-between text-sm">
-                                    <span>QR Code generati:</span>
-                                    <span class="font-semibold">{{ stats.qrcodes_count }} / ∞</span>
-                                </div>
-                                <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
-                                    <div class="bg-green-500 h-2 rounded-full" :style="{ width: Math.min((stats.qrcodes_count / 100) * 100, 100) + '%' }"></div>
-                                </div>
-                            </div>
-                        </div>
-                        <button
-                            class="rounded-full border border-yellow-400 dark:border-yellow-400 text-yellow-700 dark:text-yellow-300 bg-yellow-50 dark:bg-yellow-900 px-5 py-2 font-semibold shadow hover:bg-yellow-100 dark:hover:bg-yellow-800 transition w-full flex items-center justify-center gap-2">
-                            <Zap class="w-4 h-4" /> Passa al piano PRO
-                        </button>
-                    </div>
+                    <PlanLimitsCard :stats="stats" />
                     <!-- Riepilogo attività -->
                     <div
                         class="rounded-xl bg-white dark:bg-gray-900 shadow-sm p-7 flex flex-col gap-4 border border-gray-200 dark:border-gray-800">

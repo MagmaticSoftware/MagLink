@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { LucideAlertCircle } from 'lucide-vue-next';
 
-const props = defineProps<{
+defineProps<{
   type: string;
   title?: string;
   content: any;

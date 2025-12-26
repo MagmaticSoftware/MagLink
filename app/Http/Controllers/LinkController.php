@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreLinkRequest;
 use App\Http\Requests\UpdateLinkRequest;
 use App\Models\Link;
+use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 use Illuminate\Support\Str;
 
@@ -27,10 +28,25 @@ class LinkController extends Controller
      */
     public function create()
     {
+        $user = Auth::user();
+        
+        // Verifica se l'utente può creare nuovi link
+        if (!$user->canCreateLink()) {
+            $limits = $user->getPlanLimits();
+            $linkLimit = $limits['links'] ?? 0;
+            
+            return redirect()->route('links.index')
+                ->with('error', "Hai raggiunto il limite di {$linkLimit} link del piano gratuito. Effettua l'upgrade per continuare.")
+                ->with('showUpgradeBanner', true);
+        }
+        
+        $linkCount = Link::where('user_id', $user->id)->count();
+        
         $slug = $this->generateRandomSlug();
         return Inertia::render('tenant/links/Create', [
             'slug' => $slug,
             'shortUrl' => config('app.short_url'),
+            'linkCount' => $linkCount,
         ]);
     }
 
@@ -39,6 +55,18 @@ class LinkController extends Controller
      */
     public function store(StoreLinkRequest $request)
     {
+        $user = $request->user();
+        
+        // Verifica se l'utente può creare nuovi link
+        if (!$user->canCreateLink()) {
+            $limits = $user->getPlanLimits();
+            $linkLimit = $limits['links'] ?? 0;
+            
+            return redirect()->back()
+                ->with('error', "Hai raggiunto il limite di {$linkLimit} link del piano gratuito. Effettua l'upgrade per continuare.")
+                ->with('showUpgradeBanner', true);
+        }
+        
         $validate = $request->validated();
         $link = Link::create($validate);
         return redirect()->route('links.index')->with('success', 'Link created successfully.');

@@ -88,7 +88,7 @@ const deleteBlock = () => {
 </script>
 
 <template>
-  <div class="h-full w-full flex flex-col p-0">
+  <div class="h-full w-full flex flex-col p-2">
     <!-- Header with actions -->
     <div class="flex items-center justify-between mb-3 pb-2 border-b border-surface-200 dark:border-surface-700">
       <div class="flex items-center gap-2">

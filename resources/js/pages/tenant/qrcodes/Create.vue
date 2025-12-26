@@ -21,6 +21,7 @@ import InputText from '@/components/volt/InputText.vue';
 import Button from '@/components/volt/Button.vue';
 import Select from '@/components/volt/Select.vue';
 import Textarea from '@/components/volt/Textarea.vue';
+import LimitWarning from '@/components/LimitWarning.vue';
 import { useI18n } from 'vue-i18n';
 import { type PageProps } from '@/types/inertia';
 import { ref, computed } from 'vue';
@@ -31,6 +32,8 @@ const page = usePage<PageProps>();
 const props = defineProps<{
     slug: string;
     shortUrl: string;
+    dynamicQrCodeCount: number;
+    totalQrCodeCount: number;
 }>();
 
 const form = useForm({
@@ -119,6 +122,9 @@ const submitForm = () => {
 
     <AppLayout :breadcrumbs="breadcrumbs">
         <div class="flex h-full flex-1 flex-col gap-6 p-6">
+            <!-- Limit Warning -->
+            <LimitWarning type="qrcodes" :currentCount="totalQrCodeCount" />
+            
             <!-- Header -->
             <div class="flex items-center justify-between">
                 <div class="flex items-center gap-4">
@@ -242,6 +248,14 @@ const submitForm = () => {
 
                 <!-- Right Column - Settings -->
                 <div class="lg:col-span-1 space-y-6">
+                    <!-- Dynamic QR Code Limit Warning -->
+                    <LimitWarning 
+                        v-if="form.type === 'dynamic'"
+                        type="qrcodes" 
+                        :currentCount="dynamicQrCodeCount"
+                        qrcodeType="dynamic"
+                    />
+                    
                     <!-- Settings -->
                     <div class="bg-white dark:bg-surface-900 rounded-xl p-6 shadow-sm border border-surface-200 dark:border-surface-800">
                         <h2 class="text-lg font-semibold text-surface-900 dark:text-surface-50 mb-4 flex items-center gap-2">

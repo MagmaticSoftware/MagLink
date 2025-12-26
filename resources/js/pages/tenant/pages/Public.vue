@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { reactive } from 'vue';
+import { computed } from 'vue';
 import { Head } from '@inertiajs/vue3';
 import { useDark, useToggle } from '@vueuse/core';
 import { LucideSun, LucideMoon } from 'lucide-vue-next';
@@ -9,7 +9,9 @@ import TextBlock from '@/components/tenant/pageblocks/show/Text.vue';
 import ImageBlock from '@/components/tenant/pageblocks/show/Image.vue';
 import VideoBlock from '@/components/tenant/pageblocks/show/Video.vue';
 import DefaultBlock from '@/components/tenant/pageblocks/show/Default.vue';
-import { GridLayout, GridItem } from 'grid-layout-plus';
+import TitleBlock from '@/components/tenant/pageblocks/show/Title.vue';
+import SeparatorBlock from '@/components/tenant/pageblocks/show/Separator.vue';
+import MapBlock from '@/components/tenant/pageblocks/show/Map.vue';
 
 const isDark = useDark();
 const toggleDark = useToggle(isDark);
@@ -20,6 +22,9 @@ const blockComponents: Record<string, any> = {
     text: TextBlock,
     image: ImageBlock,
     video: VideoBlock,
+    title: TitleBlock,
+    separator: SeparatorBlock,
+    map: MapBlock,
 };
 
 const props = defineProps<{
@@ -55,58 +60,86 @@ const props = defineProps<{
 // Get theme color from page style
 const themeColor = props.page.style?.primaryColor || 'blue';
 
-// Generate gradient classes based on theme color
-const getGradientClasses = (color: string) => {
-    const gradients: Record<string, { light: string; dark: string }> = {
-        blue: { light: 'from-blue-600 to-indigo-600', dark: 'from-blue-400 to-indigo-400' },
-        indigo: { light: 'from-indigo-600 to-purple-600', dark: 'from-indigo-400 to-purple-400' },
-        purple: { light: 'from-purple-600 to-pink-600', dark: 'from-purple-400 to-pink-400' },
-        pink: { light: 'from-pink-600 to-rose-600', dark: 'from-pink-400 to-rose-400' },
-        red: { light: 'from-red-600 to-orange-600', dark: 'from-red-400 to-orange-400' },
-        orange: { light: 'from-orange-600 to-amber-600', dark: 'from-orange-400 to-amber-400' },
-        amber: { light: 'from-amber-600 to-yellow-600', dark: 'from-amber-400 to-yellow-400' },
-        yellow: { light: 'from-yellow-600 to-lime-600', dark: 'from-yellow-400 to-lime-400' },
-        lime: { light: 'from-lime-600 to-green-600', dark: 'from-lime-400 to-green-400' },
-        green: { light: 'from-green-600 to-emerald-600', dark: 'from-green-400 to-emerald-400' },
-        emerald: { light: 'from-emerald-600 to-teal-600', dark: 'from-emerald-400 to-teal-400' },
-        teal: { light: 'from-teal-600 to-cyan-600', dark: 'from-teal-400 to-cyan-400' },
-        cyan: { light: 'from-cyan-600 to-sky-600', dark: 'from-cyan-400 to-sky-400' },
-        sky: { light: 'from-sky-600 to-blue-600', dark: 'from-sky-400 to-blue-400' },
+// Generate color classes based on theme color
+const getColorClasses = (color: string) => {
+    const colors: Record<string, { light: string; dark: string }> = {
+        blue: { light: 'text-blue-600', dark: 'text-blue-400' },
+        indigo: { light: 'text-indigo-600', dark: 'text-indigo-400' },
+        purple: { light: 'text-purple-600', dark: 'text-purple-400' },
+        pink: { light: 'text-pink-600', dark: 'text-pink-400' },
+        red: { light: 'text-red-600', dark: 'text-red-400' },
+        orange: { light: 'text-orange-600', dark: 'text-orange-400' },
+        amber: { light: 'text-amber-600', dark: 'text-amber-400' },
+        yellow: { light: 'text-yellow-600', dark: 'text-yellow-400' },
+        lime: { light: 'text-lime-600', dark: 'text-lime-400' },
+        green: { light: 'text-green-600', dark: 'text-green-400' },
+        emerald: { light: 'text-emerald-600', dark: 'text-emerald-400' },
+        teal: { light: 'text-teal-600', dark: 'text-teal-400' },
+        cyan: { light: 'text-cyan-600', dark: 'text-cyan-400' },
+        sky: { light: 'text-sky-600', dark: 'text-sky-400' },
     };
-    return gradients[color] || gradients.blue;
+    return colors[color] || colors.blue;
 };
 
-const gradientClasses = getGradientClasses(themeColor);
+const colorClasses = getColorClasses(themeColor);
 
-// Prepare layout for grid - only active blocks
-const layout = reactive(
-    Array.isArray(props.page.blocks)
-        ? props.page.blocks
-            .filter(block => block.is_active)
-            .map((block, index) => {
-                const x = block.position?.x ?? (index % 2);
-                const y = block.position?.y ?? Math.floor(index / 2);
-                return {
-                    x,
-                    y,
-                    w: block.size?.width ?? 1,
-                    h: block.size?.height ?? 2,
-                    i: String(block.id),
-                    id: block.id,
-                    page_id: block.page_id,
-                    type: block.type,
-                    title: block.title,
-                    content: block.content,
-                    position: { x, y },
-                    size: block.size ?? { width: 1, height: 2 },
-                    style: block.style,
-                    settings: block.settings,
-                    is_active: block.is_active,
-                    static: true
-                };
-            })
-        : []
-);
+// Get active blocks with their positions
+const blocks = computed(() => {
+    if (!Array.isArray(props.page.blocks)) return [];
+    
+    return props.page.blocks
+        .filter(block => block.is_active)
+        .map(block => {
+            const x = block.position?.x ?? 0;
+            const y = block.position?.y ?? 0;
+            const width = block.size?.width ?? 1;
+            const height = block.size?.height ?? 2;
+            
+            return {
+                ...block,
+                position: { x, y },
+                size: { width, height }
+            };
+        });
+});
+
+// Calculate max rows needed for the grid
+const maxRows = computed(() => {
+    if (blocks.value.length === 0) return 0;
+    
+    return Math.max(...blocks.value.map(block => {
+        const height = (block.type === 'title' || block.type === 'separator') ? 1 : block.size.height;
+        return block.position.y + height;
+    }));
+});
+
+// Helper to get grid positioning styles
+const getGridPosition = (block: any) => {
+    const x = block.position.x;
+    const y = block.position.y;
+    const width = block.size.width;
+    const height = (block.type === 'title' || block.type === 'separator') ? 1 : block.size.height;
+    
+    return {
+        gridColumnStart: x + 1, // CSS Grid is 1-based
+        gridColumnEnd: x + 1 + width,
+        gridRowStart: y + 1,
+        gridRowEnd: y + 1 + height
+    };
+};
+
+// Helper to get block height class
+const getBlockHeight = (block: any) => {
+    // All blocks use size height (80px base unit)
+    const heightMap: Record<number, string> = {
+        1: 'h-[80px]',
+        2: 'h-[192px]', // 80*2 + 32 (gap)
+        3: 'h-[304px]', // 80*3 + 32*2
+        4: 'h-[416px]'  // 80*4 + 32*3
+    };
+    
+    return heightMap[block.size.height] || heightMap[2];
+};
 </script>
 
 <template>
@@ -138,58 +171,65 @@ const layout = reactive(
 
         <!-- Header Section -->
         <div class="flex-shrink-0 px-4 pt-12 pb-6 lg:pt-16 lg:pb-8">
-            <div class="max-w-6xl mx-auto text-center">
-                <h1 :class="[
-                    'text-4xl lg:text-6xl font-bold bg-gradient-to-r bg-clip-text text-transparent mb-4',
-                    gradientClasses.light,
-                    'dark:' + gradientClasses.dark
-                ]">
-                    {{ props.page.title }}
-                </h1>
-                <p v-if="props.page.description" class="text-lg text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
-                    {{ props.page.description }}
-                </p>
+            <!-- Header with Image: Left Aligned -->
+            <div class="max-w-6xl mx-auto">
+                <div class="flex items-center gap-6">
+                    <img 
+                        v-if="props.page.settings?.profile_image"
+                        :src="props.page.settings.profile_image"
+                        alt="Profile"
+                        class="w-46 h-46 lg:w-46 lg:h-46 rounded-full object-cover shadow-xl shrink-0"
+                    />
+                    <div class="flex-1 text-left px-6">
+                        <h1 :class="[
+                            'text-4xl lg:text-6xl font-bold mb-2',
+                            colorClasses.light,
+                            'dark:' + colorClasses.dark
+                        ]">
+                            {{ props.page.title }}
+                        </h1>
+                        <p v-if="props.page.description" class="text-xl text-slate-700 dark:text-slate-400 whitespace-pre-line">
+                            {{ props.page.description }}
+                        </p>
+                    </div>
+                </div>
             </div>
         </div>
 
         <!-- Content Section (scrollable) -->
         <div class="flex-1 overflow-y-auto px-4 pb-6">
             <div class="max-w-6xl mx-auto">
-                <div v-if="layout.length > 0" class="bento-container">
-                    <GridLayout 
-                        v-model:layout="layout" 
-                        :col-num="2" 
-                        :row-height="150" 
-                        :is-draggable="false"
-                        :is-resizable="false"
-                        :vertical-compact="false"
-                        :prevent-collision="true"
-                        :use-css-transforms="true"
-                        :margin="[20, 20]"
-                        class="w-full"
+                <div 
+                    v-if="blocks.length > 0" 
+                    class="grid grid-cols-4 gap-8 w-full"
+                    :style="{ gridTemplateRows: `repeat(${maxRows}, minmax(0, 1fr))` }"
+                >
+                    <div 
+                        v-for="block in blocks" 
+                        :key="block.id"
+                        :class="getBlockHeight(block)"
+                        :style="getGridPosition(block)"
                     >
-                        <GridItem 
-                            v-for="item in layout" 
-                            :key="item.i" 
-                            :x="item.x" 
-                            :y="item.y" 
-                            :w="item.w" 
-                            :h="item.h"
-                            :i="item.i"
-                            :static="true"
-                            class="bento-item"
+                        <div 
+                            :class="[
+                                'h-full w-full',
+                                block.type === 'title' || block.type === 'separator' 
+                                    ? '' 
+                                    : 'bento-card overflow-auto',
+                                block.type === 'map' || block.type === 'video' || block.type === 'image' || block.type === 'text' || block.type === 'title' || block.type === 'separator'
+                                    ? 'p-0' 
+                                    : 'p-6'
+                            ]"
                         >
-                            <div class="bento-card h-full w-full p-6 overflow-auto">
-                                <component 
-                                    :is="blockComponents[item.type] ?? DefaultBlock" 
-                                    :id="item.id"
-                                    :title="item.title" 
-                                    :content="item.content"
-                                    :position="item.position"
-                                />
-                            </div>
-                        </GridItem>
-                    </GridLayout>
+                            <component 
+                                :is="blockComponents[block.type] ?? DefaultBlock" 
+                                :id="block.id"
+                                :title="block.title" 
+                                :content="block.content"
+                                :position="block.position"
+                            />
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Empty State -->
@@ -214,9 +254,9 @@ const layout = reactive(
             <div class="max-w-6xl mx-auto text-center">
                 <p class="text-sm text-slate-500 dark:text-slate-400">
                     Powered by <span :class="[
-                        'font-semibold bg-gradient-to-r bg-clip-text text-transparent',
-                        gradientClasses.light,
-                        'dark:' + gradientClasses.dark
+                        'font-semibold',
+                        colorClasses.light,
+                        'dark:' + colorClasses.dark
                     ]">MagLink</span>
                 </p>
             </div>

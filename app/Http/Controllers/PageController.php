@@ -5,6 +5,9 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StorePageRequest;
 use App\Http\Requests\UpdatePageRequest;
 use App\Models\Page;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Http\Request;
 use Inertia\Inertia;
 
 class PageController extends Controller
@@ -35,7 +38,23 @@ class PageController extends Controller
      */
     public function create()
     {
-        return Inertia::render('tenant/pages/Create');
+        $user = Auth::user();
+        
+        // Verifica se l'utente può creare nuove pagine
+        if (!$user->canCreatePage()) {
+            $limits = $user->getPlanLimits();
+            $pageLimit = $limits['pages'] ?? 0;
+            
+            return redirect()->route('pages.index')
+                ->with('error', "Hai raggiunto il limite di {$pageLimit} pagina del piano gratuito. Effettua l'upgrade per continuare.")
+                ->with('showUpgradeBanner', true);
+        }
+        
+        $pageCount = Page::where('user_id', $user->id)->count();
+        
+        return Inertia::render('tenant/pages/Create', [
+            'pageCount' => $pageCount,
+        ]);
     }
 
     /**
@@ -43,6 +62,18 @@ class PageController extends Controller
      */
     public function store(StorePageRequest $request)
     {
+        $user = $request->user();
+        
+        // Verifica se l'utente può creare nuove pagine
+        if (!$user->canCreatePage()) {
+            $limits = $user->getPlanLimits();
+            $pageLimit = $limits['pages'] ?? 0;
+            
+            return redirect()->back()
+                ->with('error', "Hai raggiunto il limite di {$pageLimit} pagina del piano gratuito. Effettua l'upgrade per continuare.")
+                ->with('showUpgradeBanner', true);
+        }
+        
         $validated = $request->validated();
         $page = Page::create($validated);
         return redirect()->route('pages.index')->with('success', 'Pagina creata con successo.');
@@ -66,8 +97,11 @@ class PageController extends Controller
      */
     public function showPublic(Page $page)
     {
+        // Load page with blocks and ensure settings is included
+        $page->load('blocks');
+        
         return Inertia::render('tenant/pages/Public', [
-            'page' => $page->load('blocks'),
+            'page' => $page,
         ]);
     }
 
@@ -99,5 +133,51 @@ class PageController extends Controller
     {
         $page->delete();
         return redirect()->route('pages.index');
+    }
+
+    /**
+     * Upload profile image for a page.
+     */
+    public function uploadProfileImage(Request $request, Page $page)
+    {
+        $request->validate([
+            'profile_image' => 'required|image|max:2048', // 2MB max
+        ]);
+
+        // Delete old profile image if exists
+        if ($page->settings && isset($page->settings['profile_image'])) {
+            $oldPath = str_replace('/storage/', '', $page->settings['profile_image']);
+            Storage::disk('public')->delete($oldPath);
+        }
+
+        // Store the new image in a folder based on page ID
+        $path = $request->file('profile_image')->store("pages/{$page->id}", 'public');
+        $url = Storage::url($path);
+
+        // Update page settings with new image URL
+        $settings = $page->settings ?? [];
+        $settings['profile_image'] = $url;
+        $page->update(['settings' => $settings]);
+
+        return response()->json(['url' => $url]);
+    }
+
+    /**
+     * Delete profile image for a page.
+     */
+    public function deleteProfileImage(Page $page)
+    {
+        // Delete profile image file if exists
+        if ($page->settings && isset($page->settings['profile_image'])) {
+            $oldPath = str_replace('/storage/', '', $page->settings['profile_image']);
+            Storage::disk('public')->delete($oldPath);
+            
+            // Update page settings to remove image URL
+            $settings = $page->settings;
+            unset($settings['profile_image']);
+            $page->update(['settings' => $settings]);
+        }
+
+        return response()->json(['success' => true]);
     }
 }

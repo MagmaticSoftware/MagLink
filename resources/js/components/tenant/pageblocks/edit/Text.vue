@@ -87,7 +87,7 @@ const deleteBlock = () => {
 </script>
 
 <template>
-  <div class="h-full w-full flex flex-col p-0">
+  <div class="h-full w-full flex flex-col p-2">
     <!-- Header with actions -->
     <div class="flex items-center justify-between mb-3 pb-2 border-b border-surface-200 dark:border-surface-700">
       <div class="flex items-center gap-2">
@@ -120,11 +120,11 @@ const deleteBlock = () => {
     <div class="flex-1 flex flex-col gap-3 overflow-y-auto">
       <div>
         <label class="text-xs font-medium text-surface-700 dark:text-surface-300 block mb-1">
-          Title (optional)
+          Titolo (opzionale)
         </label>
         <InputText 
           v-model="localTitle" 
-          placeholder="Block title..."
+          placeholder="Titolo del blocco..."
           @blur="saveBlock"
           class="w-full text-sm"
         />

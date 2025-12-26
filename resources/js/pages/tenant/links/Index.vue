@@ -19,10 +19,22 @@ import {
 } from 'lucide-vue-next';
 import { useI18n } from 'vue-i18n';
 import { ref, computed } from 'vue';
+import { router, usePage } from '@inertiajs/vue3';
 import InputText from '@/components/volt/InputText.vue';
 import Select from '@/components/volt/Select.vue';
+import LimitReachedDialog from '@/components/LimitReachedDialog.vue';
+import PlanSelectionModal from '@/components/PlanSelectionModal.vue';
+import type { PageProps } from '@/types/inertia';
 
 const { t } = useI18n();
+const page = usePage<PageProps>();
+
+const showLimitDialog = ref(false);
+const showPlanModal = ref(false);
+
+const handleShowPlans = () => {
+    showPlanModal.value = true;
+};
 
 const props = defineProps<{
     links: any[];
@@ -59,6 +71,24 @@ const computedStats = computed(() => {
         avgClicksPerLink: props.links.length > 0 ? Math.round(totalClicks / props.links.length) : 0
     };
 });
+
+// Get limits from billing
+const limits = computed(() => page.props.billing?.limits || {});
+
+// Helper to get limit status (normal, warning, exceeded)
+const getLimitStatus = (current: number, limit: number) => {
+    if (limit === -1) return 'normal'; // unlimited
+    if (current >= limit) return 'exceeded';
+    if (current >= limit - 1) return 'warning';
+    return 'normal';
+};
+
+// Helper to get limit classes
+const getLimitClasses = (status: string) => {
+    if (status === 'exceeded') return 'text-red-700 dark:text-red-400';
+    if (status === 'warning') return 'text-orange-600 dark:text-orange-400';
+    return 'text-surface-900 dark:text-surface-50';
+};
 
 // Sort options
 const sortOptions = [
@@ -125,6 +155,21 @@ const copyToClipboard = (slug: string) => {
     // TODO: Add toast notification
 };
 
+// Handle create button click
+const handleCreateClick = () => {
+    const limits = page.props.billing?.limits;
+    const linkLimit = limits?.links || 0;
+    const currentCount = computedStats.value.total;
+    
+    // Se il limite è -1 (illimitato) o non raggiunto, naviga alla pagina di creazione
+    if (linkLimit === -1 || currentCount < linkLimit) {
+        router.visit(route('links.create'));
+    } else {
+        // Altrimenti mostra la dialog
+        showLimitDialog.value = true;
+    }
+};
+
 // Format date
 const formatDate = (date: string) => {
     return new Date(date).toLocaleDateString(undefined, { 
@@ -138,6 +183,22 @@ const formatDate = (date: string) => {
 <template>
     <Head title="Links" />
 
+    <!-- Limit Reached Dialog -->
+    <LimitReachedDialog
+        v-model:visible="showLimitDialog"
+        type="links"
+        @show-plans="handleShowPlans"
+    />
+
+    <PlanSelectionModal
+        v-model:visible="showPlanModal"
+        :plans="page.props.plans || {}"
+        :is-new-user="page.props.billing?.isNewUser || false"
+        :has-active-trial="page.props.billing?.hasActiveTrial || false"
+        :can-start-trial="page.props.billing?.canStartTrial || false"
+        :is-subscribed="page.props.billing?.isSubscribed || false"
+    />
+
     <AppLayout :breadcrumbs="breadcrumbs">
         <div class="flex h-full flex-1 flex-col gap-6 p-6">
             <!-- Page Header -->
@@ -147,63 +208,69 @@ const formatDate = (date: string) => {
                     <p class="text-surface-600 dark:text-surface-400 mt-1">{{ t('links.subtitle') }}</p>
                 </div>
                 <div>
-                    <Link
-                        :href="route('links.create')"
+                    <button
+                        @click="handleCreateClick"
                         class="button-primary flex items-center gap-2"
                     >
                         <LucidePlus class="w-4 h-4" /> {{ t('links.addNew') }}
-                    </Link>
+                    </button>
                 </div>
             </div>
 
             <!-- Statistics Cards -->
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <!-- Total Links -->
                 <div class="bg-white dark:bg-surface-900 rounded-xl p-6 shadow-sm border border-surface-200 dark:border-surface-800">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-sm font-medium text-surface-600 dark:text-surface-400">{{ t('links.stats.totalLinks') }}</p>
-                            <p class="text-3xl font-bold text-surface-900 dark:text-surface-50 mt-2">{{ computedStats.total }}</p>
-                        </div>
+                    <div class="flex items-center justify-between mb-2">
+                        <p class="text-sm font-medium text-surface-600 dark:text-surface-400">{{ t('links.stats.totalLinks') }}</p>
                         <div class="p-3 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
                             <LucideLink :size="24" class="text-blue-600 dark:text-blue-400" />
                         </div>
                     </div>
+                    <p 
+                        :class="['text-3xl font-bold mt-2', getLimitClasses(getLimitStatus(computedStats.total, limits.links || -1))]"
+                    >
+                        {{ computedStats.total }}{{ limits.links > 0 ? ` / ${limits.links}` : '' }}
+                    </p>
+                    <p 
+                        v-if="getLimitStatus(computedStats.total, limits.links || -1) === 'exceeded'"
+                        class="text-xs text-red-700 dark:text-red-400 mt-1"
+                    >
+                        Limite raggiunto per il piano free
+                    </p>
                 </div>
 
+                <!-- Active Links -->
                 <div class="bg-white dark:bg-surface-900 rounded-xl p-6 shadow-sm border border-surface-200 dark:border-surface-800">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-sm font-medium text-surface-600 dark:text-surface-400">{{ t('links.stats.activeLinks') }}</p>
-                            <p class="text-3xl font-bold text-surface-900 dark:text-surface-50 mt-2">{{ computedStats.active }}</p>
-                        </div>
+                    <div class="flex items-center justify-between mb-2">
+                        <p class="text-sm font-medium text-surface-600 dark:text-surface-400">{{ t('links.stats.activeLinks') }}</p>
                         <div class="p-3 bg-green-100 dark:bg-green-900/30 rounded-lg">
                             <LucideTrendingUp :size="24" class="text-green-600 dark:text-green-400" />
                         </div>
                     </div>
+                    <p class="text-3xl font-bold text-surface-900 dark:text-surface-50 mt-2">{{ computedStats.active }}</p>
                 </div>
 
+                <!-- Total Clicks -->
                 <div class="bg-white dark:bg-surface-900 rounded-xl p-6 shadow-sm border border-surface-200 dark:border-surface-800">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-sm font-medium text-surface-600 dark:text-surface-400">{{ t('links.stats.totalClicks') }}</p>
-                            <p class="text-3xl font-bold text-surface-900 dark:text-surface-50 mt-2">{{ computedStats.totalClicks }}</p>
-                        </div>
+                    <div class="flex items-center justify-between mb-2">
+                        <p class="text-sm font-medium text-surface-600 dark:text-surface-400">{{ t('links.stats.totalClicks') }}</p>
                         <div class="p-3 bg-purple-100 dark:bg-purple-900/30 rounded-lg">
                             <LucideMousePointerClick :size="24" class="text-purple-600 dark:text-purple-400" />
                         </div>
                     </div>
+                    <p class="text-3xl font-bold text-surface-900 dark:text-surface-50 mt-2">{{ computedStats.totalClicks }}</p>
                 </div>
 
+                <!-- Average Clicks -->
                 <div class="bg-white dark:bg-surface-900 rounded-xl p-6 shadow-sm border border-surface-200 dark:border-surface-800">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-sm font-medium text-surface-600 dark:text-surface-400">{{ t('links.stats.avgClicks') }}</p>
-                            <p class="text-3xl font-bold text-surface-900 dark:text-surface-50 mt-2">{{ computedStats.avgClicksPerLink }}</p>
-                        </div>
+                    <div class="flex items-center justify-between mb-2">
+                        <p class="text-sm font-medium text-surface-600 dark:text-surface-400">{{ t('links.stats.avgClicks') }}</p>
                         <div class="p-3 bg-orange-100 dark:bg-orange-900/30 rounded-lg">
                             <LucideEye :size="24" class="text-orange-600 dark:text-orange-400" />
                         </div>
                     </div>
+                    <p class="text-3xl font-bold text-surface-900 dark:text-surface-50 mt-2">{{ computedStats.avgClicksPerLink }}</p>
                 </div>
             </div>
 

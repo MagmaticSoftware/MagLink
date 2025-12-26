@@ -58,6 +58,8 @@ Route::domain(config('app.tenant_url'))->middleware([
 
         Route::resource('links', LinkController::class)->names('links');
         Route::resource('qrcodes', QrCodeController::class)->names('qrcodes');
+        Route::post('pages/{page}/upload-profile-image', [PageController::class, 'uploadProfileImage'])->name('pages.upload-profile-image');
+        Route::delete('pages/{page}/delete-profile-image', [PageController::class, 'deleteProfileImage'])->name('pages.delete-profile-image');
         Route::resource('pages', PageController::class)->names('pages');
         
         // Block routes - order matters! Put specific routes before resource
@@ -65,6 +67,7 @@ Route::domain(config('app.tenant_url'))->middleware([
         Route::post('page-blocks/positions', [PageBlockController::class, 'updatePositions'])->name('blocks.positions');
         Route::post('page-blocks/{block}/position', [PageBlockController::class, 'updatePosition'])->name('blocks.position');
         Route::post('page-blocks/{block}/size', [PageBlockController::class, 'updateSize'])->name('blocks.size');
+        Route::post('page-blocks/fetch-url-metadata', [PageBlockController::class, 'fetchUrlMetadata'])->name('blocks.fetch-url-metadata');
         Route::resource('page-blocks', PageBlockController::class)
             ->names('page-blocks');
     });

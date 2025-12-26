@@ -16,6 +16,7 @@ import InputText from '@/components/volt/InputText.vue';
 import Textarea from '@/components/volt/Textarea.vue';
 import Button from '@/components/volt/Button.vue';
 import ToggleSwitch from '@/components/volt/ToggleSwitch.vue';
+import LimitWarning from '@/components/LimitWarning.vue';
 import { type PageProps } from '@/types/inertia';
 import { useI18n } from 'vue-i18n';
 
@@ -24,6 +25,7 @@ const page = usePage<PageProps>();
 
 const props = defineProps<{
     slug?: string;
+    pageCount: number;
 }>();
 
 const form = useForm({
@@ -121,6 +123,9 @@ watch(() => form.is_active, (isActive, oldValue) => {
 
     <AppLayout :breadcrumbs="breadcrumbs">
         <div class="flex h-full flex-1 flex-col gap-6 p-6">
+            <!-- Limit Warning -->
+            <LimitWarning type="pages" :currentCount="pageCount" />
+            
             <!-- Page Header -->
             <div class="flex items-center justify-between">
                 <div>

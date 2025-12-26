@@ -19,10 +19,22 @@ import {
 } from 'lucide-vue-next';
 import { useI18n } from 'vue-i18n';
 import { ref, computed } from 'vue';
+import { router, usePage } from '@inertiajs/vue3';
 import InputText from '@/components/volt/InputText.vue';
 import Select from '@/components/volt/Select.vue';
+import LimitReachedDialog from '@/components/LimitReachedDialog.vue';
+import PlanSelectionModal from '@/components/PlanSelectionModal.vue';
+import type { PageProps } from '@/types/inertia';
 
 const { t } = useI18n();
+const page = usePage<PageProps>();
+
+const showLimitDialog = ref(false);
+const showPlanModal = ref(false);
+
+const handleShowPlans = () => {
+    showPlanModal.value = true;
+};
 
 const props = defineProps<{
     qrcodes: any[];
@@ -41,6 +53,19 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
 ];
 
+// Handle create click - check limits
+const handleCreateClick = () => {
+    const page = usePage();
+    const limits = page.props.billing?.limits;
+    const currentCount = computedStats.value.total;
+    
+    if (limits && currentCount >= limits.qrcodes) {
+        showLimitDialog.value = true;
+    } else {
+        router.visit(route('qrcodes.create'));
+    }
+};
+
 // Search and filter state
 const searchQuery = ref('');
 const sortBy = ref('created_desc');
@@ -51,13 +76,34 @@ const computedStats = computed(() => {
     if (props.stats) return props.stats;
     
     const totalScans = props.qrcodes.reduce((sum, qr) => sum + (qr.scans || 0), 0);
+    const dynamicCount = props.qrcodes.filter(q => q.type === 'dynamic').length;
+    
     return {
         total: props.qrcodes.length,
         active: props.qrcodes.filter(q => q.is_active).length,
+        dynamic: dynamicCount,
         totalScans,
         avgScansPerCode: props.qrcodes.length > 0 ? Math.round(totalScans / props.qrcodes.length) : 0
     };
 });
+
+// Get limits from billing
+const limits = computed(() => page.props.billing?.limits || {});
+
+// Helper to get limit status (normal, warning, exceeded)
+const getLimitStatus = (current: number, limit: number) => {
+    if (limit === -1) return 'normal'; // unlimited
+    if (current >= limit) return 'exceeded';
+    if (current >= limit - 1) return 'warning';
+    return 'normal';
+};
+
+// Helper to get limit classes
+const getLimitClasses = (status: string) => {
+    if (status === 'exceeded') return 'text-red-700 dark:text-red-400';
+    if (status === 'warning') return 'text-orange-600 dark:text-orange-400';
+    return 'text-surface-900 dark:text-surface-50';
+};
 
 // Sort options
 const sortOptions = [
@@ -166,63 +212,79 @@ const getFormatIcon = (format: string) => {
                     <p class="text-surface-600 dark:text-surface-400 mt-1">{{ t('qrcodes.subtitle') }}</p>
                 </div>
                 <div>
-                    <Link
-                        :href="route('qrcodes.create')"
+                    <button
+                        @click="handleCreateClick"
                         class="button-primary flex items-center gap-2"
                     >
                         <LucidePlus class="w-4 h-4" /> {{ t('qrcodes.addNew') }}
-                    </Link>
+                    </button>
                 </div>
             </div>
 
             <!-- Statistics Cards -->
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <!-- Total QR Codes -->
                 <div class="bg-white dark:bg-surface-900 rounded-xl p-6 shadow-sm border border-surface-200 dark:border-surface-800">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-sm font-medium text-surface-600 dark:text-surface-400">{{ t('qrcodes.stats.totalQrCodes') }}</p>
-                            <p class="text-3xl font-bold text-surface-900 dark:text-surface-50 mt-2">{{ computedStats.total }}</p>
-                        </div>
+                    <div class="flex items-center justify-between mb-2">
+                        <p class="text-sm font-medium text-surface-600 dark:text-surface-400">{{ t('qrcodes.stats.totalQrCodes') }}</p>
                         <div class="p-3 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
                             <LucideQrCode :size="24" class="text-blue-600 dark:text-blue-400" />
                         </div>
                     </div>
+                    <p 
+                        :class="['text-3xl font-bold mt-2', getLimitClasses(getLimitStatus(computedStats.total, limits.qrcodes || -1))]"
+                    >
+                        {{ computedStats.total }}{{ limits.qrcodes > 0 ? ` / ${limits.qrcodes}` : '' }}
+                    </p>
+                    <p 
+                        v-if="getLimitStatus(computedStats.total, limits.qrcodes || -1) === 'exceeded'"
+                        class="text-xs text-red-700 dark:text-red-400 mt-1"
+                    >
+                        Limite raggiunto per il piano free
+                    </p>
                 </div>
 
+                <!-- Active QR Codes -->
                 <div class="bg-white dark:bg-surface-900 rounded-xl p-6 shadow-sm border border-surface-200 dark:border-surface-800">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-sm font-medium text-surface-600 dark:text-surface-400">{{ t('qrcodes.stats.activeQrCodes') }}</p>
-                            <p class="text-3xl font-bold text-surface-900 dark:text-surface-50 mt-2">{{ computedStats.active }}</p>
-                        </div>
+                    <div class="flex items-center justify-between mb-2">
+                        <p class="text-sm font-medium text-surface-600 dark:text-surface-400">{{ t('qrcodes.stats.activeQrCodes') }}</p>
                         <div class="p-3 bg-green-100 dark:bg-green-900/30 rounded-lg">
                             <LucideTrendingUp :size="24" class="text-green-600 dark:text-green-400" />
                         </div>
                     </div>
+                    <p class="text-3xl font-bold text-surface-900 dark:text-surface-50 mt-2">{{ computedStats.active }}</p>
                 </div>
 
+                <!-- Dynamic QR Codes -->
                 <div class="bg-white dark:bg-surface-900 rounded-xl p-6 shadow-sm border border-surface-200 dark:border-surface-800">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-sm font-medium text-surface-600 dark:text-surface-400">{{ t('qrcodes.stats.totalScans') }}</p>
-                            <p class="text-3xl font-bold text-surface-900 dark:text-surface-50 mt-2">{{ computedStats.totalScans }}</p>
-                        </div>
+                    <div class="flex items-center justify-between mb-2">
+                        <p class="text-sm font-medium text-surface-600 dark:text-surface-400">QR Code dinamici</p>
                         <div class="p-3 bg-purple-100 dark:bg-purple-900/30 rounded-lg">
-                            <LucideScan :size="24" class="text-purple-600 dark:text-purple-400" />
+                            <LucideQrCode :size="24" class="text-purple-600 dark:text-purple-400" />
                         </div>
                     </div>
+                    <p 
+                        :class="['text-3xl font-bold mt-2', getLimitClasses(getLimitStatus(computedStats.dynamic, limits.qrcodes_dynamic || -1))]"
+                    >
+                        {{ computedStats.dynamic }}{{ limits.qrcodes_dynamic > 0 ? ` / ${limits.qrcodes_dynamic}` : '' }}
+                    </p>
+                    <p 
+                        v-if="getLimitStatus(computedStats.dynamic, limits.qrcodes_dynamic || -1) === 'exceeded'"
+                        class="text-xs text-red-700 dark:text-red-400 mt-1"
+                    >
+                        Limite raggiunto per il piano free
+                    </p>
                 </div>
 
+                <!-- Total Scans -->
                 <div class="bg-white dark:bg-surface-900 rounded-xl p-6 shadow-sm border border-surface-200 dark:border-surface-800">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-sm font-medium text-surface-600 dark:text-surface-400">{{ t('qrcodes.stats.avgScans') }}</p>
-                            <p class="text-3xl font-bold text-surface-900 dark:text-surface-50 mt-2">{{ computedStats.avgScansPerCode }}</p>
-                        </div>
+                    <div class="flex items-center justify-between mb-2">
+                        <p class="text-sm font-medium text-surface-600 dark:text-surface-400">{{ t('qrcodes.stats.totalScans') }}</p>
                         <div class="p-3 bg-orange-100 dark:bg-orange-900/30 rounded-lg">
-                            <LucideEye :size="24" class="text-orange-600 dark:text-orange-400" />
+                            <LucideScan :size="24" class="text-orange-600 dark:text-orange-400" />
                         </div>
                     </div>
+                    <p class="text-3xl font-bold text-surface-900 dark:text-surface-50 mt-2">{{ computedStats.totalScans }}</p>
                 </div>
             </div>
 
@@ -410,5 +472,21 @@ const getFormatIcon = (format: string) => {
                 </div>
             </div>
         </div>
+
+        <!-- Limit Reached Dialog -->
+        <LimitReachedDialog
+            v-model:visible="showLimitDialog"
+            type="qrcodes"
+            @show-plans="handleShowPlans"
+        />
+
+        <PlanSelectionModal
+            v-model:visible="showPlanModal"
+            :plans="page.props.plans || {}"
+            :is-new-user="page.props.billing?.isNewUser || false"
+            :has-active-trial="page.props.billing?.hasActiveTrial || false"
+            :can-start-trial="page.props.billing?.canStartTrial || false"
+            :is-subscribed="page.props.billing?.isSubscribed || false"
+        />
     </AppLayout>
 </template>
