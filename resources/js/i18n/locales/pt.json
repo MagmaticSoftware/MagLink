@@ -253,5 +253,128 @@
     },
     "subtitle": "O encurtador de URL moderno criado para empresas e criadores",
     "copyright": "© 2025 MagLink. Todos os direitos reservados."
+  },
+  "welcome": {
+    "nav": {
+      "features": "Recursos",
+      "pricing": "Preços",
+      "signIn": "Entrar",
+      "getStarted": "Começar",
+      "dashboard": "Dashboard",
+      "adminDashboard": "Dashboard Admin"
+    },
+    "hero": {
+      "title": "Sua Plataforma",
+      "titleHighlight": "de Gestão",
+      "titleEnd": "de Links",
+      "subtitle": "Transforme seus URLs longos em poderosos links curtos rastreáveis. Obtenha análises detalhadas, marca personalizada e recursos de nível empresarial para o seu negócio.",
+      "getStarted": "Começar",
+      "goToDashboard": "Ir para Dashboard"
+    },
+    "slider": {
+      "linkShortening": {
+        "title": "Encurtamento de Links",
+        "description": "Transforme URLs longos em poderosos links curtos rastreáveis com marca personalizada"
+      },
+      "qrCodes": {
+        "title": "Códigos QR",
+        "description": "Gere códigos QR dinâmicos com análises e opções de personalização"
+      },
+      "blockPages": {
+        "title": "Páginas com Blocos",
+        "description": "Crie belas landing pages com blocos de arrastar e soltar"
+      }
+    },
+    "features": {
+      "title": "Tudo o que você precisa para gerenciar seus links",
+      "subtitle": "Recursos poderosos projetados para indivíduos, equipes e empresas",
+      "customLinks": {
+        "title": "Links Curtos Personalizados",
+        "description": "Crie links curtos com marca com domínios personalizados e aliases memoráveis"
+      },
+      "analytics": {
+        "title": "Análises Avançadas",
+        "description": "Obtenha insights detalhados sobre cliques, dados geográficos e comportamento do usuário"
+      },
+      "security": {
+        "title": "Segurança Empresarial",
+        "description": "Proteção por senha, datas de expiração e recursos avançados de segurança"
+      },
+      "qrGenerator": {
+        "title": "Gerador de Códigos QR",
+        "description": "Gere códigos QR dinâmicos com análises integradas e personalização"
+      },
+      "blockPages": {
+        "title": "Páginas com Blocos",
+        "description": "Crie belas landing pages com blocos de arrastar e soltar"
+      },
+      "fast": {
+        "title": "Velocidade Relâmpago",
+        "description": "CDN global garante que seus links curtos redirecionem instantaneamente em todo o mundo"
+      }
+    },
+    "pricing": {
+      "title": "Encontre um plano para otimizar seus fluxos de trabalho",
+      "subtitle": "Flexível e poderoso, MagLink facilita a criação do fluxo de trabalho exato que sua equipe precisa",
+      "essentials": {
+        "name": "Essentials",
+        "price": "$0",
+        "period": "/mês",
+        "description": "Perfeito para uso pessoal",
+        "feature1": "100 links por mês",
+        "feature2": "Análises básicas",
+        "feature3": "Suporte padrão",
+        "cta": "Começar"
+      },
+      "teams": {
+        "name": "Teams",
+        "badge": "Mais Popular",
+        "price": "$19",
+        "period": "/mês",
+        "description": "Para empresas em crescimento",
+        "feature1": "10.000 links por mês",
+        "feature2": "Análises avançadas",
+        "feature3": "Domínios personalizados",
+        "feature4": "Suporte prioritário",
+        "cta": "Iniciar Teste Gratuito"
+      },
+      "enterprise": {
+        "name": "Enterprise",
+        "price": "$99",
+        "period": "/mês",
+        "description": "Para grandes organizações",
+        "feature1": "Links ilimitados",
+        "feature2": "Gerenciamento de equipes",
+        "feature3": "Acesso API",
+        "feature4": "Suporte 24/7",
+        "cta": "Contatar Vendas"
+      }
+    },
+    "footer": {
+      "product": "Produto",
+      "resources": "Recursos",
+      "company": "Empresa",
+      "community": "Comunidade",
+      "features": "Recursos",
+      "pricing": "Preços",
+      "api": "API",
+      "documentation": "Documentação",
+      "guide": "Guia",
+      "blog": "Blog",
+      "helpCenter": "Centro de Ajuda",
+      "status": "Status",
+      "about": "Sobre",
+      "careers": "Carreiras",
+      "contact": "Contato",
+      "pressKit": "Kit de Imprensa",
+      "discord": "Discord",
+      "twitter": "Twitter",
+      "github": "GitHub",
+      "linkedin": "LinkedIn",
+      "copyright": "© 2024 MagLink. Todos os direitos reservados.",
+      "privacy": "Política de Privacidade",
+      "terms": "Termos de Serviço",
+      "security": "Segurança"
+    }
   }
 }
