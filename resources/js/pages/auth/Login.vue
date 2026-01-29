@@ -56,7 +56,7 @@ const submit = () => {
                 <div class="grid gap-2">
                     <div class="flex items-center justify-between">
                         <Label for="password" class="text-gray-700 dark:text-gray-300">Password</Label>
-                        <TextLink v-if="canResetPassword" :href="route('password.request')" class="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300" :tabindex="5">
+                        <TextLink v-if="canResetPassword" :href="route('password.request')" class="text-sm text-orange-600 dark:text-orange-400 hover:text-orange-700 dark:hover:text-orange-300" :tabindex="5">
                             Forgot password?
                         </TextLink>
                     </div>
@@ -80,7 +80,7 @@ const submit = () => {
                     </Label>
                 </div>
 
-                <Button type="submit" class="mt-4 w-full bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600" :tabindex="4" :disabled="form.processing">
+                <Button type="submit" class="mt-4 w-full bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 dark:from-orange-600 dark:to-orange-700 dark:hover:from-orange-700 dark:hover:to-orange-800 text-white" :tabindex="4" :disabled="form.processing">
                     <LogIn v-if="!form.processing" class="h-4 w-4" />
                     <LoaderCircle v-if="form.processing" class="h-4 w-4 animate-spin" />
                     Log in
@@ -89,7 +89,7 @@ const submit = () => {
 
             <div class="text-center text-sm text-gray-600 dark:text-gray-400">
                 Don't have an account?
-                <TextLink :href="route('register')" :tabindex="5" class="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium">Sign up</TextLink>
+                <TextLink :href="route('register')" :tabindex="5" class="text-orange-600 dark:text-orange-400 hover:text-orange-700 dark:hover:text-orange-300 font-medium">Sign up</TextLink>
             </div>
         </form>
     </AuthBase>

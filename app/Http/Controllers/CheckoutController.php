@@ -77,17 +77,27 @@ class CheckoutController extends Controller
     {
         $user = $request->user();
         
-        // Se già abbonato, non può passare al piano gratuito tramite checkout
-        if ($user->subscribed('default')) {
-            return redirect()->route('plans.index')
+        // Se già abbonato a un piano a pagamento, non può passare al piano gratuito tramite checkout
+        if ($user->subscribed('default') && !$user->onFreePlan()) {
+            return redirect()->route('plans.index', ['tenant' => $user->tenant_id])
                 ->with('info', 'Hai già un abbonamento attivo. Per passare al piano gratuito, contatta il supporto.');
         }
         
-        // Per il piano gratuito, "bruciamo" il trial e attiviamo l'account
+        // Se ha già il piano gratuito, reindirizza alla dashboard
+        if ($user->onFreePlan()) {
+            return \Inertia\Inertia::location(route('tenant.index', ['tenant' => $user->tenant_id]));
+        }
+        
+        // Per il piano gratuito, "bruciamo" il trial
         $user->burnTrial();
         
-        return redirect()->route('tenant.index', ['tenant' => $user->tenant_id])
-            ->with('success', 'Piano Free attivato! Puoi passare a un piano a pagamento in qualsiasi momento.');
+        // Segna l'utente come su piano free aggiungendo un metadato
+        // Invece di creare un abbonamento Stripe, gestiamo il piano free internamente
+        $user->free_plan_started_at = now();
+        $user->save();
+        
+        // Usa Inertia::location per forzare un reload completo della pagina
+        return \Inertia\Inertia::location(route('tenant.index', ['tenant' => $user->tenant_id]));
     }
 
     /**
@@ -97,14 +107,31 @@ class CheckoutController extends Controller
     {
         $user = $request->user();
         
+        // Refresh del modello per ottenere i dati aggiornati dal webhook
+        $user->refresh();
+        
         // Verifica che l'abbonamento sia effettivamente attivo
         if ($user->subscribed('default')) {
             // "Brucia" il diritto al trial se non è stato ancora utilizzato
             $user->burnTrial();
+            
+            // Usa Inertia::location per forzare un reload completo della pagina
+            return \Inertia\Inertia::location(route('tenant.index', ['tenant' => $user->tenant_id]));
         }
         
+        // Se l'abbonamento non è ancora attivo, aspetta qualche secondo e riprova
+        // (può succedere se il webhook non è ancora arrivato)
+        sleep(2);
+        $user->refresh();
+        
+        if ($user->subscribed('default')) {
+            $user->burnTrial();
+            return \Inertia\Inertia::location(route('tenant.index', ['tenant' => $user->tenant_id]));
+        }
+        
+        // Se ancora non è attivo, reindirizza comunque ma con un messaggio
         return redirect()->route('tenant.index', ['tenant' => $user->tenant_id])
-            ->with('success', 'Abbonamento attivato con successo!');
+            ->with('info', 'Abbonamento in elaborazione. Se non vedi le funzionalità sbloccate, ricarica la pagina tra qualche secondo.');
     }
 
     /**

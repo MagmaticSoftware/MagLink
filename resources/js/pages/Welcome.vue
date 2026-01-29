@@ -139,13 +139,20 @@ setInterval(() => {
                         
                         <div class="flex flex-col space-y-2 pt-4 border-t border-gray-800">
                             <Link
-                                v-if="isAuthenticated"
-                                :href="route('tenant.index')"
+                                v-if="isAuthenticated && isTenant"
+                                :href="route('tenant.index', { tenant: page.props.auth.tenant })"
                                 class="bg-gradient-to-r from-orange-500 to-orange-600 text-white px-4 py-2 rounded-lg font-medium transition-colors text-center"
                             >
                                 {{ t('welcome.nav.dashboard') }}
                             </Link>
-                            <template v-else>
+                            <Link
+                                v-else-if="isAuthenticated && isAdmin"
+                                :href="route('admin.index')"
+                                class="bg-gradient-to-r from-orange-500 to-orange-600 text-white px-4 py-2 rounded-lg font-medium transition-colors text-center"
+                            >
+                                {{ t('welcome.nav.adminDashboard') }}
+                            </Link>
+                            <template v-else-if="!isAuthenticated">
                                 <Link
                                     :href="route('login')"
                                     class="text-gray-300 hover:text-white transition-colors text-center"
@@ -194,7 +201,7 @@ setInterval(() => {
                             </Link>
                             <Link
                                 v-else
-                                :href="route('tenant.index')"
+                                :href="route('tenant.index', { tenant: page.props.auth.tenant })"
                                 class="inline-flex items-center justify-center bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white px-8 py-4 rounded-lg font-semibold transition-all text-lg"
                             >
                                 {{ t('welcome.hero.goToDashboard') }}

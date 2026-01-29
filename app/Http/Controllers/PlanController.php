@@ -14,9 +14,13 @@ class PlanController extends Controller
     {
         $user = $request->user();
         
-        // Se l'utente ha trial attivo o abbonamento, reindirizza alla dashboard
+        // Se l'utente ha trial attivo o abbonamento E non è sulla pagina per cambiare piano,
+        // reindirizza alla dashboard (ma solo se non ha il trial scaduto)
         if ($user && ($user->onTrial() || $user->subscribed('default'))) {
-            return redirect()->route('tenant.index', ['tenant' => $user->tenant_id]);
+            // Permetti di visualizzare i piani se esplicitamente richiesto tramite query param
+            if (!$request->has('show')) {
+                return redirect()->route('tenant.index', ['tenant' => $user->tenant_id]);
+            }
         }
         
         $plans = config('subscriptions.plans');

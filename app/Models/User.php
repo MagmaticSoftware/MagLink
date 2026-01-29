@@ -28,6 +28,7 @@ class User extends Authenticatable
         'email',
         'password',
         'trial_ends_at',
+        'free_plan_started_at',
     ];
 
     /**
@@ -51,6 +52,7 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
             'trial_ends_at' => 'datetime',
+            'free_plan_started_at' => 'datetime',
         ];
     }
 
@@ -165,7 +167,7 @@ class User extends Authenticatable
      */
     public function hasAccess(): bool
     {
-        // Ha un abbonamento attivo
+        // Ha un abbonamento attivo (incluso piano free)
         if ($this->subscribed('default')) {
             return true;
         }
@@ -179,6 +181,12 @@ class User extends Authenticatable
         if ($this->canStartTrial()) {
             return true;
         }
+        
+        // Ha esplicitamente scelto il piano gratuito (anche se non ha abbonamento Stripe)
+        // Questo copre il caso in cui il piano free sia gestito internamente
+        if ($this->onFreePlan()) {
+            return true;
+        }
 
         return false;
     }
@@ -188,15 +196,23 @@ class User extends Authenticatable
      */
     public function onFreePlan(): bool
     {
+        // Controlla se l'utente ha scelto esplicitamente il piano free (gestito internamente)
+        if ($this->free_plan_started_at !== null) {
+            return true;
+        }
+        
+        // Controlla se ha un abbonamento Stripe al piano free (per retrocompatibilità)
         $subscription = $this->subscription('default');
         
         if (!$subscription) {
             return false;
         }
 
-        $freePriceIds = config('subscriptions.plans.free.monthly.price_id', []);
+        $freePriceIds = [
+            config('subscriptions.plans.free.monthly.price_id'),
+        ];
         
-        return in_array($subscription->stripe_price, (array) $freePriceIds);
+        return in_array($subscription->stripe_price, $freePriceIds);
     }
 
     /**
@@ -204,6 +220,11 @@ class User extends Authenticatable
      */
     public function currentPlanName(): ?string
     {
+        // Controlla prima se è sul piano free (gestito internamente)
+        if ($this->onFreePlan()) {
+            return 'Free';
+        }
+        
         $subscription = $this->subscription('default');
         
         if (!$subscription) {
@@ -229,10 +250,15 @@ class User extends Authenticatable
      */
     public function currentPlanKey(): ?string
     {
+        // Controlla prima se è sul piano free (gestito internamente)
+        if ($this->onFreePlan()) {
+            return 'free';
+        }
+        
         $subscription = $this->subscription('default');
         
         if (!$subscription) {
-            return 'free'; // Default to free plan
+            return null;
         }
 
         $plans = config('subscriptions.plans', []);
@@ -246,7 +272,7 @@ class User extends Authenticatable
             }
         }
 
-        return 'free';
+        return null;
     }
 
     /**
@@ -255,6 +281,12 @@ class User extends Authenticatable
     public function getPlanLimits(): array
     {
         $planKey = $this->currentPlanKey();
+        
+        // Se non ha un piano, usa i limiti del piano free
+        if (!$planKey) {
+            $planKey = 'free';
+        }
+        
         $plans = config('subscriptions.plans', []);
         
         return $plans[$planKey]['limits'] ?? [];

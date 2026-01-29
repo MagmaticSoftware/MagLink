@@ -132,9 +132,9 @@
     "downloadQr": "Scarica QR Code:",
     "preview": "Anteprima",
     "howItAppears": "Come apparirà il tuo QR code",
-    "currentQrCode": "QR Code Attuale",
-    "dynamicQr": "QR Code Dinamico",
-    "staticQr": "QR Code Statico",
+    "currentQrCode": "QR Code attuale",
+    "dynamicQr": "QR Code dinamico",
+    "staticQr": "QR Code statico",
     "canBeChanged": "Il contenuto può essere modificato in seguito senza ristampare",
     "canBeUpdated": "Il contenuto può essere aggiornato senza ristampare",
     "cannotBeChanged": "Il contenuto non può essere modificato senza ristampare",
@@ -146,9 +146,9 @@
     "contentCannotChange": "Il contenuto non può essere modificato per i QR Code statici",
     "stats": {
       "totalQrCodes": "Totale QR Code",
-      "activeQrCodes": "QR Code Attivi",
-      "totalScans": "Totale Scansioni",
-      "avgScans": "Media Scansioni"
+      "activeQrCodes": "QR Code attivi",
+      "totalScans": "Totale scansioni",
+      "avgScans": "Media scansioni"
     },
     "sort": {
       "newest": "Più recenti",
@@ -167,7 +167,7 @@
     "createdAt": "Creato"
   },
   "pages": {
-    "title": "Le Tue Pagine",
+    "title": "Le tue pagine",
     "subtitle": "Crea pagine personalizzate con blocchi componibili",
     "addNew": "Aggiungi nuova pagina",
     "noPages": "Nessuna pagina trovata",
@@ -241,26 +241,26 @@
   "auth": {
     "features": {
       "linkShortening": {
-        "title": "Abbreviazione Link Intelligente",
+        "title": "Abbreviazione link intelligente",
         "description": "Crea link brevi potenti e tracciabili in pochi secondi"
       },
       "qrCodes": {
-        "title": "QR Code Dinamici",
+        "title": "QR Code dinamici",
         "description": "Genera QR code che puoi aggiornare senza ristampare"
       },
       "analytics": {
-        "title": "Analytics in Tempo Reale",
+        "title": "Analytics in tempo reale",
         "description": "Traccia click, posizioni e dispositivi con insight dettagliati"
       },
       "blockPages": {
-        "title": "Pagine a Blocchi",
+        "title": "Pagine a blocchi",
         "description": "Costruisci landing page personalizzate con blocchi drag-and-drop"
       }
     },
     "tagline": {
-      "part1": "Abbrevia, Traccia e",
-      "highlight": "Ottimizza",
-      "part2": "I Tuoi Link"
+      "part1": "Abbrevia, traccia e",
+      "highlight": "ottimizza",
+      "part2": "i tuoi link"
     },
     "subtitle": "Il moderno abbreviatore di URL creato per aziende e creatori",
     "copyright": "© 2025 MagLink. Tutti i diritti riservati."
@@ -347,7 +347,7 @@
         "feature2": "Analytics avanzate",
         "feature3": "Domini personalizzati",
         "feature4": "Supporto prioritario",
-        "cta": "Inizia Prova Gratuita"
+        "cta": "Inizia prova gratuita"
       },
       "enterprise": {
         "name": "Enterprise",
@@ -358,7 +358,7 @@
         "feature2": "Gestione team",
         "feature3": "Accesso API",
         "feature4": "Supporto 24/7",
-        "cta": "Contatta Vendite"
+        "cta": "Contatta vendite"
       }
     },
     "footer": {
@@ -372,9 +372,9 @@
       "documentation": "Documentazione",
       "guide": "Guida",
       "blog": "Blog",
-      "helpCenter": "Centro Assistenza",
+      "helpCenter": "Centro assistenza",
       "status": "Stato",
-      "about": "Chi Siamo",
+      "about": "Chi siamo",
       "careers": "Carriere",
       "contact": "Contatti",
       "pressKit": "Kit Stampa",
@@ -382,9 +382,9 @@
       "twitter": "Twitter",
       "github": "GitHub",
       "linkedin": "LinkedIn",
-      "copyright": "© 2024 MagLink. Tutti i diritti riservati.",
-      "privacy": "Privacy Policy",
-      "terms": "Termini di Servizio",
+      "copyright": "© 2026 MagLink. Tutti i diritti riservati.",
+      "privacy": "Privacy policy",
+      "terms": "Termini di servizio",
       "security": "Sicurezza"
     }
   }
