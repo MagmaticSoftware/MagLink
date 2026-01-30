@@ -48,14 +48,14 @@ class CheckoutController extends Controller
         try {
             // Debug: controlliamo se l'utente ha già un abbonamento
             if ($user->subscribed('default')) {
-                return redirect()->route('plans.index')
+                return redirect()->route('plans.index', ['tenant' => $user->tenant_id])
                     ->with('error', 'Hai già un abbonamento attivo. Per cambiare piano, vai nelle impostazioni di fatturazione.');
             }
             
             $checkout = $user->newSubscription('default', $priceId)
                 ->checkout([
-                    'success_url' => route('checkout.success') . '?session_id={CHECKOUT_SESSION_ID}',
-                    'cancel_url' => route('checkout.cancel'),
+                    'success_url' => route('checkout.success', ['tenant' => $user->tenant_id]) . '?session_id={CHECKOUT_SESSION_ID}',
+                    'cancel_url' => route('checkout.cancel', ['tenant' => $user->tenant_id]),
                     'allow_promotion_codes' => true,
                     'billing_address_collection' => 'required',
                     'customer_update' => [
@@ -66,7 +66,7 @@ class CheckoutController extends Controller
             return $checkout;
         } catch (\Exception $e) {
             // In caso di errore, torna alla pagina dei piani con messaggio di errore
-            return redirect()->route('plans.index')
+            return redirect()->route('plans.index', ['tenant' => $user->tenant_id])
                 ->with('error', 'Errore durante la creazione del checkout: ' . $e->getMessage());
         }
     }
@@ -187,7 +187,8 @@ class CheckoutController extends Controller
      */
     public function cancel(Request $request)
     {
-        return redirect()->route('plans.index')
+        $user = $request->user();
+        return redirect()->route('plans.index', ['tenant' => $user->tenant_id])
             ->with('info', 'Checkout annullato. Puoi riprovare quando vuoi.');
     }
 
@@ -199,7 +200,7 @@ class CheckoutController extends Controller
         $user = $request->user();
         
         if (!$user->hasStripeId()) {
-            return redirect()->route('plans.index')
+            return redirect()->route('plans.index', ['tenant' => $user->tenant_id])
                 ->with('error', 'Non hai ancora un account di fatturazione attivo.');
         }
         
