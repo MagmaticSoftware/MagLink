@@ -70,12 +70,12 @@ return [
                 'pages' => 10,
             ],
             'monthly' => [
-                'price' => 900, // 9€ in centesimi
+                'price' => 400, // 4€ in centesimi
                 'currency' => 'EUR',
                 'price_id' => env('STRIPE_PRICE_PROFESSIONAL_MONTHLY', 'price_professional_monthly'),
             ],
             'yearly' => [
-                'price' => 9000, // 90€ in centesimi (equivale a 7.50€/mese)
+                'price' => 4000, // 40€ in centesimi (equivale a 3.33€/mese)
                 'currency' => 'EUR',
                 'price_id' => env('STRIPE_PRICE_PROFESSIONAL_YEARLY', 'price_professional_yearly'),
                 'discount' => 17, // percentuale di sconto rispetto al mensile
@@ -101,12 +101,12 @@ return [
                 'pages' => -1, // illimitato
             ],
             'monthly' => [
-                'price' => 2900, // 29€ in centesimi
+                'price' => 800, // 8€ in centesimi
                 'currency' => 'EUR',
                 'price_id' => env('STRIPE_PRICE_ENTERPRISE_MONTHLY', 'price_enterprise_monthly'),
             ],
             'yearly' => [
-                'price' => 29000, // 290€ in centesimi (equivale a ~24€/mese)
+                'price' => 8000, // 80€ in centesimi (equivale a 6.67€/mese)
                 'currency' => 'EUR',
                 'price_id' => env('STRIPE_PRICE_ENTERPRISE_YEARLY', 'price_enterprise_yearly'),
                 'discount' => 17, // percentuale di sconto rispetto al mensile
