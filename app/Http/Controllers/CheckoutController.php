@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 
 class CheckoutController extends Controller
@@ -106,32 +107,79 @@ class CheckoutController extends Controller
     public function success(Request $request)
     {
         $user = $request->user();
+        $sessionId = $request->get('session_id');
         
-        // Refresh del modello per ottenere i dati aggiornati dal webhook
-        $user->refresh();
-        
-        // Verifica che l'abbonamento sia effettivamente attivo
-        if ($user->subscribed('default')) {
+        if (!$sessionId) {
+            return redirect()->route('plans.index', ['tenant' => $user->tenant_id])
+                ->with('error', 'Sessione di checkout non valida.');
+        }
+
+        try {
+            // Recupera i dettagli della sessione da Stripe
+            $stripe = new \Stripe\StripeClient(config('cashier.secret'));
+            $session = $stripe->checkout->sessions->retrieve($sessionId, [
+                'expand' => ['subscription', 'customer']
+            ]);
+
+            // Verifica che la sessione sia stata completata con successo
+            if ($session->status !== 'complete' || $session->payment_status !== 'paid') {
+                return redirect()->route('plans.index', ['tenant' => $user->tenant_id])
+                    ->with('error', 'Il pagamento non è stato completato.');
+            }
+
+            // Se l'utente non ha ancora un customer ID Stripe, impostalo
+            if (!$user->hasStripeId() && $session->customer) {
+                $user->createOrGetStripeCustomer([
+                    'id' => $session->customer->id ?? $session->customer,
+                ]);
+            }
+
+            // Se la subscription è presente nella sessione, creala/aggiornala nel database
+            if ($session->subscription) {
+                $subscriptionId = is_string($session->subscription) ? $session->subscription : $session->subscription->id;
+                
+                // Verifica se la subscription esiste già nel database
+                $existingSubscription = $user->subscriptions()
+                    ->where('stripe_id', $subscriptionId)
+                    ->first();
+
+                if (!$existingSubscription) {
+                    // Recupera i dettagli completi della subscription da Stripe
+                    $stripeSubscription = $stripe->subscriptions->retrieve($subscriptionId);
+                    
+                    // Crea manualmente la subscription nel database
+                    $user->subscriptions()->create([
+                        'type' => 'default',
+                        'stripe_id' => $subscriptionId,
+                        'stripe_status' => $stripeSubscription->status,
+                        'stripe_price' => $stripeSubscription->items->data[0]->price->id ?? null,
+                        'quantity' => $stripeSubscription->items->data[0]->quantity ?? 1,
+                        'trial_ends_at' => null,
+                        'ends_at' => null,
+                    ]);
+                }
+            }
+
             // "Brucia" il diritto al trial se non è stato ancora utilizzato
             $user->burnTrial();
             
+            // Refresh del modello per ottenere i dati aggiornati
+            $user->refresh();
+            
             // Usa Inertia::location per forzare un reload completo della pagina
             return \Inertia\Inertia::location(route('tenant.index', ['tenant' => $user->tenant_id]));
+            
+        } catch (\Stripe\Exception\ApiErrorException $e) {
+            Log::error('Stripe checkout success error: ' . $e->getMessage());
+            
+            return redirect()->route('plans.index', ['tenant' => $user->tenant_id])
+                ->with('error', 'Errore durante la verifica del pagamento. Contatta il supporto se il problema persiste.');
+        } catch (\Exception $e) {
+            Log::error('Checkout success error: ' . $e->getMessage());
+            
+            return redirect()->route('plans.index', ['tenant' => $user->tenant_id])
+                ->with('error', 'Errore imprevisto. Contatta il supporto se il problema persiste.');
         }
-        
-        // Se l'abbonamento non è ancora attivo, aspetta qualche secondo e riprova
-        // (può succedere se il webhook non è ancora arrivato)
-        sleep(2);
-        $user->refresh();
-        
-        if ($user->subscribed('default')) {
-            $user->burnTrial();
-            return \Inertia\Inertia::location(route('tenant.index', ['tenant' => $user->tenant_id]));
-        }
-        
-        // Se ancora non è attivo, reindirizza comunque ma con un messaggio
-        return redirect()->route('tenant.index', ['tenant' => $user->tenant_id])
-            ->with('info', 'Abbonamento in elaborazione. Se non vedi le funzionalità sbloccate, ricarica la pagina tra qualche secondo.');
     }
 
     /**

@@ -22,6 +22,9 @@ class PlanController extends Controller
         $onFreePlan = $user && $user->onFreePlan();
         
         if ($user) {
+            // Refresh dell'utente per assicurarci di avere i dati più recenti
+            $user->refresh();
+            
             $currentPlanKey = $user->currentPlanKey();
             
             // Se ha una subscription Stripe attiva, prendi la data di scadenza
