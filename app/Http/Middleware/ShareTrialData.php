@@ -64,7 +64,7 @@ class ShareTrialData
                     'created_at' => $subscription->created_at?->toISOString(),
                     'stripe_price' => $subscription->stripe_price,
                     'on_grace_period' => $subscription->onGracePeriod(),
-                    'cancelled' => $subscription->cancelled(),
+                    'cancelled' => $subscription->canceled(),
                 ] : null,
                 'plans' => config('subscriptions.plans'),
                 'billing' => [
