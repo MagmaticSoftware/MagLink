@@ -46,10 +46,16 @@ class CheckoutController extends Controller
         $user = $request->user();
 
         try {
-            // Debug: controlliamo se l'utente ha già un abbonamento
-            if ($user->subscribed('default')) {
+            // Se l'utente è sul piano free, può sempre fare checkout verso un piano a pagamento
+            if (!$user->onFreePlan() && $user->subscribed('default')) {
                 return redirect()->route('plans.index', ['tenant' => $user->tenant_id])
-                    ->with('error', 'Hai già un abbonamento attivo. Per cambiare piano, vai nelle impostazioni di fatturazione.');
+                    ->with('error', 'Hai già un abbonamento attivo. Per cambiare piano, utilizza il portale di fatturazione.');
+            }
+            
+            // Se l'utente ha il piano free, annulla il piano free prima di procedere
+            if ($user->onFreePlan()) {
+                $user->free_plan_started_at = null;
+                $user->save();
             }
             
             $checkout = $user->newSubscription('default', $priceId)

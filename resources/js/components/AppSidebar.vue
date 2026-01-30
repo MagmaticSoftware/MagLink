@@ -16,6 +16,12 @@ const route = useRoute();
 // Trial data from shared props
 const trial = computed(() => page.props.trial);
 
+// Subscription data from shared props
+const subscription = computed(() => page.props.subscription);
+
+// Billing data from shared props
+const billing = computed(() => page.props.billing);
+
 // Plan modal visibility
 const showPlanModal = ref(false);
 
@@ -85,10 +91,11 @@ const isActive = (href: string) => {
 
         <!-- Footer con Links Secondari -->
         <div class="border-t border-surface-200/50 dark:border-surface-700/50 p-3">
-            <!-- Trial Banner -->
+            <!-- Subscription/Trial Banner -->
             <SidebarTrialBanner 
-                v-if="trial && trial.active" 
                 :trial="trial" 
+                :subscription="subscription"
+                :billing="billing"
                 @show-plan-modal="showPlanModal = true" 
             />
             
