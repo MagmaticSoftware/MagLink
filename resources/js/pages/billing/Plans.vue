@@ -98,7 +98,7 @@ const selectPlan = (planKey: string) => {
         tenant: page.props.auth.tenant,
         plan: planKey,
         billing: billingCycle.value
-    });
+    }, true);
 };
 
 const currentPlanKey = computed(() => {
