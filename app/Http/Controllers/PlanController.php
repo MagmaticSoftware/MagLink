@@ -14,9 +14,34 @@ class PlanController extends Controller
     {
         $user = $request->user();
         
+<<<<<<< Updated upstream
         // Se l'utente ha trial attivo o abbonamento, reindirizza alla dashboard
         if ($user && ($user->onTrial() || $user->subscribed('default'))) {
             return redirect()->route('tenant.index', ['tenant' => $user->tenant_id]);
+=======
+        $plans = config('subscriptions.plans');
+        
+        // Determina il piano attivo corrente
+        $currentPlanKey = null;
+        $subscriptionEndsAt = null;
+        $onFreePlan = $user && $user->onFreePlan();
+        
+        if ($user) {
+            // Refresh dell'utente per assicurarci di avere i dati più recenti
+            $user->refresh();
+            
+            $currentPlanKey = $user->currentPlanKey();
+            
+            // Se ha una subscription Stripe attiva, prendi la data di scadenza
+            if ($user->subscribed('default')) {
+                $subscription = $user->subscription('default');
+                $subscriptionEndsAt = $subscription->ends_at ?? $subscription->asStripeSubscription()->current_period_end;
+            }
+            // Se è in trial, prendi la data di scadenza del trial
+            elseif ($user->onTrial()) {
+                $subscriptionEndsAt = $user->trial_ends_at;
+            }
+>>>>>>> Stashed changes
         }
         
         $plans = config('subscriptions.plans');
