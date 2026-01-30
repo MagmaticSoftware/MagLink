@@ -106,7 +106,7 @@ class QrCodeImageController extends Controller
         
         // For DYNAMIC QR codes, always use the short URL (redirect controllato)
         if ($type === 'dynamic') {
-            return "$baseUrl/$slug";
+            return "$baseUrl/q/$slug";
         }
         
         // For STATIC QR codes, embed the actual content directly
@@ -141,10 +141,10 @@ class QrCodeImageController extends Controller
             case 'url':
                 // For dynamic QR codes, use the short URL
                 if ($qrcode->type === 'dynamic') {
-                    return "$baseUrl/{$qrcode->slug}";
+                    return "$baseUrl/q/{$qrcode->slug}";
                 }
                 // For static, use the direct URL from payload
-                return $payload['url'] ?? $payload['content'] ?? "$baseUrl/{$qrcode->slug}";
+                return $payload['url'] ?? $payload['content'] ?? "$baseUrl/q/{$qrcode->slug}";
             
             case 'text':
                 return $payload['content'] ?? $payload['text'] ?? '';
@@ -174,7 +174,7 @@ class QrCodeImageController extends Controller
                 return $this->generateVCard($payload);
             
             default:
-                return "$baseUrl/{$qrcode->slug}";
+                return "$baseUrl/q/{$qrcode->slug}";
         }
     }
 

@@ -42,24 +42,17 @@ const toggleDark = useToggle(isDark);
 const userMenu = ref();
 const userMenuItems = computed(() => [
     {
-        label: t('common.profile'),
-        icon: 'pi pi-user',
-        command: () => {
-            window.location.href = route('profile.edit');
-        }
-    },
-    {
         label: t('common.settings'),
         icon: 'pi pi-cog',
         command: () => {
-            window.location.href = route('profile.edit');
+            window.location.href = route('profile.edit', { tenant: page.props.auth.tenant });
         }
     },
     {
-        label: t('common.billing'),
+        label: 'Piani e Prezzi',
         icon: 'pi pi-credit-card',
         command: () => {
-            window.location.href = '/billing';
+            window.location.href = route('plans.index', { tenant: page.props.auth.tenant });
         }
     },
     {
@@ -103,7 +96,7 @@ const getUserInitials = () => {
     <header class="sticky top-0 z-20 flex h-16 items-center justify-between gap-4 bg-white/80 dark:bg-surface-950/80 backdrop-blur-md shadow-sm px-6">
         <!-- Breadcrumbs -->
         <div class="flex-1 flex flex-row justify-start items-center">
-            <Link :href="route('tenant.index')" class="inline-flex items-center mr-3">
+            <Link :href="route('tenant.index', { tenant: page.props.auth.tenant })" class="inline-flex items-center mr-3">
                 <Home :size="18" class="text-surface-400 dark:text-surface-400 hover:text-primary dark:hover:text-primary transition-colors" />
             </Link>
             <ChevronRight :size="16" class="text-surface-400 dark:text-surface-500" />

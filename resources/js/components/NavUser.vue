@@ -4,7 +4,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from '@/compon
 import { SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from '@/components/ui/sidebar';
 import { type SharedData, type User } from '@/types';
 import { Link, usePage } from '@inertiajs/vue3';
-import { ChevronUp, FileDigit, Settings } from 'lucide-vue-next';
+import { ChevronUp, FileDigit, Settings, CreditCard } from 'lucide-vue-next';
 import UserMenuContent from './UserMenuContent.vue';
 import Menu from './volt/Menu.vue';
 import SecondaryButton from './volt/SecondaryButton.vue';
@@ -25,12 +25,12 @@ const MenuItems = [
     {
         label: 'Settings',
         icon: Settings,
-        href: route('profile.edit'),
+        href: route('profile.edit', { tenant: page.props.auth.tenant }),
     },
     {
-        label: 'Billing',
-        icon: FileDigit,
-        href: route('spark.portal'),
+        label: 'Piani e Prezzi',
+        icon: CreditCard,
+        href: route('plans.index', { tenant: page.props.auth.tenant }),
     },
 ];
 

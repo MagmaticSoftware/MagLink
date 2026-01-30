@@ -57,12 +57,24 @@ class DashboardController extends Controller
             ->get(['id', 'page_id', 'type', 'title', 'position', 'created_at']);
         
         // Performance ultimi 7 giorni (conteggio creazioni per giorno)
-        $performance = Link::where('user_id', $user->id)
-            ->where('created_at', '>=', now()->subDays(7))
+        $performanceData = Link::where('user_id', $user->id)
+            ->where('created_at', '>=', now()->subDays(6)->startOfDay())
             ->selectRaw('DATE(created_at) as date, COUNT(*) as total_items')
             ->groupBy('date')
             ->orderBy('date', 'asc')
-            ->get();
+            ->get()
+            ->keyBy('date');
+        
+        // Assicurati che tutti i 7 giorni siano inclusi, anche con 0 link
+        $performance = collect();
+        for ($i = 6; $i >= 0; $i--) {
+            $date = now()->subDays($i)->format('Y-m-d');
+            $dayData = $performanceData->get($date);
+            $performance->push([
+                'date' => $date,
+                'total_items' => $dayData ? (int)$dayData->total_items : 0
+            ]);
+        }
         
         return Inertia::render('tenant/Dashboard', [
             'stats' => $stats,

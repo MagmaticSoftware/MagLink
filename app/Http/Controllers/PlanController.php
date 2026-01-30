@@ -14,16 +14,26 @@ class PlanController extends Controller
     {
         $user = $request->user();
         
-        // Se l'utente ha trial attivo o abbonamento E non è sulla pagina per cambiare piano,
-        // reindirizza alla dashboard (ma solo se non ha il trial scaduto)
-        if ($user && ($user->onTrial() || $user->subscribed('default'))) {
-            // Permetti di visualizzare i piani se esplicitamente richiesto tramite query param
-            if (!$request->has('show')) {
-                return redirect()->route('tenant.index', ['tenant' => $user->tenant_id]);
+        $plans = config('subscriptions.plans');
+        
+        // Determina il piano attivo corrente
+        $currentPlanKey = null;
+        $subscriptionEndsAt = null;
+        $onFreePlan = $user && $user->onFreePlan();
+        
+        if ($user) {
+            $currentPlanKey = $user->currentPlanKey();
+            
+            // Se ha una subscription Stripe attiva, prendi la data di scadenza
+            if ($user->subscribed('default')) {
+                $subscription = $user->subscription('default');
+                $subscriptionEndsAt = $subscription->ends_at ?? $subscription->asStripeSubscription()->current_period_end;
+            }
+            // Se è in trial, prendi la data di scadenza del trial
+            elseif ($user->onTrial()) {
+                $subscriptionEndsAt = $user->trial_ends_at;
             }
         }
-        
-        $plans = config('subscriptions.plans');
         
         return Inertia::render('billing/Plans', [
             'plans' => $plans,
@@ -31,7 +41,11 @@ class PlanController extends Controller
             'hasActiveTrial' => $user ? $user->onTrial() : false,
             'canStartTrial' => $user ? $user->canStartTrial() : false,
             'currentPlan' => $user ? $user->currentPlanName() : null,
+            'currentPlanKey' => $currentPlanKey,
             'isSubscribed' => $user ? $user->subscribed('default') : false,
+            'onFreePlan' => $onFreePlan,
+            'subscriptionEndsAt' => $subscriptionEndsAt,
+            'trialEndsAt' => $user ? $user->trial_ends_at : null,
         ]);
     }
 

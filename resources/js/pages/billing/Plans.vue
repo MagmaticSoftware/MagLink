@@ -35,7 +35,11 @@ interface Props {
     hasActiveTrial: boolean;
     canStartTrial: boolean;
     currentPlan: string | null;
+    currentPlanKey: string | null;
     isSubscribed: boolean;
+    onFreePlan: boolean;
+    subscriptionEndsAt: string | null;
+    trialEndsAt: string | null;
 }
 
 const props = defineProps<Props>();
@@ -76,12 +80,10 @@ const startTrial = () => {
 
 const selectPlan = (planKey: string) => {
     if (planKey === 'free') {
-        // Per il piano gratuito, redirect al checkout che gestisce internamente
+        // Per il piano gratuito, usa POST alla route dedicata
         loading.value = planKey;
-        router.get(route('checkout', { 
-            tenant: page.props.auth.tenant,
-            plan: planKey,
-            billing: 'monthly'
+        router.post(route('checkout.free', { 
+            tenant: page.props.auth.tenant
         }), {}, {
             onFinish: () => {
                 loading.value = null;
@@ -100,10 +102,60 @@ const selectPlan = (planKey: string) => {
 };
 
 const currentPlanKey = computed(() => {
-    if (!props.currentPlan) return null;
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    return Object.entries(props.plans).find(([_key, plan]) => plan.name === props.currentPlan)?.[0];
+    return props.currentPlanKey;
 });
+
+const canSelectPlan = (planKey: string) => {
+    // Piano attuale - sempre disabilitato
+    if (currentPlanKey.value === planKey) return false;
+    
+    // Piano free - sempre selezionabile se non è il piano attuale
+    if (planKey === 'free') return true;
+    
+    // Se l'utente ha una subscription Stripe attiva (non trial, non free)
+    // può fare upgrade al piano enterprise, ma non può cambiare tra piani a pagamento
+    if (props.isSubscribed && !props.hasActiveTrial) {
+        // Può solo fare upgrade da professional a enterprise
+        if (currentPlanKey.value === 'professional' && planKey === 'enterprise') {
+            return false; // Bloccato - deve contattare assistenza
+        }
+        // Tutti gli altri cambi tra piani a pagamento sono bloccati
+        if (planKey !== 'free' && currentPlanKey.value !== 'free') {
+            return false;
+        }
+    }
+    
+    return true;
+};
+
+const getPlanButtonText = (planKey: string) => {
+    if (currentPlanKey.value === planKey) return 'Piano Attuale';
+    if (planKey === 'free') return 'Passa a Gratis';
+    
+    // Se ha una subscription attiva e vuole cambiare tra piani a pagamento
+    if (props.isSubscribed && !props.hasActiveTrial && planKey !== 'free' && currentPlanKey.value !== 'free') {
+        return 'Contatta Assistenza';
+    }
+    
+    // Determina se è un upgrade o downgrade
+    const planOrder = ['free', 'professional', 'enterprise'];
+    const currentIndex = planOrder.indexOf(currentPlanKey.value || '');
+    const targetIndex = planOrder.indexOf(planKey);
+    
+    if (targetIndex > currentIndex) return `Upgrade a ${props.plans[planKey].name}`;
+    if (targetIndex < currentIndex) return `Downgrade a ${props.plans[planKey].name}`;
+    
+    return `Scegli ${props.plans[planKey].name}`;
+};
+
+const formatDate = (date: string | null) => {
+    if (!date) return '';
+    return new Date(date).toLocaleDateString('it-IT', {
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric'
+    });
+};
 </script>
 
 <template>
@@ -119,6 +171,31 @@ const currentPlanKey = computed(() => {
                 <p class="text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
                     Inizia con una prova gratuita di 30 giorni, poi scegli il piano più adatto alle tue esigenze.
                 </p>
+            </div>
+
+            <!-- Current Plan Info Banner -->
+            <div 
+                v-if="currentPlanKey" 
+                class="bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 border border-green-200 dark:border-green-800 rounded-xl p-6 mb-8"
+            >
+                <div class="flex items-start justify-between">
+                    <div class="flex-1">
+                        <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+                            Piano Attivo: {{ currentPlan }}
+                        </h3>
+                        <div class="space-y-1 text-sm text-gray-600 dark:text-gray-300">
+                            <p v-if="hasActiveTrial && trialEndsAt">
+                                ⏰ Il tuo periodo di prova termina il <strong>{{ formatDate(trialEndsAt) }}</strong>
+                            </p>
+                            <p v-else-if="isSubscribed && subscriptionEndsAt">
+                                📅 Prossimo rinnovo: <strong>{{ formatDate(subscriptionEndsAt) }}</strong>
+                            </p>
+                            <p v-else-if="onFreePlan">
+                                ✨ Stai usando il piano gratuito
+                            </p>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <!-- Trial Banner (se può iniziare trial) -->
@@ -260,24 +337,32 @@ const currentPlanKey = computed(() => {
                     </ul>
 
                     <!-- CTA Button -->
-                    <button
-                        @click="selectPlan(key)"
-                        :disabled="loading !== null || currentPlanKey === key"
-                        :class="[
-                            'w-full py-3 px-6 rounded-lg font-semibold transition-all',
-                            plan.popular 
-                                ? 'bg-blue-600 hover:bg-blue-700 text-white' 
-                                : key === 'free'
-                                    ? 'bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-900 dark:text-white'
-                                    : 'bg-gray-900 hover:bg-gray-800 dark:bg-white dark:hover:bg-gray-100 text-white dark:text-gray-900',
-                            (loading !== null || currentPlanKey === key) ? 'opacity-50 cursor-not-allowed' : ''
-                        ]"
-                    >
-                        <span v-if="loading === key">Caricamento...</span>
-                        <span v-else-if="currentPlanKey === key">Piano Attuale</span>
-                        <span v-else-if="key === 'free'">Inizia Gratis</span>
-                        <span v-else>Scegli {{ plan.name }}</span>
-                    </button>
+                    <div>
+                        <button
+                            @click="selectPlan(key)"
+                            :disabled="loading !== null || !canSelectPlan(key)"
+                            :class="[
+                                'w-full py-3 px-6 rounded-lg font-semibold transition-all',
+                                plan.popular 
+                                    ? 'bg-blue-600 hover:bg-blue-700 text-white' 
+                                    : key === 'free'
+                                        ? 'bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-900 dark:text-white'
+                                        : 'bg-gray-900 hover:bg-gray-800 dark:bg-white dark:hover:bg-gray-100 text-white dark:text-gray-900',
+                                (loading !== null || !canSelectPlan(key)) ? 'opacity-50 cursor-not-allowed' : ''
+                            ]"
+                        >
+                            <span v-if="loading === key">Caricamento...</span>
+                            <span v-else>{{ getPlanButtonText(key) }}</span>
+                        </button>
+                        
+                        <!-- Warning message per upgrade/downgrade tra piani a pagamento -->
+                        <p 
+                            v-if="isSubscribed && !hasActiveTrial && key !== 'free' && currentPlanKey !== 'free' && currentPlanKey !== key"
+                            class="text-xs text-center text-orange-600 dark:text-orange-400 mt-2"
+                        >
+                            Per modificare il piano contatta l'assistenza
+                        </p>
+                    </div>
                 </div>
             </div>
 

@@ -27,6 +27,7 @@ class Link extends Model
         'description',
         'is_active',
         'type',
+        'require_consent',
     ];
 
     /**
@@ -54,4 +55,8 @@ class Link extends Model
         return $this->belongsTo(Company::class);
     }
 
+    public function views()
+    {
+        return $this->morphMany(View::class, 'viewable');
+    }
 }

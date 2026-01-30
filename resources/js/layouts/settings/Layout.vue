@@ -5,22 +5,22 @@ import { Separator } from '@/components/ui/separator';
 import { type NavItem } from '@/types';
 import { Link, usePage } from '@inertiajs/vue3';
 
+const page = usePage();
+
 const sidebarNavItems: NavItem[] = [
     {
         title: 'Profile',
-        href: '/settings/profile',
+        href: route('profile.edit', { tenant: page.props.auth.tenant }),
     },
     {
         title: 'Password',
-        href: '/settings/password',
+        href: route('password.edit', { tenant: page.props.auth.tenant }),
     },
     {
         title: 'Appearance',
-        href: '/settings/appearance',
+        href: route('appearance', { tenant: page.props.auth.tenant }),
     },
 ];
-
-const page = usePage();
 
 const currentPath = page.props.ziggy?.location ? new URL(page.props.ziggy.location).pathname : '';
 </script>

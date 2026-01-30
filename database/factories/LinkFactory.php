@@ -23,12 +23,13 @@ class LinkFactory extends Factory
             'user_id' => $user->id,
             'company_id' => $user->companies->first()->id,
             'tenant_id' => $user->tenant_id,
-            'slug' => $this->faker->slug(),
+            'slug' => strtolower($this->faker->unique()->bothify('??????')), // 6 caratteri lowercase
             'url' => $this->faker->url(),
             'title' => $this->faker->sentence(),
             'description' => $this->faker->paragraph(),
             'is_active' => $this->faker->boolean(),
             'type' => $this->faker->word(),
+            'require_consent' => $this->faker->boolean(30), // 30% richiede consenso
         ];
     }
 }

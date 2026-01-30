@@ -18,22 +18,36 @@ class QrCodeFactory extends Factory
     public function definition(): array
     {
         $user = User::role('tenant')->inRandomOrder()->first() ?? User::factory()->create();
+        $format = $this->faker->randomElement(['url', 'text', 'email', 'phone', 'sms', 'vcard']);
+        
+        // Generate appropriate payload based on format
+        $payload = match($format) {
+            'url' => ['content' => $this->faker->url()],
+            'text' => ['content' => $this->faker->sentence()],
+            'email' => ['content' => $this->faker->email()],
+            'phone' => ['content' => $this->faker->phoneNumber()],
+            'sms' => ['content' => $this->faker->phoneNumber()],
+            'vcard' => ['content' => $this->faker->name()],
+            default => ['content' => $this->faker->url()],
+        };
+        
         return [
             'user_id' => $user->id,
             'company_id' => $user->companies->first()->id,
             'tenant_id' => $user->tenant_id,
-            'slug' => $this->faker->unique()->slug(),
+            'slug' => strtolower($this->faker->unique()->bothify('??????')), // 6 caratteri lowercase
             'name' => $this->faker->word(),
             'description' => $this->faker->sentence(),
             'type' => $this->faker->randomElement(['static', 'dynamic']),
-            'format' => $this->faker->randomElement(['url', 'text', 'email', 'phone', 'sms', 'vcard']),
-            'payload' => json_encode(['url' => $this->faker->url()]),
+            'format' => $format,
+            'payload' => $payload,
             'target_type' => null,
             'target_id' => null,
-            'options' => json_encode(['size' => 200, 'margin' => 2]),
+            'options' => ['size' => 200, 'margin' => 2],
             'scans' => 0,
             'is_active' => true,
             'last_scanned_at' => null,
+            'require_consent' => $this->faker->boolean(30), // 30% richiede consenso
         ];
     }
 }

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { router, usePage } from '@inertiajs/vue3';
+import { router, usePage, Link } from '@inertiajs/vue3';
 import { ref, computed } from 'vue';
 import Dialog from '@/components/volt/Dialog.vue';
 import { LucideCheck, LucideX, LucideSparkles, LucideRocket, LucideBuilding, LucideBan, LucideFlag, LucidePiggyBank, LucideArrowUpCircle, LucideLoader2 } from 'lucide-vue-next';
@@ -39,6 +39,7 @@ const emit = defineEmits<{
 const page = usePage<PageProps>();
 const billingType = ref<'monthly' | 'yearly'>('monthly');
 const isStartingTrial = ref(false);
+const isSelectingFreePlan = ref(false);
 
 const startTrial = () => {
     isStartingTrial.value = true;
@@ -48,6 +49,19 @@ const startTrial = () => {
         {
             onFinish: () => {
                 isStartingTrial.value = false;
+            }
+        }
+    );
+};
+
+const selectFreePlan = () => {
+    isSelectingFreePlan.value = true;
+    router.post(
+        route('checkout.free', { tenant: page.props.auth.tenant }),
+        {},
+        {
+            onFinish: () => {
+                isSelectingFreePlan.value = false;
             }
         }
     );
@@ -303,13 +317,15 @@ const closeModal = () => {
                             >
                                 Scegli {{ plan.name }}
                             </a>
-                            <Link 
+                            <button 
                                 v-else
-                                :href="route('checkout', { tenant: page.props.auth.tenant, plan: 'free', billing: 'monthly' })" 
-                                class="w-full py-3 px-4 rounded-lg font-medium text-center transition-all duration-200 block bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-900 dark:text-white"
+                                @click="selectFreePlan"
+                                :disabled="isSelectingFreePlan"
+                                class="w-full py-3 px-4 rounded-lg font-medium text-center transition-all duration-200 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-900 dark:text-white disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center"
                             >
-                                Inizia Gratis
-                            </Link>
+                                <LucideLoader2 v-if="isSelectingFreePlan" class="w-5 h-5 mr-2 animate-spin" />
+                                {{ isSelectingFreePlan ? 'Attivazione...' : 'Inizia Gratis' }}
+                            </button>
                         </div>
                     </div>
                 </div>

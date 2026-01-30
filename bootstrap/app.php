@@ -35,5 +35,26 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->trustProxies(at: '*');
     })
     ->withExceptions(function (Exceptions $exceptions) {
-        //
+        $exceptions->respond(function (\Symfony\Component\HttpFoundation\Response $response) {
+            $status = $response->getStatusCode();
+            
+            // Render custom error pages for common HTTP errors
+            if (in_array($status, [403, 404, 500, 503])) {
+                $messages = [
+                    403 => 'Non hai i permessi necessari per accedere a questa pagina.',
+                    404 => 'La pagina che stai cercando non esiste o è stata spostata.',
+                    500 => 'Si è verificato un errore interno del server. Stiamo lavorando per risolverlo.',
+                    503 => 'Il servizio è temporaneamente non disponibile. Riprova tra qualche minuto.',
+                ];
+                
+                return \Inertia\Inertia::render('Error', [
+                    'status' => $status,
+                    'message' => $messages[$status] ?? 'Si è verificato un errore.'
+                ])
+                ->toResponse(request())
+                ->setStatusCode($status);
+            }
+
+            return $response;
+        });
     })->create();

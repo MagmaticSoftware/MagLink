@@ -59,27 +59,25 @@ class RegisteredUserController extends Controller
                 'password' => Hash::make($request->password),
             ]);
 
-            // Crea la Company SENZA triggare eventi Paddle
-            $company = new Company([
+            // Crea la Company
+            $company = Company::create([
                 'name' => $request->company_name,
                 'slug' => $request->slug,
                 'email' => $request->company_email,
                 'industry' => $request->company_industry,
                 'size' => $request->company_size,
             ]);
-            $company->saveQuietly(); // Evita la sincronizzazione automatica con Paddle
 
             $user->companies()->attach($company->id, [
                 'is_company_admin' => true,
             ]);
 
-            // Crea il BillingProfile SENZA sincronizzazione Paddle
-            $billingProfile = new BillingProfile([
+            // Crea il BillingProfile
+            BillingProfile::create([
                 'company_id' => $company->id,
                 'company_name' => $request->company_name,
                 'phone' => $request->company_phone,
             ]);
-            $billingProfile->saveQuietly(); // Evita eventi che potrebbero triggare Paddle
 
             UserPreferences::create([
                 'user_id' => $user->id,

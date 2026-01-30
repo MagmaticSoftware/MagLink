@@ -12,7 +12,9 @@ Route::middleware([
     InitializeTenancyByPath::class,
     PreventAccessFromCentralDomains::class
 ])->prefix('/{tenant}')->group(function () {
-    Route::redirect('settings', '/settings/profile');
+    Route::get('settings', function () {
+        return redirect()->route('profile.edit', ['tenant' => request()->route('tenant')]);
+    });
 
     Route::get('settings/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('settings/profile', [ProfileController::class, 'update'])->name('profile.update');

@@ -15,7 +15,8 @@ import {
     LucideTrendingUp,
     LucideCopy,
     LucideExternalLink,
-    LucideCalendar
+    LucideCalendar,
+    LucideBarChart3
 } from 'lucide-vue-next';
 import { useI18n } from 'vue-i18n';
 import { ref, computed } from 'vue';
@@ -38,6 +39,7 @@ const handleShowPlans = () => {
 
 const props = defineProps<{
     qrcodes: any[];
+    shortUrl: string;
     stats?: {
         total: number;
         active: number;
@@ -75,7 +77,7 @@ const filterStatus = ref('all');
 const computedStats = computed(() => {
     if (props.stats) return props.stats;
     
-    const totalScans = props.qrcodes.reduce((sum, qr) => sum + (qr.scans || 0), 0);
+    const totalScans = props.qrcodes.reduce((sum, qr) => sum + (qr.views_count || 0), 0);
     const dynamicCount = props.qrcodes.filter(q => q.type === 'dynamic').length;
     
     return {
@@ -83,7 +85,7 @@ const computedStats = computed(() => {
         active: props.qrcodes.filter(q => q.is_active).length,
         dynamic: dynamicCount,
         totalScans,
-        avgScansPerCode: props.qrcodes.length > 0 ? Math.round(totalScans / props.qrcodes.length) : 0
+        avgScansPerCode: props.qrcodes.length > 0 ? (totalScans / props.qrcodes.length).toFixed(1) : '0.0'
     };
 });
 
@@ -173,7 +175,7 @@ const filteredQrCodes = computed(() => {
 
 // Copy QR code link to clipboard
 const copyToClipboard = (slug: string) => {
-    const url = `${window.location.origin}/qrcodes/${slug}`;
+    const url = `${props.shortUrl}/${slug}`;
     navigator.clipboard.writeText(url);
 };
 
@@ -381,34 +383,48 @@ const getFormatIcon = (format: string) => {
                                         <span class="font-medium text-surface-700 dark:text-surface-300">{{ qrcode.format.toUpperCase() }}</span>
                                         <span class="text-surface-400">·</span>
                                         <code class="px-2 py-1 bg-surface-100 dark:bg-surface-800 rounded text-primary font-mono text-xs">
-                                            /{{ qrcode.slug }}
+                                            {{ shortUrl }}/q/{{ qrcode.slug }}
                                         </code>
                                         <button
-                                            @click="copyToClipboard(qrcode.slug)"
+                                            @click="copyToClipboard(`q/${qrcode.slug}`)"
                                             class="p-1 hover:bg-surface-100 dark:hover:bg-surface-800 rounded transition-colors"
-                                            :title="t('links.copyLink')"
+                                            :title="t('qrcodes.copyLink')"
                                         >
                                             <LucideCopy :size="14" class="text-surface-500" />
                                         </button>
                                         <a
-                                            :href="`/qrcodes/${qrcode.slug}`"
+                                            :href="`${shortUrl}/q/${qrcode.slug}`"
                                             target="_blank"
                                             class="p-1 hover:bg-surface-100 dark:hover:bg-surface-800 rounded transition-colors"
-                                            :title="t('links.openLink')"
+                                            :title="t('qrcodes.openLink')"
                                         >
                                             <LucideExternalLink :size="14" class="text-surface-500" />
                                         </a>
                                     </div>
 
                                     <!-- Meta Info -->
-                                    <div class="flex items-center gap-4 text-xs text-surface-500 dark:text-surface-400">
+                                    <div class="flex items-center flex-wrap gap-3 text-xs text-surface-500 dark:text-surface-400">
                                         <span class="flex items-center gap-1">
                                             <LucideCalendar :size="14" />
                                             {{ t('qrcodes.createdAt') }}: {{ formatDate(qrcode.created_at) }}
                                         </span>
-                                        <span class="flex items-center gap-1">
-                                            <LucideScan :size="14" />
-                                            {{ qrcode.scans || 0 }} {{ t('qrcodes.scans') }}
+                                        
+                                        <!-- Views Statistics -->
+                                        <span class="flex items-center gap-1 font-medium text-primary">
+                                            <LucideEye :size="14" />
+                                            {{ qrcode.views_count || 0 }} views
+                                        </span>
+                                        <span 
+                                            v-if="qrcode.views_with_consent_count > 0"
+                                            class="px-2 py-0.5 rounded-full text-xs font-medium bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400"
+                                        >
+                                            🔒 {{ qrcode.views_with_consent_count }} con consenso
+                                        </span>
+                                        <span 
+                                            v-if="qrcode.views_anonymous_count > 0"
+                                            class="px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 dark:bg-gray-900/30 text-gray-700 dark:text-gray-400"
+                                        >
+                                            🕶️ {{ qrcode.views_anonymous_count }} anonimi
                                         </span>
                                     </div>
                                 </div>
@@ -423,6 +439,13 @@ const getFormatIcon = (format: string) => {
                             >
                                 <LucideEye :size="16" />
                                 <span class="hidden sm:inline">{{ t('common.view') }}</span>
+                            </Link>
+                            <Link
+                                :href="route('qrcodes.analytics', qrcode.slug)"
+                                class="px-4 py-2 bg-purple-100 dark:bg-purple-900/30 hover:bg-purple-200 dark:hover:bg-purple-900/50 text-purple-700 dark:text-purple-400 rounded-lg flex items-center gap-2 transition-colors"
+                            >
+                                <LucideBarChart3 :size="16" />
+                                <span class="hidden sm:inline">Analytics</span>
                             </Link>
                             <Link
                                 :href="route('qrcodes.edit', qrcode.slug)"

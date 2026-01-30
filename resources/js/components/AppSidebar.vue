@@ -3,6 +3,7 @@ import { Link, usePage } from '@inertiajs/vue3';
 import { LayoutGrid, LayoutTemplate, Link as LinkIcon, QrCode, Settings, HelpCircle } from 'lucide-vue-next';
 import { computed, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
+import { useRoute } from '@/composables/useRoute';
 import ApplicationLogo from './ApplicationLogo.vue';
 import SidebarTrialBanner from './SidebarTrialBanner.vue';
 import PlanSelectionModal from './PlanSelectionModal.vue';
@@ -10,6 +11,7 @@ import type { PageProps } from '@/types/inertia';
 
 const { t } = useI18n();
 const page = usePage<PageProps>();
+const route = useRoute();
 
 // Trial data from shared props
 const trial = computed(() => page.props.trial);

@@ -28,6 +28,7 @@ class QrCode extends Model
         'scans',
         'is_active',
         'last_scanned_at',
+        'require_consent',
     ];
 
     protected $casts = [
@@ -60,5 +61,10 @@ class QrCode extends Model
     public function target(): MorphTo
     {
         return $this->morphTo();
+    }
+
+    public function views()
+    {
+        return $this->morphMany(View::class, 'viewable');
     }
 }

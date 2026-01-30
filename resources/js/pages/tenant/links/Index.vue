@@ -15,11 +15,13 @@ import {
     LucideTrendingUp,
     LucideCopy,
     LucideExternalLink,
-    LucideCalendar
+    LucideCalendar,
+    LucideBarChart3
 } from 'lucide-vue-next';
 import { useI18n } from 'vue-i18n';
 import { ref, computed } from 'vue';
 import { router, usePage } from '@inertiajs/vue3';
+import { useRoute } from '@/composables/useRoute';
 import InputText from '@/components/volt/InputText.vue';
 import Select from '@/components/volt/Select.vue';
 import LimitReachedDialog from '@/components/LimitReachedDialog.vue';
@@ -28,6 +30,7 @@ import type { PageProps } from '@/types/inertia';
 
 const { t } = useI18n();
 const page = usePage<PageProps>();
+const route = useRoute();
 
 const showLimitDialog = ref(false);
 const showPlanModal = ref(false);
@@ -63,12 +66,12 @@ const filterStatus = ref('all');
 const computedStats = computed(() => {
     if (props.stats) return props.stats;
     
-    const totalClicks = props.links.reduce((sum, link) => sum + (link.clicks || 0), 0);
+    const totalClicks = props.links.reduce((sum, link) => sum + (link.views_count || 0), 0);
     return {
         total: props.links.length,
         active: props.links.filter(l => l.is_active).length,
         totalClicks,
-        avgClicksPerLink: props.links.length > 0 ? Math.round(totalClicks / props.links.length) : 0
+        avgClicksPerLink: props.links.length > 0 ? (totalClicks / props.links.length).toFixed(1) : '0.0'
     };
 });
 
@@ -367,15 +370,30 @@ const formatDate = (date: string) => {
                                     </div>
 
                                     <!-- Meta Info -->
-                                    <div class="flex items-center gap-4 mt-3 text-xs text-surface-500 dark:text-surface-400">
+                                    <div class="flex items-center flex-wrap gap-3 mt-3 text-xs text-surface-500 dark:text-surface-400">
                                         <span class="flex items-center gap-1">
                                             <LucideCalendar :size="14" />
                                             {{ t('links.createdAt') }}: {{ formatDate(link.created_at) }}
                                         </span>
-                                        <span class="flex items-center gap-1">
-                                            <LucideMousePointerClick :size="14" />
-                                            {{ link.clicks || 0 }} {{ t('links.clicks') }}
+                                        
+                                        <!-- Views Statistics -->
+                                        <span class="flex items-center gap-1 font-medium text-primary">
+                                            <LucideEye :size="14" />
+                                            {{ link.views_count || 0 }} views
                                         </span>
+                                        <span 
+                                            v-if="link.views_with_consent_count > 0"
+                                            class="px-2 py-0.5 rounded-full text-xs font-medium bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400"
+                                        >
+                                            🔒 {{ link.views_with_consent_count }} con consenso
+                                        </span>
+                                        <span 
+                                            v-if="link.views_anonymous_count > 0"
+                                            class="px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 dark:bg-gray-900/30 text-gray-700 dark:text-gray-400"
+                                        >
+                                            🕶️ {{ link.views_anonymous_count }} anonimi
+                                        </span>
+                                        
                                         <span
                                             class="px-2 py-1 rounded-full text-xs font-medium"
                                             :class="link.is_active 
@@ -391,6 +409,13 @@ const formatDate = (date: string) => {
 
                         <!-- Actions -->
                         <div class="flex items-center gap-2 flex-shrink-0">
+                            <Link
+                                :href="route('links.analytics', link.id)"
+                                class="px-4 py-2 bg-purple-100 dark:bg-purple-900/30 hover:bg-purple-200 dark:hover:bg-purple-900/50 text-purple-700 dark:text-purple-400 rounded-lg flex items-center gap-2 transition-colors"
+                            >
+                                <LucideBarChart3 :size="16" />
+                                <span class="hidden sm:inline">Analytics</span>
+                            </Link>
                             <Link
                                 :href="route('links.edit', link.id)"
                                 class="px-4 py-2 bg-surface-100 dark:bg-surface-800 hover:bg-surface-200 dark:hover:bg-surface-700 text-surface-700 dark:text-surface-300 rounded-lg flex items-center gap-2 transition-colors"

@@ -45,6 +45,7 @@ Route::domain(config('app.tenant_url'))->middleware([
     Route::post('/plans/start-trial', [PlanController::class, 'startTrial'])->name('plans.start-trial');
     
     Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout');
+    Route::post('/checkout/free', [CheckoutController::class, 'handleFreePlan'])->name('checkout.free');
     Route::get('/checkout/success', [CheckoutController::class, 'success'])->name('checkout.success');
     Route::get('/checkout/cancel', [CheckoutController::class, 'cancel'])->name('checkout.cancel');
     Route::get('/billing-portal', [CheckoutController::class, 'billingPortal'])->name('billing.portal');
@@ -53,8 +54,14 @@ Route::domain(config('app.tenant_url'))->middleware([
     // Routes che richiedono abbonamento/trial attivo
     // ==========================================
     Route::middleware([RedirectIfNotSubscribed::class])->group(function () {
-        Route::get('/dashboard', [App\Http\Controllers\DashboardController::class, 'index'])
+        Route::get('/', [App\Http\Controllers\DashboardController::class, 'index'])
             ->name('tenant.index');
+
+        // Analytics routes
+        Route::get('links/{link}/analytics', [App\Http\Controllers\AnalyticsController::class, 'link'])
+            ->name('links.analytics');
+        Route::get('qrcodes/{qrcode}/analytics', [App\Http\Controllers\AnalyticsController::class, 'qrcode'])
+            ->name('qrcodes.analytics');
 
         Route::resource('links', LinkController::class)->names('links');
         Route::resource('qrcodes', QrCodeController::class)->names('qrcodes');
@@ -74,16 +81,14 @@ Route::domain(config('app.tenant_url'))->middleware([
 });
 
 Route::domain(config('app.tenant_url'))->middleware('web')->group(function () {
+    // Fallback per app.maglink.it senza tenant - redirect a homepage pubblica
     Route::get('/', function () {
-        if (!Auth::check()) {
-            return redirect()->route('login');
-        }
-        // Se loggato, redirigi alla dashboard del tenant
-        return redirect()->route('tenant.index', ['tenant' => Auth::user()->tenant_id]);
-    })->name('tenant.home');
-    require __DIR__.'/auth.php';
-    require __DIR__.'/settings.php';
+        return redirect()->route('home');
+    });
 });
+
+// Settings routes - require tenancy
+require __DIR__.'/settings.php';
 
 
 

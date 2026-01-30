@@ -33,15 +33,19 @@ class RedirectIfNotSubscribed
                 return $next($request);
             }
             
+            // Se l'utente ha il piano free attivo, procedi
+            if ($user->onFreePlan()) {
+                return $next($request);
+            }
+            
             // Se l'utente può ancora iniziare un trial (trial_ends_at è NULL), permetti l'accesso
             // ma mostra il paywall per far scegliere se iniziare trial o acquistare
             if ($user->canStartTrial()) {
                 return $next($request);
             }
             
-            // Se non ha abbonamento, né trial attivo, né può iniziare un trial, reindirizza ai piani
-            return redirect()->route('plans.index')
-                ->with('error', 'Devi avere un abbonamento attivo o un trial per accedere a questa funzionalità.');
+            // Se non ha abbonamento, né trial attivo, né piano free, né può iniziare un trial, reindirizza ai piani
+            return \Inertia\Inertia::location(route('plans.index', ['tenant' => $user->tenant_id]));
         }
         
         return $next($request);

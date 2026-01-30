@@ -73,7 +73,7 @@ class CheckoutController extends Controller
     /**
      * Handle free plan subscription (no Stripe checkout needed).
      */
-    protected function handleFreePlan(Request $request)
+    public function handleFreePlan(Request $request)
     {
         $user = $request->user();
         

@@ -5,11 +5,15 @@ import { type BreadcrumbItem } from '@/types';
 import { Head, Link } from '@inertiajs/vue3';
 import { Link2, QrCode, BarChart2, Zap, Gem, Plus, Box, TrendingUp, FileText } from 'lucide-vue-next';
 import PlanLimitsCard from '@/components/PlanLimitsCard.vue';
+import PerformanceChart from '@/components/PerformanceChart.vue';
+import { useRoute } from '@/composables/useRoute';
+
+const route = useRoute();
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
         title: 'Dashboard',
-        href: '/dashboard',
+        href: '/',
     },
 ];
 
@@ -84,6 +88,9 @@ const formatDate = (date: string) => {
 const formatNumber = (num: number) => {
   return new Intl.NumberFormat('it-IT').format(num);
 };
+
+// Debug: verifica dati grafico
+console.log('Performance data:', props.performance);
 </script>
 
 
@@ -92,7 +99,7 @@ const formatNumber = (num: number) => {
     <Head title="Dashboard" />
     <AppLayout :breadcrumbs="breadcrumbs">
         <div
-            class="flex h-full flex-1 flex-col gap-4 rounded-2xl p-0 bg-[url('/grid.svg')] bg-repeat bg-[length:32px_32px]">
+            class="flex h-full flex-1 flex-col gap-4 rounded-2xl p-0">
             
             <!-- Welcome Banner nella griglia -->
             <div class="p-8 space-y-8">
@@ -208,20 +215,7 @@ const formatNumber = (num: number) => {
                         <div class="flex items-center gap-2 font-semibold mb-4 text-lg">
                             <BarChart2 class="w-5 h-5 text-blue-500" /> Attività ultimi 7 giorni (link creati)
                         </div>
-                        <div v-if="performance.length > 0" class="h-48 w-full bg-gradient-to-r from-blue-50/60 to-indigo-50/60 dark:from-gray-800 dark:to-gray-700 rounded-2xl flex items-end gap-3 px-6 py-4">
-                            <div v-for="(day, index) in performance" :key="index" 
-                                class="flex-1 flex flex-col items-center gap-2">
-                                <div class="w-full bg-blue-500/80 hover:bg-blue-600/90 rounded-t-lg transition-all cursor-pointer relative group"
-                                    :style="{ height: `${Math.max((day.total_items / Math.max(...performance.map(d => d.total_items))) * 100, 10)}%` }">
-                                    <div class="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-gray-900 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
-                                        {{ day.total_items }} link
-                                    </div>
-                                </div>
-                                <span class="text-xs text-gray-500 dark:text-gray-400 font-medium">
-                                    {{ new Date(day.date).toLocaleDateString('it-IT', { day: 'numeric', month: 'short' }) }}
-                                </span>
-                            </div>
-                        </div>
+                        <PerformanceChart v-if="performance.length > 0" :data="performance" />
                         <div v-else class="h-48 w-full flex items-center justify-center bg-gray-50 dark:bg-gray-800 rounded-2xl">
                             <p class="text-gray-500 dark:text-gray-400">Nessun dato disponibile per questo periodo</p>
                         </div>

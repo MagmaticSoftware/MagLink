@@ -18,7 +18,8 @@ import {
     LucideEyeOff,
     LucideClock,
     LucideScan,
-    LucideDownload
+    LucideDownload,
+    LucideShield
 } from 'lucide-vue-next';
 import Button from '@/components/volt/Button.vue';
 import InputText from '@/components/volt/InputText.vue';
@@ -44,6 +45,7 @@ const props = defineProps<{
         options: any;
         scans: number;
         is_active: boolean;
+        require_consent: boolean;
         last_scanned_at: string | null;
         created_at: string;
         updated_at: string;
@@ -52,6 +54,9 @@ const props = defineProps<{
 }>();
 
 const form = useForm({
+    user_id: props.qrcode.user_id,
+    company_id: props.qrcode.company_id,
+    tenant_id: props.qrcode.tenant_id,
     name: props.qrcode.name ?? '',
     slug: props.qrcode.slug ?? '',
     description: props.qrcode.description ?? '',
@@ -60,6 +65,7 @@ const form = useForm({
     payload: props.qrcode.payload ?? {},
     options: props.qrcode.options ?? {},
     is_active: props.qrcode.is_active,
+    require_consent: props.qrcode.require_consent,
 });
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -98,8 +104,15 @@ const currentFormat = computed(() =>
     formatOptions.find(f => f.value === form.format) || formatOptions[0]
 );
 
-// Payload content helper
-const payloadContent = ref(props.qrcode.payload?.content || '');
+// Payload content helper - recupera da content, url, o altri campi
+const payloadContent = ref(
+    props.qrcode.payload?.content || 
+    props.qrcode.payload?.url || 
+    props.qrcode.payload?.email || 
+    props.qrcode.payload?.phone || 
+    props.qrcode.payload?.text || 
+    ''
+);
 
 // QR Code image URL
 const qrImageUrl = computed(() => {
@@ -367,6 +380,42 @@ const submitForm = () => {
                                     <div class="w-11 h-6 bg-surface-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary/20 dark:peer-focus:ring-primary/40 rounded-full peer dark:bg-surface-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-surface-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-surface-600 peer-checked:bg-primary"></div>
                                 </label>
                             </div>
+
+                            <!-- Consent Page -->
+                            <div class="flex items-center justify-between p-4 bg-surface-50 dark:bg-surface-800 rounded-lg border-2 border-dashed" :class="form.require_consent ? 'border-blue-300 dark:border-blue-700' : 'border-surface-300 dark:border-surface-700'">
+                                <div class="flex items-center gap-3">
+                                    <div class="flex-shrink-0">
+                                        <LucideShield :size="20" :class="form.require_consent ? 'text-blue-600 dark:text-blue-400' : 'text-surface-400'" />
+                                    </div>
+                                    <div>
+                                        <div class="font-medium text-surface-900 dark:text-surface-50 text-sm">
+                                            {{ form.require_consent ? 'Consent page enabled' : 'Consent page disabled' }}
+                                        </div>
+                                        <div class="text-xs text-surface-500 dark:text-surface-400">
+                                            GDPR-compliant tracking
+                                        </div>
+                                    </div>
+                                </div>
+                                <label class="relative inline-flex items-center cursor-pointer">
+                                    <input 
+                                        type="checkbox" 
+                                        v-model="form.require_consent" 
+                                        class="sr-only peer"
+                                    />
+                                    <div class="w-11 h-6 bg-surface-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-200 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-surface-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-surface-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-surface-600 peer-checked:bg-blue-600"></div>
+                                </label>
+                            </div>
+
+                            <div v-if="form.require_consent" class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
+                                <div class="flex gap-2">
+                                    <LucideShield :size="16" class="text-blue-600 dark:text-blue-400 flex-shrink-0 mt-0.5" />
+                                    <div class="text-xs text-blue-900 dark:text-blue-200">
+                                        <strong>When enabled:</strong> Users scanning this QR code will see a consent page before redirect (like LinkedIn). 
+                                        If they accept, detailed analytics are collected (browser, device, country, etc.). 
+                                        If they decline, only a scan count is saved.
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
@@ -426,7 +475,7 @@ const submitForm = () => {
                                     </div>
                                     <div class="flex-1 min-w-0">
                                         <div class="text-xs text-surface-500 dark:text-surface-400 mt-1 truncate">
-                                            {{ t('qrcodes.shortUrl') }}: <span class="text-primary font-mono">{{ shortUrl }}/{{ qrcode.slug }}</span>
+                                            {{ t('qrcodes.shortUrl') }}: <span class="text-primary font-mono">{{ shortUrl }}/q/{{ qrcode.slug }}</span>
                                         </div>
                                         <div class="text-xs text-primary mt-2 truncate">
                                             {{ t('qrcodes.content') }}: {{ payloadContent || t('qrcodes.preview') }}

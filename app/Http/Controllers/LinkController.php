@@ -16,10 +16,29 @@ class LinkController extends Controller
      */
     public function index()
     {
-        $links = Link::orderBy('created_at', 'desc')->get();
+        $links = Link::withCount([
+            'views',
+            'views as views_with_consent_count' => function ($query) {
+                $query->where('consent_given', true);
+            },
+            'views as views_anonymous_count' => function ($query) {
+                $query->where('consent_given', false);
+            },
+        ])->orderBy('created_at', 'desc')->get();
+        
+        // Calculate stats
+        $totalViews = $links->sum('views_count');
+        $stats = [
+            'total' => $links->count(),
+            'active' => $links->where('is_active', true)->count(),
+            'totalClicks' => $totalViews,
+            'avgClicksPerLink' => $links->count() > 0 ? round($totalViews / $links->count(), 1) : 0,
+        ];
+        
         return Inertia::render('tenant/links/Index', [
             'links' => $links,
             'shortUrl' => config('app.short_url'),
+            'stats' => $stats,
         ]);
     }
 

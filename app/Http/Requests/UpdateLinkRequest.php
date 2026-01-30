@@ -21,16 +21,32 @@ class UpdateLinkRequest extends FormRequest
      */
     public function rules(): array
     {
+        $linkId = $this->route('link') ? $this->route('link')->id : null;
+        
         return [
             'user_id' => 'nullable|exists:users,id',
             'company_id' => 'nullable|exists:companies,id',
             'tenant_id' => 'nullable|string|max:255',
-            'slug' => 'nullable|string|max:255|unique:links,slug',
+            'slug' => 'nullable|string|min:3|max:100|unique:links,slug,'.$linkId.'|regex:/^[a-z0-9]+(-[a-z0-9]+)*$/',
             'url' => 'required|url',
             'title' => 'required|string|max:255',
             'description' => 'nullable|string|max:1000',
             'is_active' => 'boolean',
             'type' => 'nullable|string|max:50',
+            'require_consent' => 'boolean',
+        ];
+    }
+
+    /**
+     * Get custom messages for validator errors.
+     */
+    public function messages(): array
+    {
+        return [
+            'slug.regex' => 'Lo slug deve contenere solo lettere minuscole, numeri e trattini. Non può iniziare o finire con un trattino.',
+            'slug.min' => 'Lo slug deve contenere almeno :min caratteri.',
+            'slug.max' => 'Lo slug non può superare :max caratteri.',
+            'slug.unique' => 'Questo slug è già in uso. Scegline un altro.',
         ];
     }
 }

@@ -11,7 +11,8 @@ import {
     LucideExternalLink,
     LucideEye,
     LucideEyeOff,
-    LucideGlobe
+    LucideGlobe,
+    LucideShield
 } from 'lucide-vue-next';
 import InputText from '@/components/volt/InputText.vue';
 import Button from '@/components/volt/Button.vue';
@@ -41,6 +42,7 @@ const form = useForm({
     title: '',
     description: '',
     is_active: true,
+    require_consent: false,
     type: 'link',
 });
 
@@ -236,6 +238,42 @@ const submitForm = () => {
                                     />
                                     <div class="w-11 h-6 bg-surface-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary/20 dark:peer-focus:ring-primary/40 rounded-full peer dark:bg-surface-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-surface-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-surface-600 peer-checked:bg-primary"></div>
                                 </label>
+                            </div>
+
+                            <!-- Consent Page -->
+                            <div class="flex items-center justify-between p-4 bg-surface-50 dark:bg-surface-800 rounded-lg border-2 border-dashed" :class="form.require_consent ? 'border-blue-300 dark:border-blue-700' : 'border-surface-300 dark:border-surface-700'">
+                                <div class="flex items-center gap-3">
+                                    <div class="flex-shrink-0">
+                                        <LucideShield :size="20" :class="form.require_consent ? 'text-blue-600 dark:text-blue-400' : 'text-surface-400'" />
+                                    </div>
+                                    <div>
+                                        <div class="font-medium text-surface-900 dark:text-surface-50 text-sm">
+                                            {{ form.require_consent ? 'Consent page enabled' : 'Consent page disabled' }}
+                                        </div>
+                                        <div class="text-xs text-surface-500 dark:text-surface-400">
+                                            GDPR-compliant tracking
+                                        </div>
+                                    </div>
+                                </div>
+                                <label class="relative inline-flex items-center cursor-pointer">
+                                    <input 
+                                        type="checkbox" 
+                                        v-model="form.require_consent" 
+                                        class="sr-only peer"
+                                    />
+                                    <div class="w-11 h-6 bg-surface-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-200 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-surface-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-surface-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-surface-600 peer-checked:bg-blue-600"></div>
+                                </label>
+                            </div>
+
+                            <div v-if="form.require_consent" class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
+                                <div class="flex gap-2">
+                                    <LucideShield :size="16" class="text-blue-600 dark:text-blue-400 flex-shrink-0 mt-0.5" />
+                                    <div class="text-xs text-blue-900 dark:text-blue-200">
+                                        <strong>When enabled:</strong> Users will see a consent page before redirect (like LinkedIn). 
+                                        If they accept, detailed analytics are collected (browser, device, country, etc.). 
+                                        If they decline, only a visit count is saved.
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>

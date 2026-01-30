@@ -3,7 +3,7 @@ import UserInfo from '@/components/UserInfo.vue';
 import { DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator } from '@/components/ui/dropdown-menu';
 import type { User } from '@/types';
 import { Link } from '@inertiajs/vue3';
-import { LogOut, Settings, SunMedium, Moon, FileDigit } from 'lucide-vue-next';
+import { LogOut, Settings, SunMedium, Moon, CreditCard } from 'lucide-vue-next';
 import { useDark, useToggle } from '@vueuse/core';
 
 const isDark = useDark();
@@ -25,18 +25,15 @@ defineProps<Props>();
     <DropdownMenuSeparator />
     <DropdownMenuGroup>
         <DropdownMenuItem :as-child="true">
-            <Link class="block w-full" :href="route('profile.edit')" as="button">
+            <Link class="block w-full" :href="route('profile.edit', { tenant: user.tenant_id })" as="button">
                 <Settings class="mr-2 h-4 w-4" />
                 Settings
             </Link>
         </DropdownMenuItem>
-    </DropdownMenuGroup>
-    <DropdownMenuSeparator />
-    <DropdownMenuGroup>
         <DropdownMenuItem :as-child="true">
-            <Link class="block w-full" :href="route('spark.portal')" as="button">
-                <FileDigit class="mr-2 h-4 w-4" />
-                Billing
+            <Link class="block w-full" :href="route('plans.index', { tenant: user.tenant_id })" as="button">
+                <CreditCard class="mr-2 h-4 w-4" />
+                Piani e Prezzi
             </Link>
         </DropdownMenuItem>
     </DropdownMenuGroup>

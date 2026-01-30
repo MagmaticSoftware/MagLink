@@ -285,7 +285,7 @@ const shareQrCode = async () => {
                                 </div>
                                 <div class="flex-1 min-w-0">
                                     <div class="text-xs text-surface-500 dark:text-surface-400 truncate">
-                                        {{ t('qrcodes.shortUrl') }}: <span class="text-primary font-mono">{{ shortUrl }}/{{ qrcode.slug }}</span>
+                                        {{ t('qrcodes.shortUrl') }}: <span class="text-primary font-mono">{{ shortUrl }}/q/{{ qrcode.slug }}</span>
                                     </div>
                                     <div class="text-xs text-primary mt-2 truncate">
                                         {{ t('qrcodes.content') }}: {{ qrcode.payload?.content || qrcode.payload?.url || t('qrcodes.preview') }}

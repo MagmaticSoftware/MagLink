@@ -16,9 +16,29 @@ class QrCodeController extends Controller
      */
     public function index()
     {
-        $qrcodes = QrCode::orderBy('created_at', 'desc')->get();
+        $qrcodes = QrCode::withCount([
+            'views',
+            'views as views_with_consent_count' => function ($query) {
+                $query->where('consent_given', true);
+            },
+            'views as views_anonymous_count' => function ($query) {
+                $query->where('consent_given', false);
+            },
+        ])->orderBy('created_at', 'desc')->get();
+        
+        // Calculate stats
+        $totalViews = $qrcodes->sum('views_count');
+        $stats = [
+            'total' => $qrcodes->count(),
+            'active' => $qrcodes->where('is_active', true)->count(),
+            'totalScans' => $totalViews,
+            'avgScansPerCode' => $qrcodes->count() > 0 ? round($totalViews / $qrcodes->count(), 1) : 0,
+        ];
+        
         return Inertia::render('tenant/qrcodes/Index', [
             'qrcodes' => $qrcodes,
+            'stats' => $stats,
+            'shortUrl' => config('app.short_url'),
         ]);
     }
 
@@ -183,7 +203,7 @@ class QrCodeController extends Controller
     private function generateRandomSlug(): string
     {
         do {
-            $slug = strtolower(Str::random(8)); // 8 caratteri alfanumerici
+            $slug = strtolower(Str::random(6)); // 6 caratteri alfanumerici
         } while (QrCode::where('slug', $slug)->exists());
 
         return $slug;
