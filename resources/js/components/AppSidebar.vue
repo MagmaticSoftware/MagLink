@@ -32,6 +32,8 @@ const planModalData = computed(() => ({
     hasActiveTrial: page.props.billing?.hasActiveTrial || false,
     canStartTrial: page.props.billing?.canStartTrial || false,
     isSubscribed: page.props.billing?.isSubscribed || false,
+    currentPlanKey: page.props.billing?.currentPlanKey || null,
+    onFreePlan: page.props.billing?.onFreePlan || false,
 }));
 
 const mainNavItems = computed(() => [
@@ -124,7 +126,9 @@ const isActive = (href: string) => {
             :is-new-user="planModalData.isNewUser" 
             :has-active-trial="planModalData.hasActiveTrial"
             :can-start-trial="planModalData.canStartTrial" 
-            :is-subscribed="planModalData.isSubscribed" 
+            :is-subscribed="planModalData.isSubscribed"
+            :current-plan-key="planModalData.currentPlanKey"
+            :on-free-plan="planModalData.onFreePlan" 
         />
     </aside>
 </template>

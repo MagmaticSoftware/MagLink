@@ -15,6 +15,7 @@ interface SubscriptionData {
     billing_type: string | null;
     active: boolean;
     ends_at: string | null;
+    current_period_end?: string | null;
     created_at: string | null;
     stripe_price: string | null;
     on_grace_period: boolean;
@@ -57,8 +58,10 @@ const daysRemaining = computed(() => {
         return props.trial.days_left;
     }
     
-    if (props.subscription?.ends_at) {
-        const endDate = new Date(props.subscription.ends_at);
+    // Per subscription attive, usa current_period_end invece di ends_at
+    const endDateStr = props.subscription?.current_period_end || props.subscription?.ends_at;
+    if (endDateStr) {
+        const endDate = new Date(endDateStr);
         const now = new Date();
         const diff = endDate.getTime() - now.getTime();
         return Math.ceil(diff / (1000 * 60 * 60 * 24));
@@ -69,7 +72,13 @@ const daysRemaining = computed(() => {
 
 // Formatta la data di scadenza
 const formattedEndDate = computed(() => {
-    const dateStr = props.trial?.active ? props.trial.ends_at : props.subscription?.ends_at;
+    let dateStr;
+    if (props.trial?.active) {
+        dateStr = props.trial.ends_at;
+    } else if (props.subscription) {
+        dateStr = props.subscription.current_period_end || props.subscription.ends_at;
+    }
+    
     if (!dateStr) return null;
     
     const date = new Date(dateStr);

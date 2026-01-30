@@ -30,6 +30,8 @@ const props = defineProps<{
     canStartTrial: boolean;
     isSubscribed: boolean;
     visible: boolean;
+    currentPlanKey?: string | null;
+    onFreePlan?: boolean;
 }>();
 
 const emit = defineEmits<{
@@ -234,11 +236,20 @@ const closeModal = () => {
                         :key="planKey" 
                         :class="[
                             'relative bg-white dark:bg-gray-800 rounded-2xl shadow-lg border-2 p-6 flex flex-col',
-                            plan.popular ? 'border-blue-500 dark:border-blue-400' : 'border-gray-200 dark:border-gray-700'
+                            plan.popular ? 'border-blue-500 dark:border-blue-400' : 
+                            currentPlanKey === planKey ? 'border-green-500 dark:border-green-400' : 
+                            'border-gray-200 dark:border-gray-700'
                         ]"
                     >
+                        <!-- Badge per il piano corrente -->
+                        <div v-if="currentPlanKey === planKey" class="absolute -top-4 left-1/2 transform -translate-x-1/2">
+                            <span class="bg-gradient-to-r from-green-500 to-green-600 text-white px-4 py-1 rounded-full text-sm font-medium">
+                                Piano Attuale
+                            </span>
+                        </div>
+                        
                         <!-- Badge per il piano consigliato -->
-                        <div v-if="plan.popular" class="absolute -top-4 left-1/2 transform -translate-x-1/2">
+                        <div v-else-if="plan.popular" class="absolute -top-4 left-1/2 transform -translate-x-1/2">
                             <span class="bg-gradient-to-r from-blue-500 to-blue-600 text-white px-4 py-1 rounded-full text-sm font-medium">
                                 Più Popolare
                             </span>
@@ -305,8 +316,31 @@ const closeModal = () => {
 
                         <!-- CTA Button -->
                         <div class="mt-auto">
+                            <!-- Piano corrente - disabilitato -->
+                            <button 
+                                v-if="currentPlanKey === planKey"
+                                disabled
+                                class="w-full py-3 px-4 rounded-lg font-medium text-center transition-all duration-200 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 cursor-not-allowed"
+                            >
+                                Piano Attuale
+                            </button>
+                            
+                            <!-- Messaggio per upgrade/downgrade non disponibile -->
+                            <div v-else-if="isSubscribed && !onFreePlan && planKey !== 'free'">
+                                <button 
+                                    disabled
+                                    class="w-full py-3 px-4 rounded-lg font-medium text-center transition-all duration-200 bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed mb-2"
+                                >
+                                    Non Disponibile
+                                </button>
+                                <p class="text-xs text-center text-gray-500 dark:text-gray-400">
+                                    Contatta l'assistenza per modificare il piano
+                                </p>
+                            </div>
+                            
+                            <!-- Link normale per piani non correnti -->
                             <a 
-                                v-if="planKey !== 'free'"
+                                v-else-if="planKey !== 'free'"
                                 :href="route('checkout', { tenant: page.props.auth.tenant, plan: planKey, billing: billingType })" 
                                 :class="[
                                     'w-full py-3 px-4 rounded-lg font-medium text-center transition-all duration-200 block',
@@ -317,14 +351,21 @@ const closeModal = () => {
                             >
                                 Scegli {{ plan.name }}
                             </a>
+                            
+                            <!-- Piano free -->
                             <button 
                                 v-else
                                 @click="selectFreePlan"
-                                :disabled="isSelectingFreePlan"
-                                class="w-full py-3 px-4 rounded-lg font-medium text-center transition-all duration-200 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-900 dark:text-white disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center"
+                                :disabled="isSelectingFreePlan || currentPlanKey === 'free'"
+                                :class="[
+                                    'w-full py-3 px-4 rounded-lg font-medium text-center transition-all duration-200 flex items-center justify-center',
+                                    currentPlanKey === 'free'
+                                        ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 cursor-not-allowed'
+                                        : 'bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-900 dark:text-white disabled:opacity-70 disabled:cursor-not-allowed'
+                                ]"
                             >
                                 <LucideLoader2 v-if="isSelectingFreePlan" class="w-5 h-5 mr-2 animate-spin" />
-                                {{ isSelectingFreePlan ? 'Attivazione...' : 'Inizia Gratis' }}
+                                {{ currentPlanKey === 'free' ? 'Piano Attuale' : isSelectingFreePlan ? 'Attivazione...' : 'Inizia Gratis' }}
                             </button>
                         </div>
                     </div>
