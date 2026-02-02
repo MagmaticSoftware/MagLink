@@ -365,7 +365,6 @@ const formatDate = (date: string | null) => {
                     </div>
                 </div>
             </div>
-        </div>
 
             <!-- FAQ or Additional Info -->
             <div class="mt-16 text-center">
