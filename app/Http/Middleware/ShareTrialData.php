@@ -61,8 +61,11 @@ class ShareTrialData
                     'billing_type' => $billingType,
                     'active' => $subscription->active(),
                     'ends_at' => $subscription->ends_at?->toISOString(),
-                    'current_period_end' => $subscription->asStripeSubscription()->current_period_end ? 
-                        \Carbon\Carbon::createFromTimestamp($subscription->asStripeSubscription()->current_period_end)->toISOString() : null,
+                    // Usa il campo current_period_end dal database, con fallback all'API Stripe
+                    'current_period_end' => $subscription->current_period_end ? 
+                        $subscription->current_period_end->toISOString() : 
+                        ($subscription->asStripeSubscription()->current_period_end ? 
+                            \Carbon\Carbon::createFromTimestamp($subscription->asStripeSubscription()->current_period_end)->toISOString() : null),
                     'created_at' => $subscription->created_at?->toISOString(),
                     'stripe_price' => $subscription->stripe_price,
                     'on_grace_period' => $subscription->onGracePeriod(),

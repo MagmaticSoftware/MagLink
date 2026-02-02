@@ -15,6 +15,17 @@ class StripeSubscription extends CashierSubscription
     protected $table = 'stripe_subscriptions';
 
     /**
+     * The attributes that should be cast.
+     *
+     * @var array
+     */
+    protected $casts = [
+        'current_period_end' => 'datetime',
+        'trial_ends_at' => 'datetime',
+        'ends_at' => 'datetime',
+    ];
+
+    /**
      * Get the subscription items related to the subscription.
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany<\App\Models\StripeSubscriptionItem, $this>
