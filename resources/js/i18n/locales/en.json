@@ -336,40 +336,42 @@
       }
     },
     "pricing": {
-      "title": "Find a plan to streamline your workflows",
-      "subtitle": "Flexible and powerful, MagLink makes it easy to build the exact workflow your team needs",
-      "essentials": {
-        "name": "Essentials",
-        "price": "$0",
+      "title": "Choose the perfect plan for you",
+      "subtitle": "Start free, then upgrade to a paid plan when you're ready",
+      "free": {
+        "name": "Free",
+        "price": "€0",
         "period": "/month",
-        "description": "Perfect for personal use",
-        "feature1": "100 links per month",
-        "feature2": "Basic analytics",
-        "feature3": "Standard support",
-        "cta": "Get Started"
+        "description": "Free plan to get started",
+        "feature1": "Up to 5 short links",
+        "feature2": "5 QR Codes (1 dynamic)",
+        "feature3": "1 Landing page (max 6 blocks)",
+        "feature4": "Basic statistics",
+        "cta": "Get Started Free"
       },
-      "teams": {
-        "name": "Teams",
+      "professional": {
+        "name": "Professional",
         "badge": "Most Popular",
-        "price": "$19",
+        "price": "€4",
         "period": "/month",
-        "description": "For growing businesses",
-        "feature1": "10,000 links per month",
-        "feature2": "Advanced analytics",
-        "feature3": "Custom domains",
-        "feature4": "Priority support",
-        "cta": "Start Free Trial"
+        "description": "Perfect for professionals and small businesses",
+        "feature1": "100 Short links",
+        "feature2": "100 QR Codes (30 dynamic)",
+        "feature3": "5 Landing pages",
+        "feature4": "Advanced statistics",
+        "feature5": "Priority email support (within 72 hours)",
+        "cta": "Start Now"
       },
       "enterprise": {
         "name": "Enterprise",
-        "price": "$99",
+        "price": "€8",
         "period": "/month",
-        "description": "For large organizations",
-        "feature1": "Unlimited links",
-        "feature2": "Team management",
-        "feature3": "API access",
-        "feature4": "24/7 support",
-        "cta": "Contact Sales"
+        "description": "For businesses and teams with advanced needs",
+        "feature1": "Everything in Professional",
+        "feature2": "Unlimited landing pages",
+        "feature3": "Complete white-label (app logo and consent page)",
+        "feature4": "Priority email support (within 24 hours)",
+        "cta": "Contact Us"
       }
     },
     "footer": {
@@ -395,7 +397,9 @@
       "linkedin": "LinkedIn",
       "copyright": "© 2024 MagLink. All rights reserved.",
       "privacy": "Privacy Policy",
+      "privacyPolicy": "Privacy Policy",
       "terms": "Terms of Service",
+      "termsOfService": "Terms of Service",
       "security": "Security"
     }
   }

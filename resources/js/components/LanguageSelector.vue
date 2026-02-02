@@ -33,7 +33,7 @@ const currentLocale = () => {
             class="flex h-9 w-9 items-center justify-center rounded-lg text-surface-600 dark:text-surface-400 hover:bg-surface-100 dark:hover:bg-surface-800 transition-colors"
             :title="currentLocale()?.name"
         >
-            <Globe :size="18" />
+            <span class="text-xl">{{ currentLocale()?.flag }}</span>
         </button>
         
         <Menu ref="languageMenu" :model="languageMenuItems" popup />

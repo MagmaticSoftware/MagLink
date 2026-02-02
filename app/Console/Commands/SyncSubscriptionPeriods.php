@@ -51,8 +51,14 @@ class SyncSubscriptionPeriods extends Command
             try {
                 $stripeSubscription = $subscription->asStripeSubscription();
                 
-                if (isset($stripeSubscription->current_period_end)) {
-                    $newPeriodEnd = Carbon::createFromTimestamp($stripeSubscription->current_period_end);
+                // Converti l'oggetto Stripe in array usando json_decode/encode
+                $data = json_decode(json_encode($stripeSubscription), true);
+                
+                // Il current_period_end è negli items, non nella subscription root
+                $currentPeriodEnd = $data['items']['data'][0]['current_period_end'] ?? null;
+                
+                if ($currentPeriodEnd) {
+                    $newPeriodEnd = Carbon::createFromTimestamp($currentPeriodEnd);
                     
                     // Aggiorna solo se il valore è cambiato o se era null
                     if (!$subscription->current_period_end || !$subscription->current_period_end->eq($newPeriodEnd)) {
@@ -62,6 +68,9 @@ class SyncSubscriptionPeriods extends Command
                     } else {
                         $skipped++;
                     }
+                } else {
+                    $this->warn("\nSubscription {$subscription->stripe_id}: current_period_end non trovato");
+                    $skipped++;
                 }
             } catch (\Exception $e) {
                 $this->error("\nErrore per subscription {$subscription->stripe_id}: {$e->getMessage()}");

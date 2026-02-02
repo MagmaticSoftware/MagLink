@@ -325,40 +325,42 @@
       }
     },
     "pricing": {
-      "title": "Trova un piano per ottimizzare i tuoi flussi di lavoro",
-      "subtitle": "Flessibile e potente, MagLink semplifica la creazione del flusso di lavoro perfetto per il tuo team",
-      "essentials": {
-        "name": "Essentials",
-        "price": "$0",
+      "title": "Scegli il piano perfetto per te",
+      "subtitle": "Inizia gratis, poi passa a un piano a pagamento quando sei pronto",
+      "free": {
+        "name": "Free",
+        "price": "€0",
         "period": "/mese",
-        "description": "Perfetto per uso personale",
-        "feature1": "100 link al mese",
-        "feature2": "Analytics base",
-        "feature3": "Supporto standard",
-        "cta": "Inizia"
+        "description": "Piano gratuito per iniziare",
+        "feature1": "Fino a 5 link brevi",
+        "feature2": "5 QR Code (1 dinamico)",
+        "feature3": "1 Landing page (max 6 blocchi)",
+        "feature4": "Statistiche base",
+        "cta": "Inizia gratis"
       },
-      "teams": {
-        "name": "Teams",
+      "professional": {
+        "name": "Professional",
         "badge": "Più Popolare",
-        "price": "$19",
+        "price": "€4",
         "period": "/mese",
-        "description": "Per aziende in crescita",
-        "feature1": "10.000 link al mese",
-        "feature2": "Analytics avanzate",
-        "feature3": "Domini personalizzati",
-        "feature4": "Supporto prioritario",
-        "cta": "Inizia prova gratuita"
+        "description": "Perfetto per professionisti e piccole imprese",
+        "feature1": "100 Link brevi",
+        "feature2": "100 QR Code (30 dinamici)",
+        "feature3": "5 Landing pages",
+        "feature4": "Statistiche avanzate",
+        "feature5": "Supporto email prioritario (entro 72 ore)",
+        "cta": "Inizia ora"
       },
       "enterprise": {
         "name": "Enterprise",
-        "price": "$99",
+        "price": "€8",
         "period": "/mese",
-        "description": "Per grandi organizzazioni",
-        "feature1": "Link illimitati",
-        "feature2": "Gestione team",
-        "feature3": "Accesso API",
-        "feature4": "Supporto 24/7",
-        "cta": "Contatta vendite"
+        "description": "Per aziende e team con esigenze avanzate",
+        "feature1": "Tutto del piano Professional",
+        "feature2": "Landing pages illimitate",
+        "feature3": "White-label completo (logo app e consent page)",
+        "feature4": "Supporto email prioritario (entro 24 ore)",
+        "cta": "Contattaci"
       }
     },
     "footer": {
@@ -384,7 +386,9 @@
       "linkedin": "LinkedIn",
       "copyright": "© 2026 MagLink. Tutti i diritti riservati.",
       "privacy": "Privacy policy",
+      "privacyPolicy": "Privacy policy",
       "terms": "Termini di servizio",
+      "termsOfService": "Termini di servizio",
       "security": "Sicurezza"
     }
   }

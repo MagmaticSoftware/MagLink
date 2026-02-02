@@ -119,6 +119,14 @@ const closeModal = () => {
         emit('update:visible', false);
     }
 };
+
+const selectPlan = (planKey: string) => {
+    window.location.href = route('checkout', { 
+        tenant: page.props.auth.tenant, 
+        plan: planKey, 
+        billing: billingType.value 
+    });
+};
 </script>
 
 <template>
@@ -338,19 +346,19 @@ const closeModal = () => {
                                 </p>
                             </div>
                             
-                            <!-- Link normale per piani non correnti -->
-                            <a 
+                            <!-- Button per piani a pagamento non correnti -->
+                            <button 
                                 v-else-if="planKey !== 'free'"
-                                :href="route('checkout', { tenant: page.props.auth.tenant, plan: planKey, billing: billingType })" 
+                                @click="selectPlan(planKey)"
                                 :class="[
-                                    'w-full py-3 px-4 rounded-lg font-medium text-center transition-all duration-200 block',
+                                    'w-full py-3 px-4 rounded-lg font-medium text-center transition-all duration-200',
                                     plan.popular
                                         ? 'bg-blue-600 hover:bg-blue-700 text-white'
                                         : 'bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-900 dark:text-white'
                                 ]"
                             >
                                 Scegli {{ plan.name }}
-                            </a>
+                            </button>
                             
                             <!-- Piano free -->
                             <button 

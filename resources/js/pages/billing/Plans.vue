@@ -93,12 +93,12 @@ const selectPlan = (planKey: string) => {
     }
     
     loading.value = planKey;
-    // Redirect al checkout Stripe
+    // Per i piani a pagamento, usa window.location per redirect a Stripe
     window.location.href = route('checkout', { 
         tenant: page.props.auth.tenant,
         plan: planKey,
         billing: billingCycle.value
-    }, true);
+    });
 };
 
 const currentPlanKey = computed(() => {
@@ -361,39 +361,6 @@ const formatDate = (date: string | null) => {
                             class="text-xs text-center text-orange-600 dark:text-orange-400 mt-2"
                         >
                             Per modificare il piano contatta l'assistenza
-                        </p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- FAQ or Additional Info -->
-            <div class="mt-16 text-center">
-                <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">
-                    Domande frequenti
-                </h3>
-                <div class="max-w-2xl mx-auto text-left space-y-6">
-                    <div>
-                        <h4 class="font-semibold text-gray-900 dark:text-white mb-2">
-                            Posso cambiare piano in qualsiasi momento?
-                        </h4>
-                        <p class="text-gray-600 dark:text-gray-400">
-                            Sì! Puoi passare a un piano superiore o inferiore quando vuoi. Le modifiche saranno applicate immediatamente.
-                        </p>
-                    </div>
-                    <div>
-                        <h4 class="font-semibold text-gray-900 dark:text-white mb-2">
-                            Cosa succede dopo il trial?
-                        </h4>
-                        <p class="text-gray-600 dark:text-gray-400">
-                            Al termine dei 30 giorni di prova, dovrai scegliere un piano per continuare. Puoi sempre iniziare con il piano gratuito!
-                        </p>
-                    </div>
-                    <div>
-                        <h4 class="font-semibold text-gray-900 dark:text-white mb-2">
-                            I pagamenti sono sicuri?
-                        </h4>
-                        <p class="text-gray-600 dark:text-gray-400">
-                            Assolutamente! Utilizziamo Stripe per elaborare tutti i pagamenti, garantendo massima sicurezza e conformità PCI.
                         </p>
                     </div>
                 </div>

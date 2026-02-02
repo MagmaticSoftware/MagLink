@@ -80,7 +80,7 @@ const submit = () => {
                     </Label>
                 </div>
 
-                <Button type="submit" class="mt-4 w-full bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 dark:from-orange-600 dark:to-orange-700 dark:hover:from-orange-700 dark:hover:to-orange-800 text-white" :tabindex="4" :disabled="form.processing">
+                <Button type="submit" class="mt-4 w-full bg-gradient-to-r from-orange-600 to-orange-800 hover:from-orange-600 hover:to-orange-700 dark:from-orange-600 dark:to-orange-700 dark:hover:from-orange-700 dark:hover:to-orange-800 text-white" :tabindex="4" :disabled="form.processing">
                     <LogIn v-if="!form.processing" class="h-4 w-4" />
                     <LoaderCircle v-if="form.processing" class="h-4 w-4 animate-spin" />
                     Log in

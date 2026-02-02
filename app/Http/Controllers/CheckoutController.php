@@ -46,8 +46,19 @@ class CheckoutController extends Controller
         $user = $request->user();
 
         try {
+            // Log per debugging
+            Log::info('Checkout attempt', [
+                'user_id' => $user->id,
+                'plan' => $planName,
+                'billing' => $billingType,
+                'price_id' => $priceId,
+                'on_free_plan' => $user->onFreePlan(),
+                'subscribed' => $user->subscribed('default'),
+            ]);
+
             // Se l'utente è sul piano free, può sempre fare checkout verso un piano a pagamento
             if (!$user->onFreePlan() && $user->subscribed('default')) {
+                Log::warning('User already has active subscription', ['user_id' => $user->id]);
                 return redirect()->route('plans.index', ['tenant' => $user->tenant_id])
                     ->with('error', 'Hai già un abbonamento attivo. Per cambiare piano, utilizza il portale di fatturazione.');
             }
@@ -69,9 +80,15 @@ class CheckoutController extends Controller
                     ],
                 ]);
 
+            Log::info('About to return checkout', ['checkout_class' => get_class($checkout)]);
             return $checkout;
         } catch (\Exception $e) {
             // In caso di errore, torna alla pagina dei piani con messaggio di errore
+            Log::error('Checkout error', [
+                'user_id' => $user->id,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
             return redirect()->route('plans.index', ['tenant' => $user->tenant_id])
                 ->with('error', 'Errore durante la creazione del checkout: ' . $e->getMessage());
         }
@@ -162,6 +179,9 @@ class CheckoutController extends Controller
                         'quantity' => $stripeSubscription->items->data[0]->quantity ?? 1,
                         'trial_ends_at' => null,
                         'ends_at' => null,
+                        'current_period_end' => isset($stripeSubscription->current_period_end) 
+                            ? \Carbon\Carbon::createFromTimestamp($stripeSubscription->current_period_end) 
+                            : null,
                     ]);
                 }
             }

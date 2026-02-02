@@ -38,7 +38,7 @@ const submit = () => {
                 </div>
 
                 <div class="my-6 flex items-center justify-start">
-                    <Button class="w-full bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 dark:from-orange-600 dark:to-orange-700 dark:hover:from-orange-700 dark:hover:to-orange-800 text-white" :disabled="form.processing">
+                    <Button class="w-full bg-gradient-to-r from-orange-600 to-orange-800 hover:from-orange-600 hover:to-orange-700 dark:from-orange-600 dark:to-orange-700 dark:hover:from-orange-700 dark:hover:to-orange-800 text-white" :disabled="form.processing">
                         <LoaderCircle v-if="form.processing" class="h-4 w-4 animate-spin" />
                         Email password reset link
                     </Button>

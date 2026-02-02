@@ -169,30 +169,35 @@ const billingTypeLabel = computed(() => {
                 </div>
             </div>
             
-            <!-- Days/Time left with circular design (only if not free plan or has end date) -->
-            <div v-if="bannerType !== 'free' || daysRemaining > 0" class="mb-3">
-                <!-- Large days number -->
-                <div class="text-center mb-2">
-                    <div :class="getTextClass()" class="text-4xl font-black leading-none">
-                        {{ daysRemaining }}
-                    </div>
-                    <p :class="getTextClass()" class="text-xs font-medium mt-1">
-                        {{ daysRemaining === 1 ? 'giorno rimanente' : 'giorni rimanenti' }}
-                    </p>
+            <!-- Plan limits -->
+            <div class="mb-3 space-y-1.5">
+                <div class="flex items-center justify-between text-xs">
+                    <span :class="getTextClass()" class="opacity-75">Link</span>
+                    <span :class="getTextClass()" class="font-semibold">
+                        {{ billing?.limits?.links === -1 ? 'Illimitati' : billing?.limits?.links || 0 }}
+                    </span>
                 </div>
-                
-                <!-- Expiry date -->
-                <div v-if="formattedEndDate" class="text-center">
-                    <p :class="getTextClass()" class="text-xs opacity-75">
-                        Scade il {{ formattedEndDate }}
-                    </p>
+                <div class="flex items-center justify-between text-xs">
+                    <span :class="getTextClass()" class="opacity-75">QR Code</span>
+                    <span :class="getTextClass()" class="font-semibold">
+                        {{ billing?.limits?.qrcodes === -1 ? 'Illimitati' : billing?.limits?.qrcodes || 0 }}
+                    </span>
+                </div>
+                <div class="flex items-center justify-between text-xs">
+                    <span :class="getTextClass()" class="opacity-75">Pagine</span>
+                    <span :class="getTextClass()" class="font-semibold">
+                        {{ billing?.limits?.pages === -1 ? 'Illimitate' : billing?.limits?.pages || 0 }}
+                    </span>
                 </div>
             </div>
             
-            <!-- Free plan message -->
-            <div v-else class="mb-3">
-                <p :class="getTextClass()" class="text-xs leading-tight">
-                    Piano gratuito senza scadenza
+            <!-- Renewal date (only for active subscriptions) -->
+            <div v-if="bannerType === 'subscription' && formattedEndDate" class="mb-3 text-center">
+                <p :class="getTextClass()" class="text-xs opacity-75">
+                    Rinnovo il {{ formattedEndDate }}
+                </p>
+                <p :class="getTextClass()" class="text-xs font-semibold mt-0.5">
+                    {{ daysRemaining }} {{ daysRemaining === 1 ? 'giorno' : 'giorni' }} rimanenti
                 </p>
             </div>
             
@@ -209,3 +214,4 @@ const billingTypeLabel = computed(() => {
         </div>
     </div>
 </template>
+
