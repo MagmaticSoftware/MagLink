@@ -59,12 +59,15 @@ const breadcrumbs: BreadcrumbItem[] = [
 const handleCreateClick = () => {
     const page = usePage();
     const limits = page.props.billing?.limits;
+    const qrcodeLimit = limits?.qrcodes || 0;
     const currentCount = computedStats.value.total;
     
-    if (limits && currentCount >= limits.qrcodes) {
-        showLimitDialog.value = true;
-    } else {
+    // Se il limite è -1 (illimitato) o non raggiunto, naviga alla pagina di creazione
+    if (qrcodeLimit === -1 || currentCount < qrcodeLimit) {
         router.visit(route('qrcodes.create'));
+    } else {
+        // Altrimenti mostra la dialog
+        showLimitDialog.value = true;
     }
 };
 
@@ -510,6 +513,8 @@ const getFormatIcon = (format: string) => {
             :has-active-trial="page.props.billing?.hasActiveTrial || false"
             :can-start-trial="page.props.billing?.canStartTrial || false"
             :is-subscribed="page.props.billing?.isSubscribed || false"
+            :current-plan-key="page.props.billing?.currentPlanKey || null"
+            :on-free-plan="page.props.billing?.onFreePlan || false"
         />
     </AppLayout>
 </template>

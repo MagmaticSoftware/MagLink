@@ -256,15 +256,20 @@ const formatDate = (date: string | null) => {
                     :key="key"
                     :class="[
                         'relative bg-white dark:bg-gray-800 rounded-2xl p-8 border-2 transition-all',
-                    plan.popular && !currentPlanKey
-                        ? 'border-blue-500 shadow-xl scale-105' 
-                        : 'border-gray-200 dark:border-gray-700 hover:border-blue-300',
-                    currentPlanKey === key ? 'ring-2 ring-green-500' : ''
-                ]"
-            >
-                <!-- Popular Badge -->
-                <div 
-                    v-if="plan.popular && !currentPlanKey" 
+                        plan.popular && !currentPlanKey
+                            ? 'border-blue-500 shadow-xl scale-105' 
+                            : 'border-gray-200 dark:border-gray-700 hover:border-blue-300',
+                        currentPlanKey === key ? 'ring-2 ring-green-500' : ''
+                    ]"
+                >
+                    <!-- Popular Badge -->
+                    <div 
+                        v-if="plan.popular && !currentPlanKey" 
+                        class="absolute -top-4 left-1/2 -translate-x-1/2 bg-blue-500 text-white px-4 py-1 rounded-full text-sm font-medium"
+                    >
+                        Più Popolare
+                    </div>
+                    
                     <!-- Current Plan Badge -->
                     <div 
                         v-if="currentPlanKey === key" 

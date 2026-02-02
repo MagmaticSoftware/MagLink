@@ -55,12 +55,15 @@ const handleShowPlans = () => {
 // Handle create click - check limits
 const handleCreateClick = () => {
     const limits = page.props.billing?.limits;
+    const pageLimit = limits?.pages || 0;
     const currentCount = computedStats.value.total;
     
-    if (limits && currentCount >= limits.pages) {
-        showLimitDialog.value = true;
-    } else {
+    // Se il limite è -1 (illimitato) o non raggiunto, naviga alla pagina di creazione
+    if (pageLimit === -1 || currentCount < pageLimit) {
         router.visit(route('pages.create'));
+    } else {
+        // Altrimenti mostra la dialog
+        showLimitDialog.value = true;
     }
 };
 
@@ -453,6 +456,8 @@ const getPublicUrl = (slug: string) => {
             :has-active-trial="page.props.billing?.hasActiveTrial || false"
             :can-start-trial="page.props.billing?.canStartTrial || false"
             :is-subscribed="page.props.billing?.isSubscribed || false"
+            :current-plan-key="page.props.billing?.currentPlanKey || null"
+            :on-free-plan="page.props.billing?.onFreePlan || false"
         />
     </AppLayout>
 </template>

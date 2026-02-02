@@ -101,7 +101,9 @@ watchEffect(() => {
             :is-new-user="planModalData.isNewUser" 
             :has-active-trial="planModalData.hasActiveTrial"
             :can-start-trial="planModalData.canStartTrial" 
-            :is-subscribed="planModalData.isSubscribed" 
+            :is-subscribed="planModalData.isSubscribed"
+            :current-plan-key="planModalData.currentPlanKey"
+            :on-free-plan="planModalData.onFreePlan" 
         />
     </div>
 </template>

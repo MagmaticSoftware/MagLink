@@ -370,10 +370,12 @@ const handleAddBlockClick = () => {
     const currentBlockCount = layout.length;
     const blockLimit = limits?.blocks_per_page || 0;
     
-    if (limits && blockLimit > 0 && currentBlockCount >= blockLimit) {
-        showLimitDialog.value = true;
-    } else {
+    // Se il limite è -1 (illimitato) o 0 (non impostato) o non raggiunto, mostra il dialog di creazione
+    if (blockLimit === -1 || blockLimit === 0 || currentBlockCount < blockLimit) {
         visible.value = true;
+    } else {
+        // Altrimenti mostra la dialog di limite raggiunto
+        showLimitDialog.value = true;
     }
 };
 
@@ -785,6 +787,8 @@ function handleBlockDeleted(blockId: number) {
             :has-active-trial="page.props.billing?.hasActiveTrial || false"
             :can-start-trial="page.props.billing?.canStartTrial || false"
             :is-subscribed="page.props.billing?.isSubscribed || false"
+            :current-plan-key="page.props.billing?.currentPlanKey || null"
+            :on-free-plan="page.props.billing?.onFreePlan || false"
         />
 
         <!-- Confirm Dialog for unsaved changes -->

@@ -200,6 +200,8 @@ const formatDate = (date: string) => {
         :has-active-trial="page.props.billing?.hasActiveTrial || false"
         :can-start-trial="page.props.billing?.canStartTrial || false"
         :is-subscribed="page.props.billing?.isSubscribed || false"
+        :current-plan-key="page.props.billing?.currentPlanKey || null"
+        :on-free-plan="page.props.billing?.onFreePlan || false"
     />
 
     <AppLayout :breadcrumbs="breadcrumbs">
