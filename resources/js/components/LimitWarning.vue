@@ -74,7 +74,7 @@ const remaining = computed(() => {
                     Attenzione: limite quasi raggiunto
                 </h4>
                 <p class="text-sm text-orange-800 dark:text-orange-200">
-                    Hai utilizzato {{ currentCount }} su {{ limitInfo?.limit }} {{ limitInfo?.label }} disponibili nel piano gratuito.
+                    Hai utilizzato {{ currentCount }} su {{ limitInfo?.limit }} {{ limitInfo?.label }} disponibili nel tuo piano.
                     {{ remaining > 0 ? `Ti rimangono solo ${remaining} ${limitInfo?.label}.` : '' }}
                 </p>
                 <Link
@@ -99,7 +99,7 @@ const remaining = computed(() => {
                     Limite raggiunto
                 </h4>
                 <p class="text-sm text-red-800 dark:text-red-200">
-                    Hai raggiunto il limite di {{ limitInfo?.limit }} {{ limitInfo?.label }} del piano gratuito.
+                    Hai raggiunto il limite di {{ limitInfo?.limit }} {{ limitInfo?.label }} del tuo piano.
                     Effettua l'upgrade per continuare a creare {{ limitInfo?.label }}.
                 </p>
                 <Link

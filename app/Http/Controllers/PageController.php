@@ -46,7 +46,7 @@ class PageController extends Controller
             $pageLimit = $limits['pages'] ?? 0;
             
             return redirect()->route('pages.index')
-                ->with('error', "Hai raggiunto il limite di {$pageLimit} pagina del piano gratuito. Effettua l'upgrade per continuare.")
+                ->with('error', "Hai raggiunto il limite di {$pageLimit} pagina del tuo piano. Effettua l'upgrade per continuare.")
                 ->with('showUpgradeBanner', true);
         }
         
@@ -70,7 +70,7 @@ class PageController extends Controller
             $pageLimit = $limits['pages'] ?? 0;
             
             return redirect()->back()
-                ->with('error', "Hai raggiunto il limite di {$pageLimit} pagina del piano gratuito. Effettua l'upgrade per continuare.")
+                ->with('error', "Hai raggiunto il limite di {$pageLimit} pagina del tuo piano. Effettua l'upgrade per continuare.")
                 ->with('showUpgradeBanner', true);
         }
         

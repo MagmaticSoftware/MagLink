@@ -55,7 +55,7 @@ class LinkController extends Controller
             $linkLimit = $limits['links'] ?? 0;
             
             return redirect()->route('links.index')
-                ->with('error', "Hai raggiunto il limite di {$linkLimit} link del piano gratuito. Effettua l'upgrade per continuare.")
+                ->with('error', "Hai raggiunto il limite di {$linkLimit} link del tuo piano. Effettua l'upgrade per continuare.")
                 ->with('showUpgradeBanner', true);
         }
         
@@ -82,7 +82,7 @@ class LinkController extends Controller
             $linkLimit = $limits['links'] ?? 0;
             
             return redirect()->back()
-                ->with('error', "Hai raggiunto il limite di {$linkLimit} link del piano gratuito. Effettua l'upgrade per continuare.")
+                ->with('error', "Hai raggiunto il limite di {$linkLimit} link del tuo piano. Effettua l'upgrade per continuare.")
                 ->with('showUpgradeBanner', true);
         }
         

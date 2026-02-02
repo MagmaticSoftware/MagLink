@@ -24,7 +24,7 @@ const currentPlan = computed(() => {
 });
 
 const displayMessage = computed(() => {
-    return props.message || 'Hai raggiunto il limite del piano gratuito. Effettua l\'upgrade per continuare!';
+    return props.message || 'Hai raggiunto il limite del tuo piano. Effettua l\'upgrade per continuare!';
 });
 </script>
 

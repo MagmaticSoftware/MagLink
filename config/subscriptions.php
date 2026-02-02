@@ -55,19 +55,17 @@ return [
             'description' => 'Perfetto per professionisti e piccole imprese',
             'popular' => true, // Badge "Più popolare"
             'features' => [
-                'Link illimitati',
-                'QR Code illimitati',
-                '10 Landing pages',
-                'QR Code dinamici',
+                '100 Link brevi',
+                '100 QR Code (30 dinamici)',
+                '5 Landing pages',
                 'Statistiche avanzate',
-                'Custom domain',
-                'Supporto email prioritario',
-                'Rimozione branding',
+                'Supporto email prioritario (entro 72 ore)',
             ],
             'limits' => [
-                'links' => -1, // illimitato
-                'qrcodes' => -1, // illimitato
-                'pages' => 10,
+                'links' => 100,
+                'qrcodes' => 100,
+                'qrcodes_dynamic' => 30,
+                'pages' => 5,
             ],
             'monthly' => [
                 'price' => 400, // 4€ in centesimi
@@ -87,17 +85,13 @@ return [
             'features' => [
                 'Tutto del piano Professional',
                 'Landing pages illimitate',
-                'API Access completo',
-                'Team multi-utente',
-                'White-label completo',
-                'Supporto telefonico dedicato',
-                'Account manager dedicato',
-                'SLA garantito',
-                'Integrazioni custom',
+                'White-label completo (logo app e consent page)',
+                'Supporto email prioritario (entro 24 ore)',
             ],
             'limits' => [
                 'links' => -1, // illimitato
                 'qrcodes' => -1, // illimitato
+                'qrcodes_dynamic' => -1, // illimitato
                 'pages' => -1, // illimitato
             ],
             'monthly' => [

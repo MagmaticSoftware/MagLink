@@ -83,8 +83,8 @@ const formattedEndDate = computed(() => {
     
     const date = new Date(dateStr);
     return new Intl.DateTimeFormat('it-IT', { 
-        day: 'numeric', 
-        month: 'long', 
+        day: '2-digit', 
+        month: '2-digit', 
         year: 'numeric' 
     }).format(date);
 });
@@ -170,20 +170,21 @@ const billingTypeLabel = computed(() => {
             </div>
             
             <!-- Days/Time left with circular design (only if not free plan or has end date) -->
-            <div v-if="bannerType !== 'free' || daysRemaining > 0" class="flex items-center mb-3">
-                <!-- Circular counter -->
-                <div :class="getTextClass()" class="flex-shrink-0 w-12 h-12 rounded-full border-3 flex items-center justify-center mr-3"
-                     :style="`border-color: ${getIconClass().replace('text-', 'rgb(')}`">
-                    <span class="text-lg font-black">{{ daysRemaining }}</span>
+            <div v-if="bannerType !== 'free' || daysRemaining > 0" class="mb-3">
+                <!-- Large days number -->
+                <div class="text-center mb-2">
+                    <div :class="getTextClass()" class="text-4xl font-black leading-none">
+                        {{ daysRemaining }}
+                    </div>
+                    <p :class="getTextClass()" class="text-xs font-medium mt-1">
+                        {{ daysRemaining === 1 ? 'giorno rimanente' : 'giorni rimanenti' }}
+                    </p>
                 </div>
                 
-                <!-- Text on the right -->
-                <div class="flex-1">
-                    <p :class="getTextClass()" class="text-xs font-medium leading-tight">
-                        {{ daysRemaining === 1 ? 'giorno rimane' : 'giorni rimanenti' }}
-                    </p>
-                    <p v-if="formattedEndDate" :class="getTextClass()" class="text-xs opacity-75 leading-tight mt-0.5">
-                        Scade: {{ formattedEndDate }}
+                <!-- Expiry date -->
+                <div v-if="formattedEndDate" class="text-center">
+                    <p :class="getTextClass()" class="text-xs opacity-75">
+                        Scade il {{ formattedEndDate }}
                     </p>
                 </div>
             </div>

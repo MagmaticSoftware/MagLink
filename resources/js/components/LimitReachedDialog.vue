@@ -28,7 +28,7 @@ const dialogConfig = computed(() => {
             limit: limits?.links || 0,
             singular: 'link',
             plural: 'link',
-            description: 'Hai raggiunto il limite massimo di link brevi del piano gratuito.'
+            description: 'Hai raggiunto il limite massimo di link brevi del tuo piano.'
         },
         qrcodes: {
             title: 'Limite QR Code Raggiunto',
@@ -36,7 +36,7 @@ const dialogConfig = computed(() => {
             limit: limits?.qrcodes || 0,
             singular: 'QR Code',
             plural: 'QR Code',
-            description: 'Hai raggiunto il limite massimo di QR Code del piano gratuito.'
+            description: 'Hai raggiunto il limite massimo di QR Code del tuo piano.'
         },
         pages: {
             title: 'Limite Pagine Raggiunto',
@@ -44,7 +44,7 @@ const dialogConfig = computed(() => {
             limit: limits?.pages || 0,
             singular: 'pagina',
             plural: 'pagine',
-            description: 'Hai raggiunto il limite massimo di pagine del piano gratuito.'
+            description: 'Hai raggiunto il limite massimo di pagine del tuo piano.'
         },
         blocks: {
             title: 'Limite Blocchi Raggiunto',
@@ -52,7 +52,7 @@ const dialogConfig = computed(() => {
             limit: limits?.blocks_per_page || 0,
             singular: 'blocco',
             plural: 'blocchi',
-            description: 'Hai raggiunto il limite massimo di blocchi per pagina del piano gratuito.'
+            description: 'Hai raggiunto il limite massimo di blocchi per pagina del tuo piano.'
         }
     };
     

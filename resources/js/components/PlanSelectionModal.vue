@@ -236,7 +236,7 @@ const closeModal = () => {
                         :key="planKey" 
                         :class="[
                             'relative bg-white dark:bg-gray-800 rounded-2xl shadow-lg border-2 p-6 flex flex-col',
-                            plan.popular ? 'border-blue-500 dark:border-blue-400' : 
+                            plan.popular && !currentPlanKey ? 'border-blue-500 dark:border-blue-400' : 
                             currentPlanKey === planKey ? 'border-green-500 dark:border-green-400' : 
                             'border-gray-200 dark:border-gray-700'
                         ]"
@@ -249,7 +249,7 @@ const closeModal = () => {
                         </div>
                         
                         <!-- Badge per il piano consigliato -->
-                        <div v-else-if="plan.popular" class="absolute -top-4 left-1/2 transform -translate-x-1/2">
+                        <div v-else-if="plan.popular && !currentPlanKey" class="absolute -top-4 left-1/2 transform -translate-x-1/2">
                             <span class="bg-gradient-to-r from-blue-500 to-blue-600 text-white px-4 py-1 rounded-full text-sm font-medium">
                                 Più Popolare
                             </span>
@@ -315,7 +315,7 @@ const closeModal = () => {
                         </div>
 
                         <!-- CTA Button -->
-                        <div class="mt-auto">
+                        <div class="mt-auto" v-if="!(planKey === 'free' && isSubscribed && !onFreePlan)">
                             <!-- Piano corrente - disabilitato -->
                             <button 
                                 v-if="currentPlanKey === planKey"

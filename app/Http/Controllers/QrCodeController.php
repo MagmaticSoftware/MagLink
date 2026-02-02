@@ -55,7 +55,7 @@ class QrCodeController extends Controller
             $qrcodeLimit = $limits['qrcodes'] ?? 0;
             
             return redirect()->route('qrcodes.index')
-                ->with('error', "Hai raggiunto il limite di {$qrcodeLimit} QR Code del piano gratuito. Effettua l'upgrade per continuare.")
+                ->with('error', "Hai raggiunto il limite di {$qrcodeLimit} QR Code del tuo piano. Effettua l'upgrade per continuare.")
                 ->with('showUpgradeBanner', true);
         }
         
@@ -91,12 +91,12 @@ class QrCodeController extends Controller
             if ($type === 'dynamic') {
                 $dynamicLimit = $limits['qrcodes_dynamic'] ?? 0;
                 return redirect()->back()
-                    ->with('error', "Hai raggiunto il limite di {$dynamicLimit} QR Code dinamici del piano gratuito. Effettua l'upgrade per continuare.")
+                    ->with('error', "Hai raggiunto il limite di {$dynamicLimit} QR Code dinamici del tuo piano. Effettua l'upgrade per continuare.")
                     ->with('showUpgradeBanner', true);
             } else {
                 $qrcodeLimit = $limits['qrcodes'] ?? 0;
                 return redirect()->back()
-                    ->with('error', "Hai raggiunto il limite di {$qrcodeLimit} QR Code del piano gratuito. Effettua l'upgrade per continuare.")
+                    ->with('error', "Hai raggiunto il limite di {$qrcodeLimit} QR Code del tuo piano. Effettua l'upgrade per continuare.")
                     ->with('showUpgradeBanner', true);
             }
         }

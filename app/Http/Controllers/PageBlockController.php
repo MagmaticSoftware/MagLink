@@ -43,7 +43,7 @@ class PageBlockController extends Controller
             
             return response()->json([
                 'success' => false,
-                'error' => "Hai raggiunto il limite di {$blockLimit} blocchi per pagina del piano gratuito. Effettua l'upgrade per continuare.",
+                'error' => "Hai raggiunto il limite di {$blockLimit} blocchi per pagina del tuo piano. Effettua l'upgrade per continuare.",
                 'showUpgradeBanner' => true
             ], 403);
         }
