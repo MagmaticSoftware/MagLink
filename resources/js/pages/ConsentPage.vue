@@ -42,7 +42,9 @@ const getTypeLabel = () => {
 </script>
 
 <template>
-  <Head title="Conferma reindirizzamento" />
+  <Head title="Conferma reindirizzamento">
+    <link rel="icon" href="/favicon.ico" />
+  </Head>
   
   <div class="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 flex items-center justify-center p-4">
     <div class="max-w-2xl w-full">

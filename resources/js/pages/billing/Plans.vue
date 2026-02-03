@@ -159,7 +159,9 @@ const formatDate = (date: string | null) => {
 </script>
 
 <template>
-    <Head title="Piani e Prezzi" />
+    <Head title="Piani e Prezzi">
+        <link rel="icon" href="/favicon.ico" />
+    </Head>
 
     <AppLayout :breadcrumbs="breadcrumbs">
         <div class="max-w-7xl mx-auto px-4 py-8">

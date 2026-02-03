@@ -13,6 +13,8 @@ import VideoBlock from '@/components/tenant/pageblocks/edit/Video.vue';
 import TitleBlock from '@/components/tenant/pageblocks/edit/Title.vue';
 import SeparatorBlock from '@/components/tenant/pageblocks/edit/Separator.vue';
 import MapBlock from '@/components/tenant/pageblocks/edit/Map.vue';
+import ButtonBlock from '@/components/tenant/pageblocks/edit/Button.vue';
+import SocialBlock from '@/components/tenant/pageblocks/edit/Social.vue';
 import Dialog from '@/components/volt/Dialog.vue';
 import ConfirmDialog from '@/components/volt/ConfirmDialog.vue';
 import Button from '@/components/volt/Button.vue';
@@ -50,6 +52,8 @@ const blockComponents: Record<string, any> = {
     title: TitleBlock,
     separator: SeparatorBlock,
     map: MapBlock,
+    button: ButtonBlock,
+    social: SocialBlock,
 };
 
 const props = defineProps<{

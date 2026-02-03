@@ -119,7 +119,9 @@ watch(() => form.is_active, (isActive, oldValue) => {
 
 <template>
 
-    <Head :title="t('pages.create')" />
+    <Head :title="t('pages.create')">
+        <link rel="icon" href="/favicon.ico" />
+    </Head>
 
     <AppLayout :breadcrumbs="breadcrumbs">
         <div class="flex h-full flex-1 flex-col gap-6 p-6">

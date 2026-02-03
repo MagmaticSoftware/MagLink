@@ -179,7 +179,9 @@ const getPublicUrl = (slug: string) => {
 </script>
 
 <template>
-    <Head title="Pages" />
+    <Head title="Pages">
+        <link rel="icon" href="/favicon.ico" />
+    </Head>
 
     <AppLayout :breadcrumbs="breadcrumbs">
         <div class="flex h-full flex-1 flex-col gap-6 p-6">

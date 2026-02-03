@@ -256,7 +256,9 @@ const getDeviceIcon = (deviceType: string | null) => {
 </script>
 
 <template>
-    <Head :title="`Analytics - ${item.name}`" />
+    <Head :title="`Analytics - ${item.name}`">
+        <link rel="icon" href="/favicon.ico" />
+    </Head>
 
     <AppLayout :breadcrumbs="breadcrumbs">
         <div class="flex h-full flex-1 flex-col gap-6 p-6">

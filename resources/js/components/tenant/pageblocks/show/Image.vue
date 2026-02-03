@@ -25,7 +25,7 @@ const imageUrl = computed(() => {
   }
 });
 
-const linkUrl = computed(() => {
+const imageLinkUrl = computed(() => {
   try {
     if (typeof props.settings === 'string') {
       const parsed = JSON.parse(props.settings);
@@ -52,12 +52,12 @@ const handleImageError = () => {
     
     <div class="flex-1 relative overflow-hidden bg-slate-100 dark:bg-slate-800">
       <component 
-        :is="linkUrl ? 'a' : 'div'"
-        :href="linkUrl || undefined"
-        :target="linkUrl ? '_blank' : undefined"
-        :rel="linkUrl ? 'noopener noreferrer' : undefined"
+        :is="imageLinkUrl ? 'a' : 'div'"
+        :href="imageLinkUrl || undefined"
+        :target="imageLinkUrl ? '_blank' : undefined"
+        :rel="imageLinkUrl ? 'noopener noreferrer' : undefined"
         class="block w-full h-full"
-        :class="linkUrl ? 'cursor-pointer hover:opacity-90 transition-opacity' : ''"
+        :class="imageLinkUrl ? 'cursor-pointer hover:opacity-90 transition-opacity' : ''"
       >
         <img 
           v-if="!imageError && imageUrl"

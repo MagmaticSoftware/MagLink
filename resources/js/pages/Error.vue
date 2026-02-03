@@ -61,7 +61,9 @@ const goBack = () => {
 </script>
 
 <template>
-    <Head :title="`${status} - ${errorConfig.title}`" />
+    <Head :title="`${status} - ${errorConfig.title}`">
+        <link rel="icon" href="/favicon.ico" />
+    </Head>
     
     <div class="min-h-screen bg-gradient-to-br from-surface-50 via-white to-primary/5 dark:from-surface-950 dark:via-surface-900 dark:to-primary/10 flex items-center justify-center p-4 overflow-hidden relative">
         <!-- Animated background elements -->

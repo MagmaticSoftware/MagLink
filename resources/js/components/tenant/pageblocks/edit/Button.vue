@@ -2,7 +2,7 @@
 import { ref, watch, computed } from 'vue';
 import axios from 'axios';
 import { useConfirm } from 'primevue/useconfirm';
-import { LucideSave, LucideImage, LucideTrash2, LucideLink2 } from 'lucide-vue-next';
+import { LucideSave, LucideTrash2, LucideMousePointer } from 'lucide-vue-next';
 import InputText from '@/components/volt/InputText.vue';
 
 const confirm = useConfirm();
@@ -40,17 +40,29 @@ const parsedSettings = computed(() => {
 
 const localTitle = ref(props.title || '');
 const localContent = ref(props.content || '');
-const localImageLinkUrl = ref(parsedSettings.value.link || '');
+const localBackgroundColor = ref(parsedSettings.value.backgroundColor || '#3b82f6');
+const localTextColor = ref(parsedSettings.value.textColor || '#ffffff');
 const isSaving = ref(false);
-const imageError = ref(false);
 const savedTitle = ref(props.title || '');
 const savedContent = ref(props.content || '');
-const savedImageLinkUrl = ref(parsedSettings.value.link || '');
+const savedBackgroundColor = ref(parsedSettings.value.backgroundColor || '#3b82f6');
+const savedTextColor = ref(parsedSettings.value.textColor || '#ffffff');
 
 const hasChanges = computed(() => {
   return localTitle.value !== savedTitle.value || 
          localContent.value !== savedContent.value ||
-         localImageLinkUrl.value !== savedImageLinkUrl.value;
+         localBackgroundColor.value !== savedBackgroundColor.value ||
+         localTextColor.value !== savedTextColor.value;
+});
+
+const isValidUrl = computed(() => {
+  if (!localContent.value) return false;
+  try {
+    new URL(localContent.value);
+    return true;
+  } catch {
+    return false;
+  }
 });
 
 watch(hasChanges, (isDirty) => {
@@ -64,20 +76,14 @@ watch(() => props.title, (newVal) => {
 watch(() => props.content, (newVal) => { 
   localContent.value = newVal || ''; 
   savedContent.value = newVal || '';
-  imageError.value = false;
 });
-watch(() => parsedSettings.value.link, (newVal) => {
-  localImageLinkUrl.value = newVal || '';
-  savedImageLinkUrl.value = newVal || '';
+watch(() => parsedSettings.value.backgroundColor, (newVal) => {
+  localBackgroundColor.value = newVal || '#3b82f6';
+  savedBackgroundColor.value = newVal || '#3b82f6';
 });
-
-const imageUrl = computed(() => {
-  try {
-    const parsed = JSON.parse(localContent.value);
-    return parsed.url || parsed.src || localContent.value;
-  } catch {
-    return localContent.value;
-  }
+watch(() => parsedSettings.value.textColor, (newVal) => {
+  localTextColor.value = newVal || '#ffffff';
+  savedTextColor.value = newVal || '#ffffff';
 });
 
 const saveBlock = async () => {
@@ -86,11 +92,15 @@ const saveBlock = async () => {
     await axios.put(route('page-blocks.update', props.id), {
       title: localTitle.value,
       content: localContent.value,
-      settings: { link: localImageLinkUrl.value },
+      settings: {
+        backgroundColor: localBackgroundColor.value,
+        textColor: localTextColor.value,
+      },
     });
     savedTitle.value = localTitle.value;
     savedContent.value = localContent.value;
-    savedImageLinkUrl.value = localImageLinkUrl.value;
+    savedBackgroundColor.value = localBackgroundColor.value;
+    savedTextColor.value = localTextColor.value;
   } catch (error) {
     console.error('Failed to save block:', error);
   } finally {
@@ -125,10 +135,10 @@ const deleteBlock = () => {
     <!-- Header with actions -->
     <div class="flex items-center justify-between mb-3 pb-2 border-b border-surface-200 dark:border-surface-700">
       <div class="flex items-center gap-2">
-        <div class="p-1.5 bg-pink-100 dark:bg-pink-900/30 rounded-lg">
-          <LucideImage :size="16" class="text-pink-600 dark:text-pink-400" />
+        <div class="p-1.5 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
+          <LucideMousePointer :size="16" class="text-blue-600 dark:text-blue-400" />
         </div>
-        <span class="text-xs font-medium text-surface-600 dark:text-surface-400">Image Block</span>
+        <span class="text-xs font-medium text-surface-600 dark:text-surface-400">Button Block</span>
       </div>
       <div class="flex items-center gap-1">
         <button
@@ -154,11 +164,11 @@ const deleteBlock = () => {
     <div class="flex-1 flex flex-col gap-3 overflow-y-auto">
       <div>
         <label class="text-xs font-medium text-surface-700 dark:text-surface-300 block mb-1">
-          Image Title (optional)
+          Button Text
         </label>
         <InputText 
           v-model="localTitle" 
-          placeholder="Image caption..."
+          placeholder="e.g., Visit our website"
           @blur="saveBlock"
           class="w-full text-sm"
         />
@@ -166,48 +176,73 @@ const deleteBlock = () => {
       
       <div>
         <label class="text-xs font-medium text-surface-700 dark:text-surface-300 block mb-1">
-          Image URL
+          URL
         </label>
         <InputText 
           v-model="localContent" 
-          placeholder="https://example.com/image.jpg"
-          @blur="saveBlock"
-          type="url"
-          class="w-full text-sm font-mono"
-        />
-      </div>
-      
-      <div>
-        <label class="text-xs font-medium text-surface-700 dark:text-surface-300 block mb-1">
-          <LucideLink2 :size="12" class="inline mr-1" />
-          Link URL (opzionale)
-        </label>
-        <InputText 
-          v-model="localImageLinkUrl" 
           placeholder="https://example.com"
           @blur="saveBlock"
           type="url"
           class="w-full text-sm font-mono"
+          :class="{ 'border-red-500': localContent && !isValidUrl }"
         />
-        <p class="text-xs text-surface-500 dark:text-surface-400 mt-1">
-          L'immagine diventerà cliccabile se inserisci un link
-        </p>
       </div>
 
-      <!-- Image Preview -->
-      <div v-if="imageUrl" class="flex-1 min-h-[100px] relative rounded-lg overflow-hidden bg-slate-100 dark:bg-slate-800">
-        <img 
-          v-if="!imageError"
-          :src="imageUrl" 
-          :alt="localTitle || 'Preview'"
-          @error="imageError = true"
-          class="w-full h-full object-cover"
-        />
-        <div v-else class="w-full h-full flex items-center justify-center">
-          <div class="text-center">
-            <LucideImage :size="32" class="mx-auto text-slate-300 dark:text-slate-600 mb-1" />
-            <p class="text-xs text-slate-500 dark:text-slate-400">Failed to load image</p>
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label class="text-xs font-medium text-surface-700 dark:text-surface-300 block mb-1">
+            Background Color
+          </label>
+          <div class="flex gap-2">
+            <input 
+              v-model="localBackgroundColor" 
+              type="color"
+              @blur="saveBlock"
+              class="h-10 w-14 rounded border border-surface-300 dark:border-surface-600 cursor-pointer"
+            />
+            <InputText 
+              v-model="localBackgroundColor" 
+              @blur="saveBlock"
+              class="flex-1 text-sm font-mono"
+              placeholder="#3b82f6"
+            />
           </div>
+        </div>
+
+        <div>
+          <label class="text-xs font-medium text-surface-700 dark:text-surface-300 block mb-1">
+            Text Color
+          </label>
+          <div class="flex gap-2">
+            <input 
+              v-model="localTextColor" 
+              type="color"
+              @blur="saveBlock"
+              class="h-10 w-14 rounded border border-surface-300 dark:border-surface-600 cursor-pointer"
+            />
+            <InputText 
+              v-model="localTextColor" 
+              @blur="saveBlock"
+              class="flex-1 text-sm font-mono"
+              placeholder="#ffffff"
+            />
+          </div>
+        </div>
+      </div>
+
+      <!-- Preview -->
+      <div class="mt-2">
+        <label class="text-xs font-medium text-surface-700 dark:text-surface-300 block mb-2">
+          Preview
+        </label>
+        <div 
+          class="w-full px-6 py-3 rounded-lg text-center font-semibold cursor-default transition-all"
+          :style="{ 
+            backgroundColor: localBackgroundColor,
+            color: localTextColor 
+          }"
+        >
+          {{ localTitle || 'Button Preview' }}
         </div>
       </div>
     </div>

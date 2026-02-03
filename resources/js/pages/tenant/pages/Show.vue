@@ -12,6 +12,8 @@ import VideoBlock from '@/components/tenant/pageblocks/show/Video.vue';
 import TitleBlock from '@/components/tenant/pageblocks/show/Title.vue';
 import SeparatorBlock from '@/components/tenant/pageblocks/show/Separator.vue';
 import MapBlock from '@/components/tenant/pageblocks/show/Map.vue';
+import ButtonBlock from '@/components/tenant/pageblocks/show/Button.vue';
+import SocialBlock from '@/components/tenant/pageblocks/show/Social.vue';
 import { GridLayout, GridItem } from 'grid-layout-plus';
 import { 
     LucideEye, 
@@ -34,6 +36,8 @@ const blockComponents: Record<string, any> = {
     title: TitleBlock,
     separator: SeparatorBlock,
     map: MapBlock,
+    button: ButtonBlock,
+    social: SocialBlock,
 };
 
 const props = defineProps<{
@@ -128,7 +132,9 @@ const pageStats = computed(() => ({
 </script>
 
 <template>
-    <Head :title="props.page.title" />
+    <Head :title="props.page.title">
+        <link rel="icon" href="/favicon.ico" />
+    </Head>
 
     <AppLayout :breadcrumbs="breadcrumbs">
         <div class="flex h-full flex-1 flex-col gap-6 p-6">
@@ -248,6 +254,7 @@ const pageStats = computed(() => ({
                                     :id="item.id"
                                     :title="item.title" 
                                     :content="item.content"
+                                    :settings="item.settings"
                                     :position="item.position"
                                 />
                             </GridItem>

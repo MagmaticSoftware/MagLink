@@ -96,7 +96,9 @@ console.log('Performance data:', props.performance);
 
 <template>
 
-    <Head title="Dashboard" />
+    <Head title="Dashboard">
+        <link rel="icon" href="/favicon.ico" />
+    </Head>
     <AppLayout :breadcrumbs="breadcrumbs">
         <div
             class="flex h-full flex-1 flex-col gap-4 rounded-2xl p-0">

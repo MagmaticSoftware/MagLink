@@ -12,6 +12,8 @@ import DefaultBlock from '@/components/tenant/pageblocks/show/Default.vue';
 import TitleBlock from '@/components/tenant/pageblocks/show/Title.vue';
 import SeparatorBlock from '@/components/tenant/pageblocks/show/Separator.vue';
 import MapBlock from '@/components/tenant/pageblocks/show/Map.vue';
+import ButtonBlock from '@/components/tenant/pageblocks/show/Button.vue';
+import SocialBlock from '@/components/tenant/pageblocks/show/Social.vue';
 
 const isDark = useDark();
 const toggleDark = useToggle(isDark);
@@ -25,6 +27,8 @@ const blockComponents: Record<string, any> = {
     title: TitleBlock,
     separator: SeparatorBlock,
     map: MapBlock,
+    button: ButtonBlock,
+    social: SocialBlock,
 };
 
 const props = defineProps<{
@@ -82,6 +86,11 @@ const getColorClasses = (color: string) => {
 };
 
 const colorClasses = getColorClasses(themeColor);
+
+// Favicon URL - use profile image if available, otherwise use MagLink favicon
+const faviconUrl = computed(() => {
+    return props.page.settings?.profile_image || '/favicon.ico';
+});
 
 // Get active blocks with their positions
 const blocks = computed(() => {
@@ -146,6 +155,7 @@ const getBlockHeight = (block: any) => {
     <Head :title="props.page.title">
         <link rel="preconnect" href="https://rsms.me/" />
         <link rel="stylesheet" href="https://rsms.me/inter/inter.css" />
+        <link rel="icon" :href="faviconUrl" />
     </Head>
     
     <div class="w-screen h-screen flex flex-col bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 dark:from-gray-950 dark:via-slate-900 dark:to-gray-900 overflow-hidden">
@@ -216,7 +226,7 @@ const getBlockHeight = (block: any) => {
                                 block.type === 'title' || block.type === 'separator' 
                                     ? '' 
                                     : 'bento-card overflow-auto',
-                                block.type === 'map' || block.type === 'video' || block.type === 'image' || block.type === 'text' || block.type === 'title' || block.type === 'separator'
+                                block.type === 'map' || block.type === 'video' || block.type === 'image' || block.type === 'text' || block.type === 'title' || block.type === 'separator' || block.type === 'button' || block.type === 'social'
                                     ? 'p-0' 
                                     : 'p-6'
                             ]"
@@ -226,6 +236,7 @@ const getBlockHeight = (block: any) => {
                                 :id="block.id"
                                 :title="block.title" 
                                 :content="block.content"
+                                :settings="block.settings"
                                 :position="block.position"
                             />
                         </div>

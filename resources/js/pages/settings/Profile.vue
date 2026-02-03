@@ -43,7 +43,9 @@ const submit = () => {
 
 <template>
     <AppLayout :breadcrumbs="breadcrumbs">
-        <Head title="Profile settings" />
+        <Head title="Profile settings">
+            <link rel="icon" href="/favicon.ico" />
+        </Head>
 
         <SettingsLayout>
             <div class="flex flex-col space-y-6">

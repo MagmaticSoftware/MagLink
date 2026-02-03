@@ -12,7 +12,9 @@ import {
     ArrowLeft,
     Heading,
     Minus,
-    MapPin
+    MapPin,
+    MousePointer,
+    Share2
 } from 'lucide-vue-next';
 
 const emit = defineEmits(['created']);
@@ -40,6 +42,30 @@ const type = ref('text');
 const title = ref('');
 const content = ref('');
 const loading = ref(false);
+
+// Campi extra per blocchi specifici
+const buttonBgColor = ref('#3b82f6');
+const buttonTextColor = ref('#ffffff');
+const socialType = ref('facebook');
+const imageLinkUrl = ref('');
+
+// Social network configurations
+const socialConfig: Record<string, { name: string; color: string }> = {
+    facebook: { name: 'Facebook', color: '#1877F2' },
+    twitter: { name: 'Twitter / X', color: '#000000' },
+    instagram: { name: 'Instagram', color: '#E4405F' },
+    linkedin: { name: 'LinkedIn', color: '#0A66C2' },
+    youtube: { name: 'YouTube', color: '#FF0000' },
+    tiktok: { name: 'TikTok', color: '#000000' },
+    pinterest: { name: 'Pinterest', color: '#E60023' },
+    whatsapp: { name: 'WhatsApp', color: '#25D366' },
+    telegram: { name: 'Telegram', color: '#26A5E4' },
+    github: { name: 'GitHub', color: '#181717' },
+    discord: { name: 'Discord', color: '#5865F2' },
+    twitch: { name: 'Twitch', color: '#9146FF' },
+    snapchat: { name: 'Snapchat', color: '#FFFC00' },
+    reddit: { name: 'Reddit', color: '#FF4500' },
+};
 
 const blockTypes = [
     {
@@ -98,6 +124,20 @@ const blockTypes = [
         icon: MapPin,
         color: 'cyan',
     },
+    {
+        type: 'button',
+        name: 'Bottone',
+        description: 'Pulsante personalizzato con colore di sfondo',
+        icon: MousePointer,
+        color: 'blue',
+    },
+    {
+        type: 'social',
+        name: 'Social',
+        description: 'Link ai social network con icone e colori nativi',
+        icon: Share2,
+        color: 'pink',
+    },
 ];
 
 const selectBlockType = (blockType: string) => {
@@ -114,7 +154,7 @@ const goBack = () => {
     step.value = 'select';
 };
 
-const createBlockDirect = async (blockType: string, blockTitle: string, blockContent: string) => {
+const createBlockDirect = async (blockType: string, blockTitle: string, blockContent: string, blockSettings: any = {}) => {
     loading.value = true;
     try {
         const response = await axios.post(route('page-blocks.store'), {
@@ -123,7 +163,7 @@ const createBlockDirect = async (blockType: string, blockTitle: string, blockCon
             title: blockTitle,
             content: blockContent,
             style: JSON.stringify({}),
-            settings: JSON.stringify({}),
+            settings: JSON.stringify(blockSettings),
             is_active: true,
         });
         emit('created', response.data.block);
@@ -132,6 +172,10 @@ const createBlockDirect = async (blockType: string, blockTitle: string, blockCon
         type.value = 'text';
         title.value = '';
         content.value = '';
+        buttonBgColor.value = '#3b82f6';
+        buttonTextColor.value = '#ffffff';
+        socialType.value = 'facebook';
+        imageLinkUrl.value = '';
     } catch (error) {
         console.error('Errore creazione blocco:', error);
     } finally {
@@ -140,7 +184,36 @@ const createBlockDirect = async (blockType: string, blockTitle: string, blockCon
 };
 
 const createBlock = async () => {
-    await createBlockDirect(type.value, title.value, content.value);
+    let settings = {};
+    let blockTitle = title.value;
+    let blockContent = content.value;
+    
+    // Gestione specifica per ogni tipo di blocco
+    if (type.value === 'button') {
+        console.log('Creating button with colors:', buttonBgColor.value, buttonTextColor.value);
+        settings = {
+            backgroundColor: buttonBgColor.value,
+            textColor: buttonTextColor.value,
+        };
+    } else if (type.value === 'social') {
+        console.log('Creating social with type:', socialType.value);
+        settings = {
+            socialType: socialType.value,
+        };
+        // Se non c'è un titolo, usa il nome del social
+        if (!blockTitle) {
+            blockTitle = socialConfig[socialType.value].name;
+        }
+    } else if (type.value === 'image') {
+        settings = {
+            link: imageLinkUrl.value,
+        };
+    } else if (type.value === 'title') {
+        // Per il titolo, metti il contenuto sia in title che in content
+        blockContent = title.value;
+    }
+    
+    await createBlockDirect(type.value, blockTitle, blockContent, settings);
 };
 
 const getColorClasses = (color: string) => {
@@ -289,24 +362,106 @@ const getColorClasses = (color: string) => {
             </div>
 
             <form @submit.prevent="createBlock" class="space-y-4">
-                <div>
+                <!-- Titolo - Mostrato per tutti tranne title -->
+                <div v-if="type !== 'title'">
                     <label class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-2">
-                        Titolo
+                        {{ type === 'text' || type === 'image' ? 'Titolo (facoltativo)' : 
+                           type === 'button' ? 'Testo del Bottone' :
+                           type === 'social' ? 'Testo (facoltativo)' :
+                           'Titolo' }}
+                    </label>
+                    <input 
+                        v-model="title" 
+                        type="text" 
+                        :required="type !== 'text' && type !== 'image' && type !== 'social'"
+                        class="w-full px-4 py-2.5 rounded-lg border border-surface-300 dark:border-surface-700 bg-white dark:bg-surface-900 text-surface-900 dark:text-surface-100 focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-600 focus:border-transparent transition-all"
+                        :placeholder="
+                            type === 'button' ? 'es. Visita il sito' :
+                            type === 'social' ? 'Lascia vuoto per usare il nome del social' :
+                            'Inserisci un titolo...'
+                        "
+                    />
+                    <p v-if="type === 'social'" class="text-xs text-surface-500 dark:text-surface-400 mt-1">
+                        Se lasci vuoto, verrà usato il nome del social network
+                    </p>
+                </div>
+
+                <!-- Campo specifico per Title: Testo del Titolo -->
+                <div v-if="type === 'title'">
+                    <label class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-2">
+                        Testo del Titolo
                     </label>
                     <input 
                         v-model="title" 
                         type="text" 
                         required
                         class="w-full px-4 py-2.5 rounded-lg border border-surface-300 dark:border-surface-700 bg-white dark:bg-surface-900 text-surface-900 dark:text-surface-100 focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-600 focus:border-transparent transition-all"
-                        placeholder="Inserisci un titolo..."
+                        placeholder="Inserisci il testo del titolo..."
                     />
                 </div>
 
-                <div>
+                <!-- Dropdown Social -->
+                <div v-if="type === 'social'">
                     <label class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-2">
-                        Contenuto
+                        Social Network
+                    </label>
+                    <select 
+                        v-model="socialType"
+                        class="w-full px-4 py-2.5 rounded-lg border border-surface-300 dark:border-surface-700 bg-white dark:bg-surface-900 text-surface-900 dark:text-surface-100 focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-600 focus:border-transparent transition-all"
+                    >
+                        <option v-for="(config, key) in socialConfig" :key="key" :value="key">
+                            {{ config.name }}
+                        </option>
+                    </select>
+                </div>
+
+                <!-- Colori per Button -->
+                <div v-if="type === 'button'" class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-2">
+                            Colore Sfondo
+                        </label>
+                        <div class="flex gap-2">
+                            <input 
+                                v-model="buttonBgColor" 
+                                type="color"
+                                class="h-11 w-14 rounded border border-surface-300 dark:border-surface-600 cursor-pointer"
+                            />
+                            <input 
+                                v-model="buttonBgColor" 
+                                type="text"
+                                class="flex-1 px-4 py-2.5 rounded-lg border border-surface-300 dark:border-surface-700 bg-white dark:bg-surface-900 text-surface-900 dark:text-surface-100 focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-600 focus:border-transparent transition-all font-mono text-sm"
+                                placeholder="#3b82f6"
+                            />
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-2">
+                            Colore Testo
+                        </label>
+                        <div class="flex gap-2">
+                            <input 
+                                v-model="buttonTextColor" 
+                                type="color"
+                                class="h-11 w-14 rounded border border-surface-300 dark:border-surface-600 cursor-pointer"
+                            />
+                            <input 
+                                v-model="buttonTextColor" 
+                                type="text"
+                                class="flex-1 px-4 py-2.5 rounded-lg border border-surface-300 dark:border-surface-700 bg-white dark:bg-surface-900 text-surface-900 dark:text-surface-100 focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-600 focus:border-transparent transition-all font-mono text-sm"
+                                placeholder="#ffffff"
+                            />
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Contenuto/URL - Non mostrato per title -->
+                <div v-if="type !== 'title'">
+                    <label class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-2">
+                        {{ type === 'image' || type === 'link' || type === 'button' || type === 'social' ? 'URL' : 'Contenuto' }}
                     </label>
                     <textarea 
+                        v-if="type === 'text' || type === 'html'"
                         v-model="content" 
                         rows="4"
                         required
@@ -314,12 +469,77 @@ const getColorClasses = (color: string) => {
                         :placeholder="
                             type === 'text' ? 'Inserisci il testo...' :
                             type === 'html' ? 'Inserisci il codice HTML...' :
-                            type === 'image' ? 'Inserisci l\'URL dell\'immagine...' :
-                            type === 'link' ? 'Inserisci l\'URL del link...' :
-                            type === 'video' ? 'Inserisci l\'URL del video (YouTube o Vimeo)...' :
                             'Inserisci il contenuto...'
                         "
                     />
+                    <input 
+                        v-else
+                        v-model="content" 
+                        type="url"
+                        required
+                        class="w-full px-4 py-2.5 rounded-lg border border-surface-300 dark:border-surface-700 bg-white dark:bg-surface-900 text-surface-900 dark:text-surface-100 focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-600 focus:border-transparent transition-all font-mono"
+                        :placeholder="
+                            type === 'image' ? 'https://example.com/image.jpg' :
+                            type === 'link' ? 'https://example.com' :
+                            type === 'video' ? 'https://www.youtube.com/watch?v=...' :
+                            type === 'button' ? 'https://example.com' :
+                            type === 'social' ? 'https://facebook.com/yourprofile' :
+                            'https://example.com'
+                        "
+                    />
+                </div>
+
+                <!-- Link URL opzionale per Image -->
+                <div v-if="type === 'image'">
+                    <label class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-2">
+                        Link URL (facoltativo)
+                    </label>
+                    <input 
+                        v-model="imageLinkUrl" 
+                        type="url"
+                        class="w-full px-4 py-2.5 rounded-lg border border-surface-300 dark:border-surface-700 bg-white dark:bg-surface-900 text-surface-900 dark:text-surface-100 focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-600 focus:border-transparent transition-all font-mono"
+                        placeholder="https://example.com"
+                    />
+                    <p class="text-xs text-surface-500 dark:text-surface-400 mt-1">
+                        L'immagine diventerà cliccabile se inserisci un link
+                    </p>
+                </div>
+
+                <!-- Anteprima per Button -->
+                <div v-if="type === 'button' && title">
+                    <label class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-2">
+                        Anteprima
+                    </label>
+                    <div 
+                        class="w-full px-6 py-3 rounded-lg text-center font-semibold cursor-default transition-all"
+                        :style="{ 
+                            backgroundColor: buttonBgColor,
+                            color: buttonTextColor 
+                        }"
+                    >
+                        {{ title || 'Button Preview' }}
+                    </div>
+                </div>
+
+                <!-- Anteprima per Social -->
+                <div v-if="type === 'social'">
+                    <label class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-2">
+                        Anteprima
+                    </label>
+                    <div 
+                        class="w-full px-6 py-3 rounded-lg flex items-center justify-center gap-3 cursor-default transition-all"
+                        :style="{ 
+                            backgroundColor: socialConfig[socialType].color,
+                            color: socialType === 'snapchat' ? '#000000' : '#ffffff'
+                        }"
+                    >
+                        <div class="flex-shrink-0 w-6 h-6 rounded-full bg-white/20 flex items-center justify-center">
+                            <span class="text-xs font-bold">{{ socialType.charAt(0).toUpperCase() }}</span>
+                        </div>
+                        <span class="text-base font-semibold">
+                            {{ title || socialConfig[socialType].name }}
+                        </span>
+                    </div>
                 </div>
 
                 <div class="flex gap-3 pt-4">
