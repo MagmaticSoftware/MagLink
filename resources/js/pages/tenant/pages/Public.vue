@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed, ref, onMounted, onUnmounted } from 'vue';
 import { Head } from '@inertiajs/vue3';
 import { useDark, useToggle } from '@vueuse/core';
 import { LucideSun, LucideMoon } from 'lucide-vue-next';
@@ -17,6 +17,21 @@ import SocialBlock from '@/components/tenant/pageblocks/show/Social.vue';
 
 const isDark = useDark();
 const toggleDark = useToggle(isDark);
+
+// Reactive window width for responsive behavior
+const windowWidth = ref(typeof window !== 'undefined' ? window.innerWidth : 1024);
+
+const updateWindowWidth = () => {
+    windowWidth.value = window.innerWidth;
+};
+
+onMounted(() => {
+    window.addEventListener('resize', updateWindowWidth);
+});
+
+onUnmounted(() => {
+    window.removeEventListener('resize', updateWindowWidth);
+});
 
 const blockComponents: Record<string, any> = {
     link: LinkBlock,
@@ -183,22 +198,22 @@ const getBlockHeight = (block: any) => {
         <div class="flex-shrink-0 px-4 pt-12 pb-6 lg:pt-16 lg:pb-8">
             <!-- Header with Image: Left Aligned -->
             <div class="max-w-6xl mx-auto">
-                <div class="flex items-center gap-6">
+                <div class="flex flex-col sm:flex-row items-center sm:items-center gap-4 sm:gap-6">
                     <img 
                         v-if="props.page.settings?.profile_image"
                         :src="props.page.settings.profile_image"
                         alt="Profile"
-                        class="w-46 h-46 lg:w-46 lg:h-46 rounded-full object-cover shadow-xl shrink-0"
+                        class="w-24 h-24 sm:w-32 sm:h-32 lg:w-46 lg:h-46 rounded-full object-cover shadow-xl shrink-0"
                     />
-                    <div class="flex-1 text-left px-6">
+                    <div class="flex-1 text-center sm:text-left px-2 sm:px-6">
                         <h1 :class="[
-                            'text-4xl lg:text-6xl font-bold mb-2',
+                            'text-2xl sm:text-4xl lg:text-6xl font-bold mb-2',
                             colorClasses.light,
                             'dark:' + colorClasses.dark
                         ]">
                             {{ props.page.title }}
                         </h1>
-                        <p v-if="props.page.description" class="text-xl text-slate-700 dark:text-slate-400 whitespace-pre-line">
+                        <p v-if="props.page.description" class="text-base sm:text-lg lg:text-xl text-slate-700 dark:text-slate-400 whitespace-pre-line">
                             {{ props.page.description }}
                         </p>
                     </div>
@@ -211,14 +226,14 @@ const getBlockHeight = (block: any) => {
             <div class="max-w-6xl mx-auto">
                 <div 
                     v-if="blocks.length > 0" 
-                    class="grid grid-cols-4 gap-8 w-full"
-                    :style="{ gridTemplateRows: `repeat(${maxRows}, minmax(0, 1fr))` }"
+                    class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 lg:gap-8 w-full"
+                    :style="{ gridTemplateRows: windowWidth >= 1024 ? `repeat(${maxRows}, minmax(0, 1fr))` : 'auto' }"
                 >
                     <div 
                         v-for="block in blocks" 
                         :key="block.id"
                         :class="getBlockHeight(block)"
-                        :style="getGridPosition(block)"
+                        :style="windowWidth >= 1024 ? getGridPosition(block) : {}"
                     >
                         <div 
                             :class="[
@@ -352,6 +367,20 @@ const getBlockHeight = (block: any) => {
 @media (max-width: 768px) {
   .bento-card {
     padding: 1rem;
+  }
+  
+  /* Su mobile i blocchi hanno altezza automatica */
+  .grid > div {
+    height: auto !important;
+    min-height: 120px;
+  }
+}
+
+@media (min-width: 769px) and (max-width: 1023px) {
+  /* Su tablet i blocchi hanno altezza automatica */
+  .grid > div {
+    height: auto !important;
+    min-height: 150px;
   }
 }
 </style>
