@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\SlugCheckController;
 use App\Http\Controllers\QrCodeImageController;
+use App\Http\Controllers\QrLogoUploadController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 

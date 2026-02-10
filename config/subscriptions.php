@@ -44,6 +44,12 @@ return [
                 'pages' => 1,
                 'blocks_per_page' => 6,
             ],
+            'qr_customization' => [
+                'colors' => true,
+                'logo' => false,
+                'remove_background' => false,
+                'max_size' => 512,
+            ],
             'monthly' => [
                 'price' => 0, // gratuito
                 'currency' => 'EUR',
@@ -66,6 +72,12 @@ return [
                 'qrcodes' => 100,
                 'qrcodes_dynamic' => 30,
                 'pages' => 5,
+            ],
+            'qr_customization' => [
+                'colors' => true,
+                'logo' => true,
+                'remove_background' => true,
+                'max_size' => 1024,
             ],
             'monthly' => [
                 'price' => 400, // 4€ in centesimi
@@ -93,6 +105,12 @@ return [
                 'qrcodes' => -1, // illimitato
                 'qrcodes_dynamic' => -1, // illimitato
                 'pages' => -1, // illimitato
+            ],
+            'qr_customization' => [
+                'colors' => true,
+                'logo' => true,
+                'remove_background' => true,
+                'max_size' => 2048,
             ],
             'monthly' => [
                 'price' => 800, // 8€ in centesimi

@@ -82,6 +82,12 @@ class ShareTrialData
                     'currentPlanKey' => $user->currentPlanKey(),
                     'hasAccess' => $user->hasAccess(),
                     'limits' => $user->getPlanLimits(),
+                    // QR Code customization
+                    'plan' => $user->currentPlanKey() ?? 'free',
+                    'plan_name' => $user->currentPlanName() ?? 'Free',
+                    'qr_customization' => $user->getQrCustomizationOptions(),
+                    'on_trial' => $user->onTrial(),
+                    'trial_days_left' => $user->trialDaysLeft(),
                 ],
             ]);
         } else {
@@ -103,6 +109,17 @@ class ShareTrialData
                     'onFreePlan' => false,
                     'currentPlanName' => null,
                     'hasAccess' => false,
+                    // QR Code customization defaults for non-authenticated users
+                    'plan' => 'free',
+                    'plan_name' => 'Free',
+                    'qr_customization' => config('subscriptions.plans.free.qr_customization', [
+                        'colors' => true,
+                        'logo' => false,
+                        'remove_background' => false,
+                        'max_size' => 512,
+                    ]),
+                    'on_trial' => false,
+                    'trial_days_left' => 0,
                 ],
             ]);
         }

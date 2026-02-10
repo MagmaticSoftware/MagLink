@@ -48,6 +48,17 @@ export interface PageProps {
             pages: number;
             blocks_per_page?: number;
         };
+        // QR Code customization features
+        plan?: string;
+        plan_name?: string;
+        qr_customization?: {
+            colors: boolean;
+            logo: boolean;
+            remove_background: boolean;
+            max_size: number;
+        };
+        on_trial?: boolean;
+        trial_days_left?: number;
     };
     plans?: Record<string, any>;
     [key: string]: any;

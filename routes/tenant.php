@@ -8,6 +8,7 @@ use App\Http\Controllers\PageBlockController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\PlanController;
 use App\Http\Controllers\QrCodeController;
+use App\Http\Controllers\QrLogoUploadController;
 use App\Http\Middleware\RedirectIfNotSubscribed;
 use App\Http\Middleware\SetDefaultTenantForUrls;
 use Illuminate\Support\Facades\Auth;
@@ -63,8 +64,13 @@ Route::domain(config('app.tenant_url'))->middleware([
         Route::get('qrcodes/{qrcode}/analytics', [App\Http\Controllers\AnalyticsController::class, 'qrcode'])
             ->name('qrcodes.analytics');
 
+        // QR Code logo upload/delete - MUST be before resource routes
+        Route::post('qrcodes/logo/upload', [QrLogoUploadController::class, 'upload'])->name('qrcodes.logo.upload');
+        Route::delete('qrcodes/logo/delete', [QrLogoUploadController::class, 'delete'])->name('qrcodes.logo.delete');
+
         Route::resource('links', LinkController::class)->names('links');
         Route::resource('qrcodes', QrCodeController::class)->names('qrcodes');
+        
         Route::post('pages/{page}/upload-profile-image', [PageController::class, 'uploadProfileImage'])->name('pages.upload-profile-image');
         Route::delete('pages/{page}/delete-profile-image', [PageController::class, 'deleteProfileImage'])->name('pages.delete-profile-image');
         Route::resource('pages', PageController::class)->names('pages');

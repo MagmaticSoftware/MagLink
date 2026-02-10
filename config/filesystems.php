@@ -47,6 +47,15 @@ return [
             'report' => false,
         ],
 
+        'user_uploads' => [
+            'driver' => 'local',
+            'root' => storage_path('app/public/user-uploads'),
+            'url' => env('APP_URL').'/storage/user-uploads',
+            'visibility' => 'public',
+            'throw' => false,
+            'report' => false,
+        ],
+
         's3' => [
             'driver' => 's3',
             'key' => env('AWS_ACCESS_KEY_ID'),

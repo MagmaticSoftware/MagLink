@@ -374,4 +374,52 @@ class User extends Authenticatable
         $currentCount = PageBlock::where('page_id', $pageId)->count();
         return $currentCount < $blockLimit;
     }
+
+    /**
+     * Ottiene le opzioni di personalizzazione QR Code disponibili per il piano
+     */
+    public function getQrCustomizationOptions(): array
+    {
+        $planKey = $this->currentPlanKey();
+        
+        // Se non ha un piano, usa le opzioni del piano free
+        if (!$planKey) {
+            $planKey = 'free';
+        }
+        
+        $plans = config('subscriptions.plans', []);
+        
+        return $plans[$planKey]['qr_customization'] ?? [
+            'colors' => false,
+            'logo' => false,
+            'remove_background' => false,
+            'max_size' => 512,
+        ];
+    }
+
+    /**
+     * Verifica se l'utente può usare una specifica feature di personalizzazione QR
+     */
+    public function canUseQrFeature(string $feature): bool
+    {
+        $options = $this->getQrCustomizationOptions();
+        return $options[$feature] ?? false;
+    }
+
+    /**
+     * Ottiene la dimensione massima per export QR Code
+     */
+    public function getQrMaxSize(): int
+    {
+        $options = $this->getQrCustomizationOptions();
+        return $options['max_size'] ?? 512;
+    }
+
+    /**
+     * Ottiene il path della cartella upload per questo utente
+     */
+    public function getUploadPath(string $type = 'qr-logos'): string
+    {
+        return "{$this->id}/{$type}";
+    }
 }

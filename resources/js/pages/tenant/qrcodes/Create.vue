@@ -23,9 +23,10 @@ import Button from '@/components/volt/Button.vue';
 import Select from '@/components/volt/Select.vue';
 import Textarea from '@/components/volt/Textarea.vue';
 import LimitWarning from '@/components/LimitWarning.vue';
+import QrCustomization from '@/components/QrCustomization.vue';
 import { useI18n } from 'vue-i18n';
 import { type PageProps } from '@/types/inertia';
-import { ref, computed } from 'vue';
+import { ref, computed, watch } from 'vue';
 
 const { t } = useI18n();
 const page = usePage<PageProps>();
@@ -88,7 +89,9 @@ const currentFormat = computed(() =>
 const payloadContent = ref('');
 
 // QR Code preview URL
-const qrPreviewUrl = computed(() => {
+const qrPreviewUrl = ref('');
+
+const baseQrPreviewUrl = computed(() => {
     if (!payloadContent.value && form.format !== 'url') return null;
     
     const params = new URLSearchParams({
@@ -99,6 +102,16 @@ const qrPreviewUrl = computed(() => {
     });
     
     return `/api/qrcode/preview?${params.toString()}`;
+});
+
+// Initialize preview URL
+qrPreviewUrl.value = baseQrPreviewUrl.value || '';
+
+// Watch for content changes to update preview
+watch([payloadContent, () => form.format, () => form.type], () => {
+    if (baseQrPreviewUrl.value) {
+        qrPreviewUrl.value = baseQrPreviewUrl.value;
+    }
 });
 
 // Update payload when content changes
@@ -149,107 +162,9 @@ const submitForm = () => {
             </div>
 
             <!-- Form -->
-            <form @submit.prevent="submitForm" class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <!-- Left Column - Main Details -->
-                <div class="lg:col-span-2 space-y-6">
-                    <!-- Basic Information -->
-                    <div class="bg-white dark:bg-surface-900 rounded-xl p-6 shadow-sm border border-surface-200 dark:border-surface-800">
-                        <h2 class="text-lg font-semibold text-surface-900 dark:text-surface-50 mb-4 flex items-center gap-2">
-                            <LucideInfo :size="20" />
-                            Basic Information
-                        </h2>
-                        
-                        <div class="space-y-4">
-                            <!-- Name -->
-                            <div>
-                                <label class="text-sm font-medium text-surface-700 dark:text-surface-300 block mb-2">
-                                    Name <span class="text-red-500">*</span>
-                                </label>
-                                <InputText
-                                    v-model="form.name"
-                                    :placeholder="t('qrcodes.placeholders.title')"
-                                    required
-                                    class="w-full"
-                                />
-                                <p v-if="form.errors.name" class="text-sm text-red-600 dark:text-red-400 mt-1">
-                                    {{ form.errors.name }}
-                                </p>
-                            </div>
-
-                            <!-- Description -->
-                            <div>
-                                <label class="text-sm font-medium text-surface-700 dark:text-surface-300 block mb-2">
-                                    Description
-                                </label>
-                                <Textarea
-                                    v-model="form.description"
-                                    :placeholder="t('qrcodes.placeholders.description')"
-                                    rows="3"
-                                    class="w-full"
-                                />
-                                <p v-if="form.errors.description" class="text-sm text-red-600 dark:text-red-400 mt-1">
-                                    {{ form.errors.description }}
-                                </p>
-                            </div>
-
-                            <!-- Format Selection -->
-                            <div>
-                                <label class="text-sm font-medium text-surface-700 dark:text-surface-300 block mb-3">
-                                    Format Type <span class="text-red-500">*</span>
-                                </label>
-                                <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
-                                    <button
-                                        v-for="format in formatOptions"
-                                        :key="format.value"
-                                        type="button"
-                                        @click="form.format = format.value"
-                                        class="p-4 rounded-lg border-2 transition-all text-left"
-                                        :class="form.format === format.value
-                                            ? 'border-primary bg-primary/5 dark:bg-primary/10'
-                                            : 'border-surface-200 dark:border-surface-700 hover:border-surface-300 dark:hover:border-surface-600'"
-                                    >
-                                        <component :is="format.icon" :size="24" 
-                                            class="mb-2"
-                                            :class="form.format === format.value ? 'text-primary' : 'text-surface-500'" 
-                                        />
-                                        <div class="font-medium text-surface-900 dark:text-surface-50 text-sm">
-                                            {{ format.label }}
-                                        </div>
-                                        <div class="text-xs text-surface-500 dark:text-surface-400 mt-1">
-                                            {{ format.description }}
-                                        </div>
-                                    </button>
-                                </div>
-                            </div>
-
-                            <!-- Content Input -->
-                            <div>
-                                <label class="text-sm font-medium text-surface-700 dark:text-surface-300 block mb-2">
-                                    Content <span class="text-red-500">*</span>
-                                </label>
-                                <div class="relative">
-                                    <component :is="currentFormat.icon" 
-                                        :size="20" 
-                                        class="absolute left-3 top-3 text-surface-400" 
-                                    />
-                                    <Textarea
-                                        v-model="payloadContent"
-                                        :placeholder="`Enter ${currentFormat.label.toLowerCase()} content...`"
-                                        rows="4"
-                                        class="w-full pl-10"
-                                        required
-                                    />
-                                </div>
-                                <p class="text-xs text-surface-500 dark:text-surface-400 mt-1">
-                                    {{ currentFormat.description }}
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Right Column - Settings -->
-                <div class="lg:col-span-1 space-y-6">
+            <form @submit.prevent="submitForm" class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                <!-- Left Column - Settings & Customization -->
+                <div class="lg:col-span-4 space-y-6">
                     <!-- Dynamic QR Code Limit Warning -->
                     <LimitWarning 
                         v-if="form.type === 'dynamic'"
@@ -347,15 +262,143 @@ const submitForm = () => {
                         </div>
                     </div>
 
-                    <!-- QR Code Preview -->
+                    <!-- QR Customization -->
                     <div class="bg-white dark:bg-surface-900 rounded-xl p-6 shadow-sm border border-surface-200 dark:border-surface-800">
+                        <QrCustomization v-model="form.options" :previewUrl="baseQrPreviewUrl || ''" @update:previewUrl="qrPreviewUrl = $event" />
+                    </div>
+
+                    <!-- Actions -->
+                    <div class="space-y-2">
+                        <Button 
+                            type="submit" 
+                            :disabled="form.processing"
+                            class="w-full justify-center"
+                        >
+                            <LucideSave :size="16" class="mr-2" />
+                            {{ form.processing ? 'Creating...' : t('qrcodes.addNew') }}
+                        </Button>
+                        <Button 
+                            variant="outline"
+                            type="button"
+                            :href="route('qrcodes.index')"
+                            as="a"
+                            class="w-full justify-center"
+                        >
+                            {{ t('common.cancel') }}
+                        </Button>
+                    </div>
+                </div>
+
+                <!-- Center Column - Basic Information -->
+                <div class="lg:col-span-5 space-y-6">
+                    <!-- Basic Information -->
+                    <div class="bg-white dark:bg-surface-900 rounded-xl p-6 shadow-sm border border-surface-200 dark:border-surface-800">
+                        <h2 class="text-lg font-semibold text-surface-900 dark:text-surface-50 mb-4 flex items-center gap-2">
+                            <LucideInfo :size="20" />
+                            Basic Information
+                        </h2>
+                        
+                        <div class="space-y-4">
+                            <!-- Name -->
+                            <div>
+                                <label class="text-sm font-medium text-surface-700 dark:text-surface-300 block mb-2">
+                                    Name <span class="text-red-500">*</span>
+                                </label>
+                                <InputText
+                                    v-model="form.name"
+                                    :placeholder="t('qrcodes.placeholders.title')"
+                                    required
+                                    class="w-full"
+                                />
+                                <p v-if="form.errors.name" class="text-sm text-red-600 dark:text-red-400 mt-1">
+                                    {{ form.errors.name }}
+                                </p>
+                            </div>
+
+                            <!-- Description -->
+                            <div>
+                                <label class="text-sm font-medium text-surface-700 dark:text-surface-300 block mb-2">
+                                    Description
+                                </label>
+                                <Textarea
+                                    v-model="form.description"
+                                    :placeholder="t('qrcodes.placeholders.description')"
+                                    rows="3"
+                                    class="w-full"
+                                />
+                                <p v-if="form.errors.description" class="text-sm text-red-600 dark:text-red-400 mt-1">
+                                    {{ form.errors.description }}
+                                </p>
+                            </div>
+
+                            <!-- Format Selection -->
+                            <div>
+                                <label class="text-sm font-medium text-surface-700 dark:text-surface-300 block mb-3">
+                                    Format Type <span class="text-red-500">*</span>
+                                </label>
+                                <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
+                                    <button
+                                        v-for="format in formatOptions"
+                                        :key="format.value"
+                                        type="button"
+                                        @click="form.format = format.value"
+                                        class="p-4 rounded-lg border-2 transition-all text-left"
+                                        :class="form.format === format.value
+                                            ? 'border-primary bg-primary/5 dark:bg-primary/10'
+                                            : 'border-surface-200 dark:border-surface-700 hover:border-surface-300 dark:hover:border-surface-600'"
+                                    >
+                                        <component :is="format.icon" :size="24" 
+                                            class="mb-2"
+                                            :class="form.format === format.value ? 'text-primary' : 'text-surface-500'" 
+                                        />
+                                        <div class="font-medium text-surface-900 dark:text-surface-50 text-sm">
+                                            {{ format.label }}
+                                        </div>
+                                        <div class="text-xs text-surface-500 dark:text-surface-400 mt-1">
+                                            {{ format.description }}
+                                        </div>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Content Input -->
+                            <div>
+                                <label class="text-sm font-medium text-surface-700 dark:text-surface-300 block mb-2">
+                                    Content <span class="text-red-500">*</span>
+                                </label>
+                                <div class="relative">
+                                    <component :is="currentFormat.icon" 
+                                        :size="20" 
+                                        class="absolute left-3 top-3 text-surface-400" 
+                                    />
+                                    <Textarea
+                                        v-model="payloadContent"
+                                        :placeholder="`Enter ${currentFormat.label.toLowerCase()} content...`"
+                                        rows="4"
+                                        class="w-full pl-10"
+                                        required
+                                    />
+                                </div>
+                                <p class="text-xs text-surface-500 dark:text-surface-400 mt-1">
+                                    {{ currentFormat.description }}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Column - QR Preview -->
+                <div class="lg:col-span-3 space-y-6">
+
+                    <!-- QR Code Preview -->
+                    <div class="bg-white dark:bg-surface-900 rounded-xl p-6 shadow-sm border border-surface-200 dark:border-surface-800 sticky top-6">
                         <h2 class="text-lg font-semibold text-surface-900 dark:text-surface-50 mb-4">
                             Preview
                         </h2>
                         <div class="space-y-3">
-                            <div class="aspect-square bg-surface-50 dark:bg-surface-800 rounded-lg border-2 border-dashed border-surface-300 dark:border-surface-700 flex items-center justify-center">
+                            <div class="aspect-square max-w-[280px] mx-auto bg-surface-50 dark:bg-surface-800 rounded-lg border-2 border-dashed border-surface-300 dark:border-surface-700 flex items-center justify-center">
                                 <div v-if="!qrPreviewUrl" class="text-center p-4">
-                                    <LucideQrCode :size="80" class="mx-auto text-surface-300 dark:text-surface-600 mb-2" />
+                                    <LucideQrCode :size="60" class="mx-auto text-surface-300 dark:text-surface-600 mb-2" />
                                     <p class="text-xs text-surface-500 dark:text-surface-400">
                                         {{ t('qrcodes.preview') }}
                                     </p>
@@ -364,7 +407,7 @@ const submitForm = () => {
                                     v-else
                                     :src="qrPreviewUrl" 
                                     alt="QR Code Preview" 
-                                    class="w-full h-full object-contain p-4"
+                                    class="w-full h-full object-contain p-3"
                                 />
                             </div>
                             
@@ -407,27 +450,6 @@ const submitForm = () => {
                                 {{ t('qrcodes.howItAppears') }}
                             </p>
                         </div>
-                    </div>
-
-                    <!-- Actions -->
-                    <div class="space-y-2">
-                        <Button 
-                            type="submit" 
-                            :disabled="form.processing"
-                            class="w-full justify-center"
-                        >
-                            <LucideSave :size="16" class="mr-2" />
-                            {{ form.processing ? 'Creating...' : t('qrcodes.addNew') }}
-                        </Button>
-                        <Button 
-                            variant="outline"
-                            type="button"
-                            :href="route('qrcodes.index')"
-                            as="a"
-                            class="w-full justify-center"
-                        >
-                            {{ t('common.cancel') }}
-                        </Button>
                     </div>
                 </div>
             </form>
