@@ -286,7 +286,7 @@ const submitForm = () => {
     }
 };
 
-let layout = reactive(
+const layout = reactive(
     Array.isArray(props.blocks)
         ? props.blocks.map((block, index) => {
             const x = block.position?.x ?? (index % 2);
