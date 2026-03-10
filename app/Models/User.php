@@ -11,8 +11,11 @@ use Laravel\Cashier\Billable;
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
 use Stancl\Tenancy\Database\Concerns\BelongsToTenant;
+use Filament\Models\Contracts\FilamentUser;
+use Filament\Models\Contracts\HasName;
+use Filament\Panel;
 
-class User extends Authenticatable
+class User extends Authenticatable implements FilamentUser, HasName
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable, HasRoles, BelongsToTenant, HasApiTokens, SoftDeletes, Billable;
@@ -86,6 +89,20 @@ class User extends Authenticatable
     public function subscriptions()
     {
         return $this->hasMany(StripeSubscription::class, 'user_id')->orderBy('created_at', 'desc');
+    }
+
+    /**
+     * Determina se l'utente può accedere al pannello Filament admin.
+     * Richiede il ruolo superadmin (Spatie Permission).
+     */
+    public function canAccessPanel(Panel $panel): bool
+    {
+        return $this->hasRole('superadmin');
+    }
+
+    public function getFilamentName(): string
+    {
+        return trim($this->first_name . ' ' . $this->last_name) ?: $this->email;
     }
 
     // ==========================================
