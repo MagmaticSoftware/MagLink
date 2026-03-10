@@ -35,6 +35,7 @@ Route::domain(config('app.tenant_url'))->middleware([
     PreventAccessFromCentralDomains::class,
     'web',
     'auth',
+    'verified',
     SetDefaultTenantForUrls::class
 ])->prefix('/{tenant}')->group(function () {
     

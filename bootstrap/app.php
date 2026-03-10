@@ -30,6 +30,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'tenant' => SetDefaultTenantForUrls::class,
             'subscribed' => RedirectIfNotSubscribed::class,
+            'honeypot' => \Spatie\Honeypot\ProtectAgainstSpam::class,
         ]);
 
         $middleware->trustProxies(at: '*');

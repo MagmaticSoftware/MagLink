@@ -17,6 +17,15 @@ import Select from '@/components/volt//Select.vue';
 import Checkbox from '@/components/volt//Checkbox.vue';
 import { ref, computed } from 'vue';
 
+const props = defineProps<{
+    honeypot: {
+        enabled: boolean;
+        nameFieldName: string;
+        validFromFieldName: string;
+        encryptedValidFrom: string;
+    };
+}>();
+
 const currentStep = ref(1);
 
 const form = useForm({
@@ -46,6 +55,10 @@ const form = useForm({
     terms_accepted: false, // alias terms_and_conditions
     privacy_policy: false,
     newsletter_opt_in: false, // alias newsletter
+
+    // Honeypot fields
+    [props.honeypot.nameFieldName]: '',
+    [props.honeypot.validFromFieldName]: props.honeypot.encryptedValidFrom,
 
     errors: {},
 });
@@ -206,6 +219,26 @@ const checkSlug = throttle(async () => {
         <Head title="Register" />
 
         <div class="container mx-auto">
+            <!-- Honeypot fields (hidden from users, visible to bots) -->
+            <template v-if="honeypot.enabled">
+                <div :id="`${honeypot.nameFieldName}_wrap`" style="display: none" aria-hidden="true">
+                    <input
+                        :name="honeypot.nameFieldName"
+                        v-model="form[honeypot.nameFieldName]"
+                        type="text"
+                        autocomplete="nope"
+                        tabindex="-1"
+                    />
+                    <input
+                        :name="honeypot.validFromFieldName"
+                        v-model="form[honeypot.validFromFieldName]"
+                        type="text"
+                        autocomplete="off"
+                        tabindex="-1"
+                    />
+                </div>
+            </template>
+
             <Stepper v-model:value="currentStep" class="mb-8">
                 <StepList>
                     <Step :value="1">Account</Step>

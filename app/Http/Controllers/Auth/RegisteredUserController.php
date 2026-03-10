@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules;
 use Inertia\Inertia;
 use Inertia\Response;
+use Spatie\Honeypot\Honeypot;
 
 class RegisteredUserController extends Controller
 {
@@ -24,7 +25,9 @@ class RegisteredUserController extends Controller
      */
     public function create(): Response
     {
-        return Inertia::render('auth/Register');
+        return Inertia::render('auth/Register', [
+            'honeypot' => app(Honeypot::class)->toArray(),
+        ]);
     }
 
     /**
