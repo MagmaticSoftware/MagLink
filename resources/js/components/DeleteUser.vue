@@ -5,7 +5,9 @@ import { ref } from 'vue';
 // Components
 import HeadingSmall from '@/components/HeadingSmall.vue';
 import InputError from '@/components/InputError.vue';
-import { Button } from '@/components/ui/button';
+import DangerButton from '@/components/volt/DangerButton.vue';
+import SecondaryButton from '@/components/volt/SecondaryButton.vue';
+import VoltInputText from '@/components/volt/InputText.vue';
 import {
     Dialog,
     DialogClose,
@@ -16,8 +18,6 @@ import {
     DialogTitle,
     DialogTrigger,
 } from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 
 const passwordInput = ref<HTMLInputElement | null>(null);
 
@@ -52,7 +52,7 @@ const closeModal = () => {
             </div>
             <Dialog>
                 <DialogTrigger as-child>
-                    <Button variant="destructive">Delete account</Button>
+                    <DangerButton label="Delete account" />
                 </DialogTrigger>
                 <DialogContent>
                     <form class="space-y-6" @submit="deleteUser">
@@ -65,19 +65,17 @@ const closeModal = () => {
                         </DialogHeader>
 
                         <div class="grid gap-2">
-                            <Label for="password" class="sr-only">Password</Label>
-                            <Input id="password" type="password" name="password" ref="passwordInput" v-model="form.password" placeholder="Password" />
+                            <label for="password" class="sr-only">Password</label>
+                            <VoltInputText id="password" type="password" name="password" v-model="form.password" placeholder="Password" class="w-full" />
                             <InputError :message="form.errors.password" />
                         </div>
 
                         <DialogFooter class="gap-2">
                             <DialogClose as-child>
-                                <Button variant="secondary" @click="closeModal"> Cancel </Button>
+                                <SecondaryButton @click="closeModal" label="Cancel" />
                             </DialogClose>
 
-                            <Button variant="destructive" :disabled="form.processing">
-                                <button type="submit">Delete account</button>
-                            </Button>
+                            <DangerButton type="submit" :disabled="form.processing" label="Delete account" />
                         </DialogFooter>
                     </form>
                 </DialogContent>

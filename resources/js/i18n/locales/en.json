@@ -338,6 +338,7 @@
     "pricing": {
       "title": "Choose the perfect plan for you",
       "subtitle": "Start free, then upgrade to a paid plan when you're ready",
+      "startNow": "Start now",
       "free": {
         "name": "Free",
         "price": "€0",

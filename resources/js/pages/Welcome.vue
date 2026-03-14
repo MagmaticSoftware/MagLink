@@ -21,6 +21,21 @@ const { t } = useI18n();
 const isAuthenticated = computed(() => page.props.auth?.user);
 const isAdmin = computed(() => page.props.auth?.isAdmin);
 const isTenant = computed(() => page.props.auth?.tenant);
+const dashboardUrl = computed(() => {
+    if (!isAuthenticated.value) {
+        return null;
+    }
+
+    if (isAdmin.value) {
+        return route('admin.index');
+    }
+
+    if (isTenant.value) {
+        return route('tenant.index', { tenant: page.props.auth.tenant });
+    }
+
+    return route('verification.notice');
+});
 
 const currentSlide = ref(0);
 const previousSlide = ref(0);
@@ -80,17 +95,10 @@ setInterval(() => {
                             
                             <template v-if="isAuthenticated">
                                 <a
-                                    v-if="isTenant"
-                                    :href="route('tenant.index', { tenant: page.props.auth.tenant })"
+                                    :href="dashboardUrl || route('verification.notice')"
                                     class="bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-500 hover:to-orange-800 text-white px-5 py-2.5 rounded-lg font-medium transition-all"
                                 >
-                                    {{ t('welcome.nav.dashboard') }}
-                                </a>
-                                <a v-else-if="isAdmin"
-                                    :href="route('admin.index')"
-                                    class="bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-500 hover:to-orange-800 text-white px-5 py-2.5 rounded-lg font-medium transition-all"
-                                >
-                                    {{ t('welcome.nav.adminDashboard') }}
+                                    {{ isAdmin ? t('welcome.nav.adminDashboard') : t('welcome.nav.dashboard') }}
                                 </a>
                             </template>
                             <template v-else>
@@ -136,18 +144,11 @@ setInterval(() => {
                         
                         <div class="flex flex-col space-y-2 pt-4 border-t border-gray-800">
                             <Link
-                                v-if="isAuthenticated && isTenant"
-                                :href="route('tenant.index', { tenant: page.props.auth.tenant })"
+                                v-if="isAuthenticated"
+                                :href="dashboardUrl || route('verification.notice')"
                                 class="bg-gradient-to-r from-orange-600 to-orange-700 text-white px-4 py-2 rounded-lg font-medium transition-colors text-center"
                             >
-                                {{ t('welcome.nav.dashboard') }}
-                            </Link>
-                            <Link
-                                v-else-if="isAuthenticated && isAdmin"
-                                :href="route('admin.index')"
-                                class="bg-gradient-to-r from-orange-600 to-orange-700 text-white px-4 py-2 rounded-lg font-medium transition-colors text-center"
-                            >
-                                {{ t('welcome.nav.adminDashboard') }}
+                                {{ isAdmin ? t('welcome.nav.adminDashboard') : t('welcome.nav.dashboard') }}
                             </Link>
                             <template v-else-if="!isAuthenticated">
                                 <Link
@@ -198,7 +199,7 @@ setInterval(() => {
                             </a>
                             <Link
                                 v-else
-                                :href="route('tenant.index', { tenant: page.props.auth.tenant })"
+                                :href="dashboardUrl || route('verification.notice')"
                                 class="inline-flex items-center justify-center bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-500 hover:to-orange-800 text-white px-8 py-4 rounded-lg font-semibold transition-all text-lg"
                             >
                                 {{ t('welcome.hero.goToDashboard') }}
@@ -393,11 +394,10 @@ setInterval(() => {
                         </ul>
                         
                         <a
-                            v-if="!isAuthenticated"
                             :href="route('register')"
                             class="block w-full text-center bg-gray-800 hover:bg-gray-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors"
                         >
-                            {{ t('welcome.pricing.free.cta') }}
+                            {{ t('welcome.pricing.startNow') }}
                         </a>
                     </div>
                     
@@ -440,11 +440,10 @@ setInterval(() => {
                         </ul>
                         
                         <a
-                            v-if="!isAuthenticated"
                             :href="route('register')"
                             class="block w-full text-center bg-gradient-to-r from-orange-600 to-orange-800 hover:from-orange-500 hover:to-orange-600 text-white font-semibold py-3 px-6 rounded-lg transition-all"
                         >
-                            {{ t('welcome.pricing.professional.cta') }}
+                            {{ t('welcome.pricing.startNow') }}
                         </a>
                     </div>
                     
@@ -477,10 +476,10 @@ setInterval(() => {
                         </ul>
                         
                         <a
-                            href="mailto:contact@maglink.com"
+                            :href="route('register')"
                             class="block w-full text-center bg-gray-800 hover:bg-gray-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors"
                         >
-                            {{ t('welcome.pricing.enterprise.cta') }}
+                            {{ t('welcome.pricing.startNow') }}
                         </a>
                     </div>
                 </div>

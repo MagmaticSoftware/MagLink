@@ -7,6 +7,7 @@ import { useI18n } from 'vue-i18n';
 import Breadcrumb from '@/components/volt/Breadcrumb.vue';
 import Menu from '@/components/volt/Menu.vue';
 import LanguageSelector from '@/components/LanguageSelector.vue';
+import { useRoute } from '@/composables/useRoute';
 import type { BreadcrumbItemType } from '@/types';
 
 interface Props {
@@ -20,6 +21,7 @@ const props = withDefaults(defineProps<Props>(), {
 const page = usePage();
 const user = computed(() => (page.props as any).auth?.user);
 const { t } = useI18n();
+const appRoute = useRoute();
 
 // Convert breadcrumbs format for Volt component
 const voltBreadcrumbs = computed(() => {
@@ -45,14 +47,14 @@ const userMenuItems = computed(() => [
         label: t('common.settings'),
         icon: 'pi pi-cog',
         command: () => {
-            window.location.href = route('profile.edit', { tenant: page.props.auth.tenant });
+            window.location.href = appRoute('profile.edit', { tenant: page.props.auth.tenant });
         }
     },
     {
         label: 'Piani e Prezzi',
         icon: 'pi pi-credit-card',
         command: () => {
-            window.location.href = route('plans.index', { tenant: page.props.auth.tenant });
+            window.location.href = appRoute('plans.index', { tenant: page.props.auth.tenant });
         }
     },
     {

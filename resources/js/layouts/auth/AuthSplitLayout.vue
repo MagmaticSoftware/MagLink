@@ -106,7 +106,7 @@ const features = [
 
         <!-- Right Side - Form -->
         <div class="flex items-center justify-center p-8 bg-white dark:bg-gray-950">
-            <div class="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[400px]">
+            <div class="mx-auto flex w-full max-w-xl flex-col justify-center space-y-6">
                 <!-- Mobile Logo -->
                 <div class="lg:hidden flex flex-col items-center space-y-3 mb-6">
                     <Link :href="route('home')" class="flex items-center gap-3">

@@ -2,15 +2,19 @@
 
 use App\Http\Controllers\Settings\PasswordController;
 use App\Http\Controllers\Settings\ProfileController;
+use App\Http\Middleware\SetDefaultTenantForUrls;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Stancl\Tenancy\Middleware\InitializeTenancyByPath;
 use Stancl\Tenancy\Middleware\PreventAccessFromCentralDomains;
 
-Route::middleware([
-    'auth',
+Route::domain(config('app.tenant_url'))->middleware([
     InitializeTenancyByPath::class,
-    PreventAccessFromCentralDomains::class
+    PreventAccessFromCentralDomains::class,
+    'web',
+    'auth',
+    'verified',
+    SetDefaultTenantForUrls::class,
 ])->prefix('/{tenant}')->group(function () {
     Route::get('settings', function () {
         return redirect()->route('profile.edit', ['tenant' => request()->route('tenant')]);

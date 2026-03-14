@@ -5,4 +5,4 @@ use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Schedule;
 
 
-Schedule::command('subscriptions:sync-periods')->daily();
+Schedule::command('subscriptions:sync-periods')->dailyAt('02:00');

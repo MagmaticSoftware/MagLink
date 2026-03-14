@@ -5,9 +5,11 @@ import type { User } from '@/types';
 import { Link } from '@inertiajs/vue3';
 import { LogOut, Settings, SunMedium, Moon, CreditCard } from 'lucide-vue-next';
 import { useDark, useToggle } from '@vueuse/core';
+import { useRoute } from '@/composables/useRoute';
 
 const isDark = useDark();
 const toggleDark = useToggle(isDark);
+const appRoute = useRoute();
 
 interface Props {
     user: User;
@@ -25,13 +27,13 @@ defineProps<Props>();
     <DropdownMenuSeparator />
     <DropdownMenuGroup>
         <DropdownMenuItem :as-child="true">
-            <Link class="block w-full" :href="route('profile.edit', { tenant: user.tenant_id })" as="button">
+            <Link class="block w-full" :href="appRoute('profile.edit', { tenant: user.tenant_id })" as="button">
                 <Settings class="mr-2 h-4 w-4" />
                 Settings
             </Link>
         </DropdownMenuItem>
         <DropdownMenuItem :as-child="true">
-            <Link class="block w-full" :href="route('plans.index', { tenant: user.tenant_id })" as="button">
+            <Link class="block w-full" :href="appRoute('plans.index', { tenant: user.tenant_id })" as="button">
                 <CreditCard class="mr-2 h-4 w-4" />
                 Piani e Prezzi
             </Link>

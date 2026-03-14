@@ -3,12 +3,10 @@ import InputError from '@/components/InputError.vue';
 import AppLayout from '@/layouts/AppLayout.vue';
 import SettingsLayout from '@/layouts/settings/Layout.vue';
 import { Head, useForm } from '@inertiajs/vue3';
-import { ref } from 'vue';
 
 import HeadingSmall from '@/components/HeadingSmall.vue';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+import VoltButton from '@/components/volt/Button.vue';
+import VoltInputText from '@/components/volt/InputText.vue';
 import { type BreadcrumbItem } from '@/types';
 
 const breadcrumbItems: BreadcrumbItem[] = [
@@ -17,9 +15,6 @@ const breadcrumbItems: BreadcrumbItem[] = [
         href: '/settings/password',
     },
 ];
-
-const passwordInput = ref<HTMLInputElement | null>(null);
-const currentPasswordInput = ref<HTMLInputElement | null>(null);
 
 const form = useForm({
     current_password: '',
@@ -34,16 +29,12 @@ const updatePassword = () => {
         onError: (errors: any) => {
             if (errors.password) {
                 form.reset('password', 'password_confirmation');
-                if (passwordInput.value instanceof HTMLInputElement) {
-                    passwordInput.value.focus();
-                }
+                document.getElementById('password')?.focus();
             }
 
             if (errors.current_password) {
                 form.reset('current_password');
-                if (currentPasswordInput.value instanceof HTMLInputElement) {
-                    currentPasswordInput.value.focus();
-                }
+                document.getElementById('current_password')?.focus();
             }
         },
     });
@@ -62,13 +53,12 @@ const updatePassword = () => {
 
                 <form @submit.prevent="updatePassword" class="space-y-6">
                     <div class="grid gap-2">
-                        <Label for="current_password">Current password</Label>
-                        <Input
+                        <label for="current_password" class="block text-sm font-medium text-surface-700 dark:text-surface-300">Current password</label>
+                        <VoltInputText
                             id="current_password"
-                            ref="currentPasswordInput"
                             v-model="form.current_password"
                             type="password"
-                            class="mt-1 block w-full"
+                            class="mt-1 w-full"
                             autocomplete="current-password"
                             placeholder="Current password"
                         />
@@ -76,13 +66,12 @@ const updatePassword = () => {
                     </div>
 
                     <div class="grid gap-2">
-                        <Label for="password">New password</Label>
-                        <Input
+                        <label for="password" class="block text-sm font-medium text-surface-700 dark:text-surface-300">New password</label>
+                        <VoltInputText
                             id="password"
-                            ref="passwordInput"
                             v-model="form.password"
                             type="password"
-                            class="mt-1 block w-full"
+                            class="mt-1 w-full"
                             autocomplete="new-password"
                             placeholder="New password"
                         />
@@ -90,12 +79,12 @@ const updatePassword = () => {
                     </div>
 
                     <div class="grid gap-2">
-                        <Label for="password_confirmation">Confirm password</Label>
-                        <Input
+                        <label for="password_confirmation" class="block text-sm font-medium text-surface-700 dark:text-surface-300">Confirm password</label>
+                        <VoltInputText
                             id="password_confirmation"
                             v-model="form.password_confirmation"
                             type="password"
-                            class="mt-1 block w-full"
+                            class="mt-1 w-full"
                             autocomplete="new-password"
                             placeholder="Confirm password"
                         />
@@ -103,7 +92,7 @@ const updatePassword = () => {
                     </div>
 
                     <div class="flex items-center gap-4">
-                        <Button :disabled="form.processing">Save password</Button>
+                        <VoltButton label="Save password" :disabled="form.processing" />
 
                         <Transition
                             enter-active-class="transition ease-in-out"

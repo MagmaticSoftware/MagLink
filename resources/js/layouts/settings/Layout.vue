@@ -1,7 +1,5 @@
 <script setup lang="ts">
 import Heading from '@/components/Heading.vue';
-import { Button } from '@/components/ui/button';
-import { Separator } from '@/components/ui/separator';
 import { type NavItem } from '@/types';
 import { Link, usePage } from '@inertiajs/vue3';
 
@@ -23,6 +21,14 @@ const sidebarNavItems: NavItem[] = [
 ];
 
 const currentPath = page.props.ziggy?.location ? new URL(page.props.ziggy.location).pathname : '';
+
+const isCurrentPath = (href: string) => {
+    try {
+        return currentPath === new URL(href).pathname;
+    } catch {
+        return currentPath === href;
+    }
+};
 </script>
 
 <template>
@@ -32,21 +38,19 @@ const currentPath = page.props.ziggy?.location ? new URL(page.props.ziggy.locati
         <div class="flex flex-col space-y-8 md:space-y-0 lg:flex-row lg:space-x-12 lg:space-y-0">
             <aside class="w-full max-w-xl lg:w-48">
                 <nav class="flex flex-col space-x-0 space-y-1">
-                    <Button
+                    <Link
                         v-for="item in sidebarNavItems"
                         :key="item.href"
-                        variant="ghost"
-                        :class="['w-full justify-start', { 'bg-muted': currentPath === item.href }]"
-                        as-child
+                        :href="item.href"
+                        class="flex w-full items-center justify-start rounded-md px-3 py-2 text-sm font-medium text-surface-600 dark:text-surface-400 transition-colors hover:bg-surface-100 dark:hover:bg-surface-800 hover:text-surface-900 dark:hover:text-surface-100"
+                        :class="{ 'bg-surface-100 dark:bg-surface-800 !text-surface-900 dark:!text-surface-50': isCurrentPath(item.href) }"
                     >
-                        <Link :href="item.href">
-                            {{ item.title }}
-                        </Link>
-                    </Button>
+                        {{ item.title }}
+                    </Link>
                 </nav>
             </aside>
 
-            <Separator class="my-6 md:hidden" />
+            <div class="my-6 md:hidden border-t border-surface-200 dark:border-surface-700" />
 
             <div class="flex-1 md:max-w-2xl">
                 <section class="max-w-xl space-y-12">

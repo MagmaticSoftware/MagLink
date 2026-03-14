@@ -327,6 +327,7 @@
     "pricing": {
       "title": "Scegli il piano perfetto per te",
       "subtitle": "Inizia gratis, poi passa a un piano a pagamento quando sei pronto",
+      "startNow": "Inizia ora",
       "free": {
         "name": "Free",
         "price": "€0",
