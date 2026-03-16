@@ -392,14 +392,14 @@ const checkSlug = throttle(async () => {
                                     <div class="flex items-center gap-3">
                                         <Checkbox v-model="form.terms_accepted" binary />
                                         <label class="text-sm text-gray-700 dark:text-gray-300">
-                                            Accetto i <TextLink href="#" class="underline text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300">Termini di servizio</TextLink>
+                                            Accetto i <TextLink :href="route('terms-of-service')" target="_blank" class="underline text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300">Termini di servizio</TextLink>
                                         </label>
                                     </div>
                                     <Message v-if="form.errors.terms_accepted" size="small" severity="error" variant="simple">{{ form.errors.terms_accepted }}</Message>
                                     <div class="flex items-center gap-3">
                                         <Checkbox v-model="form.privacy_policy" binary />
                                         <label class="text-sm text-gray-700 dark:text-gray-300">
-                                            Accetto la <TextLink href="#" class="underline text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300">Privacy Policy</TextLink>
+                                            Accetto la <TextLink :href="route('privacy-policy')" target="_blank" class="underline text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300">Privacy Policy</TextLink>
                                         </label>
                                     </div>
                                     <Message v-if="form.errors.privacy_policy" size="small" severity="error" variant="simple">{{ form.errors.privacy_policy }}</Message>

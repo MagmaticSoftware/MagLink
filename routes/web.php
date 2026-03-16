@@ -17,6 +17,18 @@ Route::domain(config('app.url'))->middleware('web')->group(function () {
         return Inertia::render('Welcome');
     })->name('home');
 
+    Route::get('/privacy-policy', function () {
+        return Inertia::render('PrivacyPolicy');
+    })->name('privacy-policy');
+
+    Route::get('/cookie-policy', function () {
+        return Inertia::render('CookiePolicy');
+    })->name('cookie-policy');
+
+    Route::get('/terms-of-service', function () {
+        return Inertia::render('TermsOfService');
+    })->name('terms-of-service');
+
     Route::get('{page:slug}', [PageController::class, 'showPublic'])->name('pages.show.public');
 });
 

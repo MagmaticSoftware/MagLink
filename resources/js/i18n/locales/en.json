@@ -279,6 +279,8 @@
   "welcome": {
     "nav": {
       "features": "Features",
+      "howItWorks": "How It Works",
+      "useCases": "Use Cases",
       "pricing": "Pricing",
       "signIn": "Sign in",
       "getStarted": "Get Started",
@@ -286,9 +288,13 @@
       "adminDashboard": "Admin Dashboard"
     },
     "hero": {
-      "title": "Your Link",
+      "badge": "Link Management Platform",
+      "title": "Your",
       "titleHighlight": "Management",
-      "titleEnd": "Platform",
+      "titleEnd": "in one platform.",
+      "word1": "Short Links",
+      "word2": "QR Codes",
+      "word3": "Link Pages",
       "subtitle": "Transform your long URLs into powerful, trackable short links. Get detailed analytics, custom branding, and enterprise-grade features for your business.",
       "getStarted": "Get Started",
       "goToDashboard": "Go to Dashboard"
@@ -308,31 +314,68 @@
       }
     },
     "features": {
+      "label": "Features",
       "title": "Everything you need to manage your links",
       "subtitle": "Powerful features designed for individuals, teams, and enterprises",
       "customLinks": {
         "title": "Custom Short Links",
-        "description": "Create branded short links with custom domains and memorable aliases"
+        "description": "Create branded short links with custom aliases. Set expiry dates, password protection, and domain control for full ownership."
       },
       "analytics": {
-        "title": "Advanced Analytics",
-        "description": "Get detailed insights on clicks, geographic data, and user behavior"
+        "title": "Real-Time Analytics",
+        "description": "Detailed click analytics with geo breakdown, device types, and referrer tracking - everything you need to understand your audience."
       },
       "security": {
-        "title": "Enterprise Security",
-        "description": "Password protection, expiration dates, and advanced security features"
+        "title": "Access Control",
+        "description": "Password-protect any link or page. Set expiration dates and control exactly who can access your content."
       },
       "qrGenerator": {
-        "title": "QR Code Generator",
-        "description": "Generate dynamic QR codes with built-in analytics and customization"
+        "title": "Dynamic QR Codes",
+        "description": "Generate dynamic QR codes you can update without reprinting. Track every scan with built-in analytics."
       },
       "blockPages": {
-        "title": "Block Pages",
-        "description": "Create beautiful landing pages with drag-and-drop blocks"
+        "title": "Block Landing Pages",
+        "description": "Build micro landing pages with drag-and-drop blocks. Add social links, images, buttons, and custom bio content in minutes."
       },
-      "fast": {
-        "title": "Lightning Fast",
-        "description": "Global CDN ensures your short links redirect instantly worldwide"
+      "gdpr": {
+        "title": "GDPR Compliant",
+        "description": "Your data and your users' data are handled in full compliance with EU GDPR regulations - privacy by design, no exceptions."
+      }
+    },
+    "howItWorks": {
+      "label": "How It Works",
+      "title": "How it works",
+      "subtitle": "From long URL to powerful branded link in three simple steps",
+      "step1": {
+        "title": "Create your link",
+        "description": "Paste your long URL and instantly get a customizable short link with a custom alias and your own domain."
+      },
+      "step2": {
+        "title": "Share everywhere",
+        "description": "Use your short link, QR code, or landing page - across social media, email campaigns, print materials, and offline."
+      },
+      "step3": {
+        "title": "Analyze and optimize",
+        "description": "Track clicks, traffic sources, and geographic data. Fine-tune your campaigns with real, actionable insights."
+      }
+    },
+    "useCases": {
+      "title": "Built for every use case",
+      "subtitle": "From freelancers to enterprises - MagLink adapts to your needs",
+      "marketing": {
+        "tag": "Marketing",
+        "title": "Trackable campaigns",
+        "description": "Create UTM-tagged links, measure conversions, and optimize your ad spend with precise, real-time data."
+      },
+      "creators": {
+        "tag": "Creators",
+        "title": "The ultimate link in bio",
+        "description": "A landing page with all your links and content. Update it in real time - without changing your QR code."
+      },
+      "enterprise": {
+        "tag": "Enterprise",
+        "title": "Full white-label",
+        "description": "Customize the platform with your own logo, branded consent pages, and advanced team management."
       }
     },
     "pricing": {
@@ -375,33 +418,83 @@
         "cta": "Contact Us"
       }
     },
+    "stats": {
+      "links": "Links created",
+      "uptime": "Uptime",
+      "countries": "Countries",
+      "gdpr": "GDPR compliant"
+    },
+    "testimonials": {
+      "label": "Testimonials",
+      "title": "Loved by thousands of users",
+      "subtitle": "See what our customers say about MagLink",
+      "t1": {
+        "quote": "MagLink completely changed how we manage our campaigns. The analytics are incredibly detailed and the custom domains give us a professional edge.",
+        "initials": "SM",
+        "name": "Sara Marchetti",
+        "role": "Digital Marketing Manager"
+      },
+      "t2": {
+        "quote": "I use it for my link in bio and QR codes for events. Super simple, beautiful result. My audience loves how clean everything looks.",
+        "initials": "LC",
+        "name": "Luca Colombo",
+        "role": "Content Creator & Influencer"
+      },
+      "t3": {
+        "quote": "The white-label features are exactly what our agency needed. We can now offer branded link management as part of our service package.",
+        "initials": "AG",
+        "name": "Alessia Greco",
+        "role": "Agency Owner"
+      }
+    },
+    "cta": {
+      "title": "Ready to take control",
+      "titleHighlight": "of your links?",
+      "subtitle": "Join thousands of businesses and creators who use MagLink to turn links into powerful marketing tools.",
+      "button": "Get started for free",
+      "seePlans": "View pricing",
+      "noCreditCard": "No credit card required. Free plan available forever."
+    },
     "footer": {
-      "product": "Product",
-      "resources": "Resources",
-      "company": "Company",
-      "community": "Community",
+      "product": "Platform",
+      "legal": "Legal",
       "features": "Features",
+      "howItWorks": "How it works",
       "pricing": "Pricing",
-      "api": "API",
-      "documentation": "Documentation",
-      "guide": "Guide",
-      "blog": "Blog",
-      "helpCenter": "Help Center",
-      "status": "Status",
-      "about": "About",
-      "careers": "Careers",
-      "contact": "Contact",
-      "pressKit": "Press Kit",
-      "discord": "Discord",
-      "twitter": "Twitter",
-      "github": "GitHub",
-      "linkedin": "LinkedIn",
-      "copyright": "© 2024 MagLink. All rights reserved.",
-      "privacy": "Privacy Policy",
       "privacyPolicy": "Privacy Policy",
-      "terms": "Terms of Service",
+      "cookiePolicy": "Cookie Policy",
       "termsOfService": "Terms of Service",
-      "security": "Security"
+      "tagline": "The all-in-one link management platform for businesses and creators.",
+      "copyright": "© 2026 MagLink. All rights reserved."
+    }
+  },
+  "cookieBanner": {
+    "title": "We use cookies",
+    "description": "We use essential cookies to make our site work. With your consent, we may also use analytics and marketing cookies to improve your experience and show relevant content. ",
+    "learnMore": "Manage preferences",
+    "acceptAll": "Accept all",
+    "rejectAll": "Reject non-essential",
+    "customize": "Customize",
+    "cookiePolicyLink": "Cookie Policy",
+    "preferences": {
+      "title": "Cookie preferences",
+      "close": "Close",
+      "description": "Choose which cookies you allow us to use. You can change your mind at any time.",
+      "alwaysOn": "Always on",
+      "saveCustom": "Save preferences",
+      "cookiePolicyLink": "Read the Cookie Policy",
+      "necessary": {
+        "title": "Essential cookies",
+        "description": "Required for the site to function. Includes session management, CSRF protection, and language preferences. These cannot be disabled."
+      },
+      "analytics": {
+        "title": "Analytics cookies",
+        "description": "Help us understand how visitors interact with the site by collecting anonymous usage data. Used to improve performance and content."
+      },
+      "marketing": {
+        "title": "Marketing cookies",
+        "description": "Used to show relevant ads and measure the effectiveness of advertising campaigns. No data is shared with third parties without your consent."
+      }
     }
   }
 }

@@ -257,6 +257,8 @@
   "welcome": {
     "nav": {
       "features": "Recursos",
+      "howItWorks": "Como Funciona",
+      "useCases": "Casos de Uso",
       "pricing": "Preços",
       "signIn": "Entrar",
       "getStarted": "Começar",
@@ -264,9 +266,13 @@
       "adminDashboard": "Dashboard Admin"
     },
     "hero": {
-      "title": "Sua Plataforma",
+      "badge": "Plataforma de Gestão de Links",
+      "title": "Os seus",
       "titleHighlight": "de Gestão",
-      "titleEnd": "de Links",
+      "titleEnd": "numa só plataforma.",
+      "word1": "Short Links",
+      "word2": "Códigos QR",
+      "word3": "Páginas Link",
       "subtitle": "Transforme seus URLs longos em poderosos links curtos rastreáveis. Obtenha análises detalhadas, marca personalizada e recursos de nível empresarial para o seu negócio.",
       "getStarted": "Começar",
       "goToDashboard": "Ir para Dashboard"
@@ -286,6 +292,7 @@
       }
     },
     "features": {
+      "label": "Funcionalidades",
       "title": "Tudo o que você precisa para gerenciar seus links",
       "subtitle": "Recursos poderosos projetados para indivíduos, equipes e empresas",
       "customLinks": {
@@ -308,13 +315,48 @@
         "title": "Páginas com Blocos",
         "description": "Crie belas landing pages com blocos de arrastar e soltar"
       },
-      "fast": {
-        "title": "Velocidade Relâmpago",
-        "description": "CDN global garante que seus links curtos redirecionem instantaneamente em todo o mundo"
+      "gdpr": {
+        "title": "Conformidade RGPD",
+        "description": "Os seus dados e os dos seus utilizadores são tratados em total conformidade com o RGPD europeu - privacidade por design."
+      }
+    },
+    "howItWorks": {
+      "label": "Como Funciona",
+      "title": "Como funciona",
+      "subtitle": "De URL longo a link com marca em três passos simples",
+      "step1": {
+        "title": "Crie o seu link",
+        "description": "Cole o seu URL longo e obtenha imediatamente um link curto personalizável com alias e domínio próprio."
+      },
+      "step2": {
+        "title": "Partilhe em todo o lado",
+        "description": "Use o link curto, o código QR ou a landing page - em redes sociais, emails, materiais impressos e offline."
+      },
+      "step3": {
+        "title": "Analise e otimize",
+        "description": "Acompanhe cliques, fontes de tráfego e dados geográficos. Otimize as suas campanhas com dados reais."
+      }
+    },
+    "useCases": {
+      "title": "Para cada caso de uso",
+      "subtitle": "De freelancers a grandes empresas - MagLink adapta-se às suas necessidades",
+      "marketing": {
+        "tag": "Marketing",
+        "title": "Campanhas rastreadas",
+        "description": "Crie links com tags UTM, meça conversões e otimize o seu investimento publicitário com dados precisos."
+      },
+      "creators": {
+        "tag": "Criadores",
+        "title": "O link in bio definitivo",
+        "description": "Uma landing page com todos os seus links e conteúdos. Atualize em tempo real sem mudar o código QR."
+      },
+      "enterprise": {
+        "tag": "Enterprise",
+        "title": "White-label completo",
+        "description": "Personalize a plataforma com o seu logo, páginas de consentimento com a sua marca e gestão avançada de utilizadores."
       }
     },
     "pricing": {
-      "title": "Encontre um plano para otimizar seus fluxos de trabalho",
       "subtitle": "Flexível e poderoso, MagLink facilita a criação do fluxo de trabalho exato que sua equipe precisa",
       "startNow": "Comece agora",
       "essentials": {
@@ -351,31 +393,83 @@
         "cta": "Contatar Vendas"
       }
     },
+    "stats": {
+      "links": "Links criados",
+      "uptime": "Disponibilidade",
+      "countries": "Países",
+      "gdpr": "Conformidade GDPR"
+    },
+    "testimonials": {
+      "label": "Depoimentos",
+      "title": "Amado por milhares de usuários",
+      "subtitle": "Veja o que nossos clientes dizem sobre o MagLink",
+      "t1": {
+        "quote": "O MagLink mudou completamente como gerenciamos nossas campanhas. As análises são incrivelmente detalhadas e os domínios personalizados nos dão uma vantagem profissional.",
+        "initials": "SM",
+        "name": "Sara Marchetti",
+        "role": "Gerente de Marketing Digital"
+      },
+      "t2": {
+        "quote": "Uso para o meu link na bio e QR codes para eventos. Super simples, resultado bonito. Meu público ama como tudo parece limpo.",
+        "initials": "LC",
+        "name": "Luca Colombo",
+        "role": "Criador de Conteúdo e Influenciador"
+      },
+      "t3": {
+        "quote": "Os recursos de white-label são exatamente o que nossa agência precisava. Agora podemos oferecer gestão de links com marca própria como parte do nosso pacote.",
+        "initials": "AG",
+        "name": "Alessia Greco",
+        "role": "Proprietária de Agência"
+      }
+    },
+    "cta": {
+      "title": "Pronto para assumir o controle",
+      "titleHighlight": "dos seus links?",
+      "subtitle": "Junte-se a milhares de empresas e criadores que usam o MagLink para transformar links em ferramentas de marketing poderosas.",
+      "button": "Comece de graça",
+      "seePlans": "Ver planos",
+      "noCreditCard": "Sem cartão de crédito. Plano gratuito disponível para sempre."
+    },
     "footer": {
-      "product": "Produto",
-      "resources": "Recursos",
-      "company": "Empresa",
-      "community": "Comunidade",
-      "features": "Recursos",
+      "product": "Plataforma",
+      "legal": "Legal",
+      "features": "Funcionalidades",
+      "howItWorks": "Como funciona",
       "pricing": "Preços",
-      "api": "API",
-      "documentation": "Documentação",
-      "guide": "Guia",
-      "blog": "Blog",
-      "helpCenter": "Centro de Ajuda",
-      "status": "Status",
-      "about": "Sobre",
-      "careers": "Carreiras",
-      "contact": "Contato",
-      "pressKit": "Kit de Imprensa",
-      "discord": "Discord",
-      "twitter": "Twitter",
-      "github": "GitHub",
-      "linkedin": "LinkedIn",
-      "copyright": "© 2024 MagLink. Todos os direitos reservados.",
-      "privacy": "Política de Privacidade",
-      "terms": "Termos de Serviço",
-      "security": "Segurança"
+      "privacyPolicy": "Política de Privacidade",
+      "cookiePolicy": "Política de cookies",
+      "termsOfService": "Termos de Serviço",
+      "tagline": "A plataforma all-in-one para gestão de links para empresas e criadores.",
+      "copyright": "© 2026 MagLink. Todos os direitos reservados."
+    }
+  },
+  "cookieBanner": {
+    "title": "Usamos cookies",
+    "description": "Usamos cookies essenciais para o funcionamento do site. Com o seu consentimento, podemos também usar cookies analíticos e de marketing para melhorar a sua experiência. ",
+    "learnMore": "Gerir preferências",
+    "acceptAll": "Aceitar todos",
+    "rejectAll": "Recusar não essenciais",
+    "customize": "Personalizar",
+    "cookiePolicyLink": "Política de cookies",
+    "preferences": {
+      "title": "Preferências de cookies",
+      "close": "Fechar",
+      "description": "Escolha quais cookies permite usar. Pode alterar a sua decisão a qualquer momento.",
+      "alwaysOn": "Sempre ativo",
+      "saveCustom": "Guardar preferências",
+      "cookiePolicyLink": "Ler a política de cookies",
+      "necessary": {
+        "title": "Cookies essenciais",
+        "description": "Necessários para o funcionamento do site. Incluem gestão de sessão, proteção CSRF e preferências de idioma. Não podem ser desativados."
+      },
+      "analytics": {
+        "title": "Cookies analíticos",
+        "description": "Ajudam-nos a compreender como os visitantes interagem com o site através da recolha de dados anonônimos de utilização. Usados para melhorar o desempenho e o conteúdo."
+      },
+      "marketing": {
+        "title": "Cookies de marketing",
+        "description": "Usados para mostrar anúncios relevantes e medir a eficácia das campanhas publicitárias. Nenhum dado é partilhado com terceiros sem o seu consentimento."
+      }
     }
   }
 }

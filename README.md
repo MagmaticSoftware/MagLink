@@ -1,6 +1,6 @@
 # MagLink
 
-**MagLink** is an open-source URL shortener developed by [Magmatic](https://github.com/magmatic), built to simplify the creation and management of short links and dynamic QR codes — complete with tracking and a control panel.
+**MagLink** is an open-source URL shortener developed by [Magmatic](https://github.com/magmatic), built to simplify the creation and management of short links and dynamic QR codes - complete with tracking and a control panel.
 
 ---
 

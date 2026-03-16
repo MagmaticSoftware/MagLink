@@ -255,6 +255,8 @@
   "welcome": {
     "nav": {
       "features": "Funktionen",
+      "howItWorks": "So Funktioniert Es",
+      "useCases": "Anwendungsfälle",
       "pricing": "Preise",
       "signIn": "Anmelden",
       "getStarted": "Jetzt Starten",
@@ -262,9 +264,13 @@
       "adminDashboard": "Admin Dashboard"
     },
     "hero": {
-      "title": "Deine Link",
+      "badge": "Link-Management-Plattform",
+      "title": "Deine",
       "titleHighlight": "Verwaltungs",
-      "titleEnd": "Plattform",
+      "titleEnd": "auf einer Plattform.",
+      "word1": "Short Links",
+      "word2": "QR-Codes",
+      "word3": "Link-Seiten",
       "subtitle": "Verwandle deine langen URLs in leistungsstarke, verfolgbare Kurzlinks. Erhalte detaillierte Analysen, individuelles Branding und Enterprise-Funktionen für dein Unternehmen.",
       "getStarted": "Jetzt Starten",
       "goToDashboard": "Zum Dashboard"
@@ -284,6 +290,7 @@
       }
     },
     "features": {
+      "label": "Funktionen",
       "title": "Alles, was du zur Verwaltung deiner Links brauchst",
       "subtitle": "Leistungsstarke Funktionen für Einzelpersonen, Teams und Unternehmen",
       "customLinks": {
@@ -306,13 +313,48 @@
         "title": "Block-Seiten",
         "description": "Erstelle schöne Landingpages mit Drag-and-Drop-Blöcken"
       },
-      "fast": {
-        "title": "Blitzschnell",
-        "description": "Globales CDN stellt sicher, dass deine Kurzlinks weltweit sofort weiterleiten"
+      "gdpr": {
+        "title": "DSGVO-konform",
+        "description": "Deine Daten und die Daten deiner Nutzer werden vollständig konform mit der europäischen DSGVO verarbeitet - Privacy by Design."
+      }
+    },
+    "howItWorks": {
+      "label": "So Funktioniert Es",
+      "title": "So funktioniert es",
+      "subtitle": "Von der langen URL zum gebrandeten Link in drei einfachen Schritten",
+      "step1": {
+        "title": "Link erstellen",
+        "description": "Füge deine lange URL ein und erhalte sofort einen anpassbaren Kurzlink mit benutzerdefiniertem Alias und eigener Domain."
+      },
+      "step2": {
+        "title": "Überall teilen",
+        "description": "Nutze den Kurzlink, den QR-Code oder die Landing Page - in sozialen Medien, E-Mails, Druckmaterialien und offline."
+      },
+      "step3": {
+        "title": "Analysieren und optimieren",
+        "description": "Verfolge Klicks, Traffic-Quellen und geografische Daten. Optimiere deine Kampagnen mit echten Erkenntnissen."
+      }
+    },
+    "useCases": {
+      "title": "Für jeden Anwendungsfall",
+      "subtitle": "Von Freelancern bis zu großen Unternehmen - MagLink passt sich deinen Bedürfnissen an",
+      "marketing": {
+        "tag": "Marketing",
+        "title": "Verfolgbare Kampagnen",
+        "description": "Erstelle UTM-getaggte Links, messe Conversions und optimiere dein Werbebudget mit präzisen Echtzeit-Daten."
+      },
+      "creators": {
+        "tag": "Creator",
+        "title": "Das ultimative Link-in-Bio",
+        "description": "Eine Landing Page mit all deinen Links und Inhalten. In Echtzeit aktualisierbar - ohne den QR-Code zu ändern."
+      },
+      "enterprise": {
+        "tag": "Enterprise",
+        "title": "Vollständiges White-Label",
+        "description": "Passe die Plattform mit deinem Logo, gebrandeten Einwilligungsseiten und erweitertem Nutzer-Management an."
       }
     },
     "pricing": {
-      "title": "Finde einen Plan zur Optimierung deiner Workflows",
       "subtitle": "Flexibel und leistungsstark macht MagLink es einfach, den exakten Workflow zu erstellen, den dein Team braucht",
       "startNow": "Jetzt starten",
       "essentials": {
@@ -349,31 +391,83 @@
         "cta": "Vertrieb Kontaktieren"
       }
     },
+    "stats": {
+      "links": "Erstellte Links",
+      "uptime": "Verfügbarkeit",
+      "countries": "Länder",
+      "gdpr": "DSGVO-konform"
+    },
+    "testimonials": {
+      "label": "Bewertungen",
+      "title": "Von Tausenden geliebt",
+      "subtitle": "Sieh, was unsere Kunden über MagLink sagen",
+      "t1": {
+        "quote": "MagLink hat unsere Kampagnenverwaltung komplett verändert. Die Analysen sind unglaublich detailliert und die eigenen Domains geben uns einen professionellen Vorteil.",
+        "initials": "SM",
+        "name": "Sara Marchetti",
+        "role": "Digital Marketing Manager"
+      },
+      "t2": {
+        "quote": "Ich nutze es für meinen Link in Bio und QR-Codes für Events. Super einfach, tolles Ergebnis. Mein Publikum liebt das saubere Design.",
+        "initials": "LC",
+        "name": "Luca Colombo",
+        "role": "Content Creator & Influencer"
+      },
+      "t3": {
+        "quote": "Die White-Label-Funktionen sind genau das, was unsere Agentur brauchte. Wir können jetzt gebrandetes Link-Management als Teil unseres Leistungspakets anbieten.",
+        "initials": "AG",
+        "name": "Alessia Greco",
+        "role": "Agenturinhaberin"
+      }
+    },
+    "cta": {
+      "title": "Bereit, die Kontrolle",
+      "titleHighlight": "über deine Links zu übernehmen?",
+      "subtitle": "Schließe dich Tausenden von Unternehmen und Creators an, die MagLink nutzen, um Links in leistungsstarke Marketing-Tools zu verwandeln.",
+      "button": "Kostenlos starten",
+      "seePlans": "Preise ansehen",
+      "noCreditCard": "Keine Kreditkarte erforderlich. Kostenloser Plan für immer verfügbar."
+    },
     "footer": {
-      "product": "Produkt",
-      "resources": "Ressourcen",
-      "company": "Unternehmen",
-      "community": "Community",
+      "product": "Plattform",
+      "legal": "Rechtliches",
       "features": "Funktionen",
+      "howItWorks": "So funktioniert es",
       "pricing": "Preise",
-      "api": "API",
-      "documentation": "Dokumentation",
-      "guide": "Anleitung",
-      "blog": "Blog",
-      "helpCenter": "Hilfe-Center",
-      "status": "Status",
-      "about": "Über uns",
-      "careers": "Karriere",
-      "contact": "Kontakt",
-      "pressKit": "Presse-Kit",
-      "discord": "Discord",
-      "twitter": "Twitter",
-      "github": "GitHub",
-      "linkedin": "LinkedIn",
-      "copyright": "© 2024 MagLink. Alle Rechte vorbehalten.",
-      "privacy": "Datenschutz",
-      "terms": "Nutzungsbedingungen",
-      "security": "Sicherheit"
+      "privacyPolicy": "Datenschutz",
+      "cookiePolicy": "Cookie-Richtlinie",
+      "termsOfService": "Nutzungsbedingungen",
+      "tagline": "Die All-in-One-Plattform für Link-Management für Unternehmen und Creator.",
+      "copyright": "© 2026 MagLink. Alle Rechte vorbehalten."
+    }
+  },
+  "cookieBanner": {
+    "title": "Wir verwenden Cookies",
+    "description": "Wir verwenden notwendige Cookies für den Betrieb der Website. Mit deiner Zustimmung können wir auch Analyse- und Marketing-Cookies nutzen, um deine Erfahrung zu verbessern. ",
+    "learnMore": "Einstellungen verwalten",
+    "acceptAll": "Alle akzeptieren",
+    "rejectAll": "Nicht-notwendige ablehnen",
+    "customize": "Anpassen",
+    "cookiePolicyLink": "Cookie-Richtlinie",
+    "preferences": {
+      "title": "Cookie-Einstellungen",
+      "close": "Schließen",
+      "description": "Wähle, welche Cookies du erlaubst. Du kannst deine Entscheidung jederzeit ändern.",
+      "alwaysOn": "Immer aktiv",
+      "saveCustom": "Einstellungen speichern",
+      "cookiePolicyLink": "Cookie-Richtlinie lesen",
+      "necessary": {
+        "title": "Notwendige Cookies",
+        "description": "Erforderlich für den Betrieb der Website. Beinhaltet Sitzungsverwaltung, CSRF-Schutz und Spracheinstellungen. Können nicht deaktiviert werden."
+      },
+      "analytics": {
+        "title": "Analyse-Cookies",
+        "description": "Helfen uns zu verstehen, wie Besucher die Website nutzen, indem anonyme Nutzungsdaten gesammelt werden. Werden zur Verbesserung von Leistung und Inhalt verwendet."
+      },
+      "marketing": {
+        "title": "Marketing-Cookies",
+        "description": "Werden verwendet, um relevante Werbung anzuzeigen und die Effektivität von Werbekampagnen zu messen. Keine Daten werden ohne deine Zustimmung an Dritte weitergegeben."
+      }
     }
   }
 }

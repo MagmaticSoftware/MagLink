@@ -268,6 +268,8 @@
   "welcome": {
     "nav": {
       "features": "Funzionalità",
+      "howItWorks": "Come Funziona",
+      "useCases": "Casi d'Uso",
       "pricing": "Prezzi",
       "signIn": "Accedi",
       "getStarted": "Inizia",
@@ -275,9 +277,13 @@
       "adminDashboard": "Dashboard Admin"
     },
     "hero": {
-      "title": "La Tua Piattaforma",
+      "badge": "Piattaforma di Gestione Link",
+      "title": "Gestisci i tuoi",
       "titleHighlight": "di Gestione",
-      "titleEnd": "Link",
+      "titleEnd": "in un'unica piattaforma.",
+      "word1": "Link brevi",
+      "word2": "QR Code",
+      "word3": "Link page",
       "subtitle": "Trasforma i tuoi URL lunghi in potenti link brevi tracciabili. Ottieni analitiche dettagliate, branding personalizzato e funzionalità di livello enterprise per il tuo business.",
       "getStarted": "Inizia",
       "goToDashboard": "Vai alla Dashboard"
@@ -297,31 +303,68 @@
       }
     },
     "features": {
+      "label": "Funzionalità",
       "title": "Tutto ciò di cui hai bisogno per gestire i tuoi link",
       "subtitle": "Funzionalità potenti progettate per individui, team e aziende",
       "customLinks": {
         "title": "Link Brevi Personalizzati",
-        "description": "Crea link brevi brandizzati con domini personalizzati e alias memorabili"
+        "description": "Crea link brevi brandizzati con alias personalizzati. Imposta scadenze, protezione con password e controlla chi accede ai tuoi link."
       },
       "analytics": {
-        "title": "Analytics Avanzate",
-        "description": "Ottieni insight dettagliati su click, dati geografici e comportamento utenti"
+        "title": "Analytics in Tempo Reale",
+        "description": "Analytics dettagliate con dati geografici, tipologie di dispositivi e traffico per referrer - per capire davvero il tuo pubblico."
       },
       "security": {
-        "title": "Sicurezza Enterprise",
-        "description": "Protezione con password, date di scadenza e funzionalità di sicurezza avanzate"
+        "title": "Controllo degli Accessi",
+        "description": "Proteggi link e pagine con password, imposta date di scadenza e gestisci l'accesso ai tuoi contenuti in qualsiasi momento."
       },
       "qrGenerator": {
-        "title": "Generatore QR Code",
-        "description": "Genera QR code dinamici con analytics integrate e personalizzazione"
+        "title": "QR Code Dinamici",
+        "description": "Genera QR code dinamici che puoi aggiornare senza ristampare. Traccia ogni scansione con analytics integrate."
       },
       "blockPages": {
-        "title": "Pagine a Blocchi",
-        "description": "Crea bellissime landing page con blocchi drag-and-drop"
+        "title": "Landing Page a Blocchi",
+        "description": "Crea micro landing page con blocchi drag-and-drop. Aggiungi link social, immagini, pulsanti e contenuti bio in pochi minuti."
       },
-      "fast": {
-        "title": "Velocità Fulminea",
-        "description": "CDN globale garantisce che i tuoi link brevi reindirizzino istantaneamente ovunque"
+      "gdpr": {
+        "title": "Conforme al GDPR",
+        "description": "I tuoi dati e quelli dei tuoi utenti sono trattati nel pieno rispetto del GDPR europeo - privacy by design, senza compromessi."
+      }
+    },
+    "howItWorks": {
+      "label": "Come Funziona",
+      "title": "Come funziona",
+      "subtitle": "Da URL lungo a link brandizzato in tre semplici passi",
+      "step1": {
+        "title": "Crea il tuo link",
+        "description": "Incolla il tuo URL lungo e ottieni subito un link breve personalizzabile con alias e dominio custom."
+      },
+      "step2": {
+        "title": "Condividi ovunque",
+        "description": "Usa il link breve, il QR code o la landing page - su social, email, materiale stampato e offline."
+      },
+      "step3": {
+        "title": "Analizza e ottimizza",
+        "description": "Monitora click, fonti di traffico e dati geografici. Ottimizza le tue campagne con dati reali e actionable."
+      }
+    },
+    "useCases": {
+      "title": "Per ogni esigenza",
+      "subtitle": "Da freelancer a grandi aziende - MagLink si adatta alle tue necessità",
+      "marketing": {
+        "tag": "Marketing",
+        "title": "Campagne tracciabili",
+        "description": "Crea link con tag UTM, misura le conversioni e ottimizza i budget pubblicitari con dati precisi e in tempo reale."
+      },
+      "creators": {
+        "tag": "Creator",
+        "title": "Il link in bio definitivo",
+        "description": "Una landing page con tutti i tuoi link e contenuti. Aggiornabile in tempo reale, senza cambiare il QR code."
+      },
+      "enterprise": {
+        "tag": "Enterprise",
+        "title": "White-label completo",
+        "description": "Personalizza la piattaforma con il tuo logo, consent page brandizzata e gestione avanzata degli utenti."
       }
     },
     "pricing": {
@@ -364,33 +407,83 @@
         "cta": "Contattaci"
       }
     },
+    "stats": {
+      "links": "Link creati",
+      "uptime": "Uptime",
+      "countries": "Paesi",
+      "gdpr": "GDPR compliant"
+    },
+    "testimonials": {
+      "label": "Testimonianze",
+      "title": "Amato da migliaia di utenti",
+      "subtitle": "Scopri cosa dicono i nostri clienti di MagLink",
+      "t1": {
+        "quote": "MagLink ha completamente cambiato il modo in cui gestiamo le nostre campagne. Le analytics sono incredibilmente dettagliate e i domini personalizzati ci danno un tocco professionale.",
+        "initials": "SM",
+        "name": "Sara Marchetti",
+        "role": "Digital Marketing Manager"
+      },
+      "t2": {
+        "quote": "Lo uso per il mio link in bio e i QR code per gli eventi. Super semplice, risultato bellissimo. Il mio pubblico ama quanto tutto sia pulito.",
+        "initials": "LC",
+        "name": "Luca Colombo",
+        "role": "Content Creator & Influencer"
+      },
+      "t3": {
+        "quote": "Le funzionalità white-label sono esattamente ciò di cui la nostra agenzia aveva bisogno. Ora possiamo offrire la gestione link brandizzata come parte del nostro pacchetto.",
+        "initials": "AG",
+        "name": "Alessia Greco",
+        "role": "Titolare d'agenzia"
+      }
+    },
+    "cta": {
+      "title": "Pronto a prendere il controllo",
+      "titleHighlight": "dei tuoi link?",
+      "subtitle": "Unisciti a migliaia di aziende e creator che usano MagLink per trasformare i link in strumenti di marketing potenti.",
+      "button": "Inizia gratis",
+      "seePlans": "Vedi i prezzi",
+      "noCreditCard": "Nessuna carta di credito richiesta. Piano gratuito disponibile per sempre."
+    },
     "footer": {
-      "product": "Prodotto",
-      "resources": "Risorse",
-      "company": "Azienda",
-      "community": "Community",
+      "product": "Piattaforma",
+      "legal": "Legale",
       "features": "Funzionalità",
+      "howItWorks": "Come funziona",
       "pricing": "Prezzi",
-      "api": "API",
-      "documentation": "Documentazione",
-      "guide": "Guida",
-      "blog": "Blog",
-      "helpCenter": "Centro assistenza",
-      "status": "Stato",
-      "about": "Chi siamo",
-      "careers": "Carriere",
-      "contact": "Contatti",
-      "pressKit": "Kit Stampa",
-      "discord": "Discord",
-      "twitter": "Twitter",
-      "github": "GitHub",
-      "linkedin": "LinkedIn",
-      "copyright": "© 2026 MagLink. Tutti i diritti riservati.",
-      "privacy": "Privacy policy",
       "privacyPolicy": "Privacy policy",
-      "terms": "Termini di servizio",
+      "cookiePolicy": "Cookie Policy",
       "termsOfService": "Termini di servizio",
-      "security": "Sicurezza"
+      "tagline": "La piattaforma all-in-one per la gestione dei link per aziende e creator.",
+      "copyright": "© 2026 MagLink. Tutti i diritti riservati."
+    }
+  },
+  "cookieBanner": {
+    "title": "Usiamo i cookie",
+    "description": "Utilizziamo cookie essenziali per il funzionamento del sito. Con il tuo consenso, potremmo usare anche cookie analitici e di marketing per migliorare la tua esperienza. ",
+    "learnMore": "Gestisci preferenze",
+    "acceptAll": "Accetta tutti",
+    "rejectAll": "Rifiuta non essenziali",
+    "customize": "Personalizza",
+    "cookiePolicyLink": "Cookie Policy",
+    "preferences": {
+      "title": "Preferenze cookie",
+      "close": "Chiudi",
+      "description": "Scegli quali cookie vuoi consentire. Puoi modificare la tua scelta in qualsiasi momento.",
+      "alwaysOn": "Sempre attivi",
+      "saveCustom": "Salva preferenze",
+      "cookiePolicyLink": "Consulta la Cookie Policy",
+      "necessary": {
+        "title": "Cookie essenziali",
+        "description": "Necessari per il funzionamento del sito. Includono gestione della sessione, protezione CSRF e preferenze di lingua. Non possono essere disabilitati."
+      },
+      "analytics": {
+        "title": "Cookie analitici",
+        "description": "Ci aiutano a capire come i visitatori interagiscono con il sito raccogliendo dati anonimi di utilizzo. Usati per migliorare performance e contenuti."
+      },
+      "marketing": {
+        "title": "Cookie di marketing",
+        "description": "Utilizzati per mostrare annunci pertinenti e misurare l\u2019efficacia delle campagne pubblicitarie. Nessun dato viene condiviso con terze parti senza il tuo consenso."
+      }
     }
   }
 }
