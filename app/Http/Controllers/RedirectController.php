@@ -7,6 +7,7 @@ use App\Models\QrCode;
 use App\Models\View;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
+use Jaybizzle\CrawlerDetect\CrawlerDetect;
 use Jenssegers\Agent\Agent;
 
 class RedirectController extends Controller
@@ -20,15 +21,20 @@ class RedirectController extends Controller
             ->where('is_active', true)
             ->firstOrFail();
 
+        // Bot/crawler detection — bypass consent page, exclude from statistics
+        if ($this->isBot($request)) {
+            return redirect()->away($link->url);
+        }
+
         // Se richiede consenso e non è ancora stato dato, mostra pagina consenso
         if ($link->require_consent && !$request->has('consent')) {
             return inertia('ConsentPage', [
                 'type' => 'link',
                 'slug' => $slug,
                 'destination' => $link->url,
-                'title' => $link->title,
                 'privacyVersion' => config('privacy.version'),
                 'privacyText' => $this->getPrivacyText($request),
+                'referrer' => $request->header('referer'),
             ]);
         }
 
@@ -63,15 +69,20 @@ class RedirectController extends Controller
         // Determina destination URL dal QR code
         $destination = $this->getQrCodeDestination($qrCode);
 
+        // Bot/crawler detection — bypass consent page, exclude from statistics
+        if ($this->isBot($request)) {
+            return redirect()->away($destination);
+        }
+
         // Se richiede consenso e non è ancora stato dato, mostra pagina consenso
         if ($qrCode->require_consent && !$request->has('consent')) {
             return inertia('ConsentPage', [
                 'type' => 'qrcode',
                 'slug' => $slug,
                 'destination' => $destination,
-                'title' => $qrCode->name,
                 'privacyVersion' => config('privacy.version'),
                 'privacyText' => $this->getPrivacyText($request),
+                'referrer' => $request->header('referer'),
             ]);
         }
 
@@ -94,6 +105,27 @@ class RedirectController extends Controller
         $qrCode->update(['last_scanned_at' => now()]);
 
         return redirect()->away($destination);
+    }
+
+    /**
+     * Detect bots and crawlers using both Agent and CrawlerDetect for maximum coverage.
+     */
+    private function isBot(Request $request): bool
+    {
+        $userAgent = (string) $request->userAgent();
+
+        if (!$userAgent) {
+            return true; // No user agent → treat as bot
+        }
+
+        $agent = new Agent();
+        $agent->setUserAgent($userAgent);
+        if ($agent->isRobot()) {
+            return true;
+        }
+
+        $crawlerDetect = new CrawlerDetect();
+        return $crawlerDetect->isCrawler($userAgent);
     }
 
     /**

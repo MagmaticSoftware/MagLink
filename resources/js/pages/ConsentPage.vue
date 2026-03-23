@@ -1,15 +1,15 @@
 <script setup lang="ts">
 import { Head } from '@inertiajs/vue3';
-import { ExternalLink, Shield, Info } from 'lucide-vue-next';
-import { ref, onMounted } from 'vue';
+import { ExternalLink, Shield } from 'lucide-vue-next';
+import { ref, onMounted, computed } from 'vue';
 
 interface Props {
   type: 'link' | 'qrcode';
   slug: string;
   destination: string;
-  title?: string;
   privacyVersion: string;
   privacyText: string;
+  referrer?: string;
 }
 
 const props = defineProps<Props>();
@@ -17,12 +17,10 @@ const props = defineProps<Props>();
 const screenResolution = ref('');
 
 onMounted(() => {
-  // Cattura la risoluzione dello schermo
   screenResolution.value = `${window.screen.width}x${window.screen.height}`;
 });
 
 const acceptConsent = () => {
-  // Redirect con consenso e dati schermo
   const url = new URL(window.location.href);
   url.searchParams.set('consent', 'true');
   url.searchParams.set('screen', screenResolution.value);
@@ -30,130 +28,137 @@ const acceptConsent = () => {
 };
 
 const declineConsent = () => {
-  // Redirect senza consenso
   const url = new URL(window.location.href);
   url.searchParams.set('consent', 'false');
   window.location.href = url.toString();
 };
 
-const getTypeLabel = () => {
-  return props.type === 'link' ? 'link' : 'codice QR';
-};
+const referrerDomain = computed(() => {
+  if (!props.referrer) return null;
+  try {
+    return new URL(props.referrer).hostname;
+  } catch {
+    return null;
+  }
+});
 </script>
 
 <template>
   <Head title="Conferma reindirizzamento">
     <link rel="icon" href="/favicon.ico" />
   </Head>
-  
-  <div class="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 flex items-center justify-center p-4">
-    <div class="max-w-2xl w-full">
-      <!-- Card principale -->
-      <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
-        <!-- Header -->
-        <div class="bg-gradient-to-r from-blue-600 to-indigo-600 px-8 py-6">
-          <div class="flex items-center gap-3">
-            <div class="bg-white/20 p-3 rounded-lg">
-              <ExternalLink class="w-6 h-6 text-white" />
+
+  <div class="min-h-screen bg-[#13131c] text-white flex flex-col">
+    <!-- Header with logo -->
+    <header class="bg-[#13131c]/95 backdrop-blur-md border-b border-white/[0.07] px-6 py-4">
+      <div class="max-w-2xl mx-auto">
+        <svg width="140" height="37" viewBox="0 0 461 123" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;"><rect id="Convertito" x="0" y="0" width="460.879" height="122.234" style="fill:none;"/><g><g><path d="M149.577,88.04l0,-54.985l7.509,0l22.291,35.666l-4.302,0l22.214,-35.666l7.508,0l0,54.985l-10.559,0l0,-36.761l2.034,0.626l-15.487,24.872l-7.196,0l-15.486,-24.872l2.112,-0.626l-0,36.761l-10.638,0Z" style="fill:#fff;fill-rule:nonzero;"/><path d="M230.765,88.822c-3.442,0 -6.544,-0.86 -9.308,-2.581c-2.764,-1.72 -4.928,-4.067 -6.492,-7.039c-1.564,-2.972 -2.346,-6.309 -2.346,-10.012c-0,-3.754 0.782,-7.117 2.346,-10.089c1.564,-2.973 3.728,-5.319 6.492,-7.04c2.764,-1.72 5.866,-2.581 9.308,-2.581c2.711,0 5.136,0.548 7.274,1.643c2.137,1.095 3.845,2.62 5.123,4.575c1.277,1.956 1.968,4.159 2.072,6.609l0,13.61c-0.104,2.503 -0.795,4.719 -2.072,6.648c-1.278,1.929 -2.986,3.455 -5.123,4.576c-2.138,1.121 -4.563,1.681 -7.274,1.681Zm1.877,-9.464c2.868,0 5.188,-0.951 6.961,-2.854c1.773,-1.904 2.659,-4.368 2.659,-7.392c0,-1.981 -0.404,-3.741 -1.212,-5.279c-0.808,-1.539 -1.929,-2.738 -3.363,-3.598c-1.434,-0.861 -3.116,-1.291 -5.045,-1.291c-1.877,0 -3.533,0.43 -4.967,1.291c-1.434,0.86 -2.555,2.059 -3.363,3.598c-0.808,1.538 -1.212,3.298 -1.212,5.279c-0,2.034 0.404,3.82 1.212,5.358c0.808,1.538 1.929,2.737 3.363,3.598c1.434,0.86 3.09,1.29 4.967,1.29Zm9.073,8.682l-0,-10.168l1.642,-9.229l-1.642,-9.073l-0,-9.308l10.168,0l-0,37.778l-10.168,0Z" style="fill:#fff;fill-rule:nonzero;"/><path d="M276.755,104.778c-4.015,0 -7.561,-0.717 -10.637,-2.151c-3.077,-1.434 -5.527,-3.454 -7.352,-6.061l6.491,-6.492c1.46,1.721 3.09,3.037 4.889,3.95c1.799,0.912 3.976,1.368 6.531,1.368c3.181,0 5.697,-0.808 7.548,-2.424c1.851,-1.617 2.776,-3.859 2.776,-6.727l0,-9.464l1.721,-8.291l-1.643,-8.29l0,-9.934l10.168,0l0,35.823c0,3.754 -0.873,7.026 -2.62,9.816c-1.747,2.79 -4.158,4.967 -7.235,6.531c-3.076,1.564 -6.622,2.346 -10.637,2.346Zm-0.469,-17.755c-3.39,0 -6.44,-0.821 -9.151,-2.463c-2.712,-1.643 -4.837,-3.898 -6.375,-6.766c-1.538,-2.868 -2.307,-6.075 -2.307,-9.62c-0,-3.546 0.769,-6.727 2.307,-9.543c1.538,-2.815 3.663,-5.045 6.375,-6.687c2.711,-1.643 5.761,-2.464 9.151,-2.464c2.816,0 5.305,0.548 7.469,1.643c2.164,1.095 3.872,2.594 5.123,4.497c1.252,1.903 1.93,4.132 2.034,6.687l-0,11.889c-0.104,2.503 -0.795,4.732 -2.073,6.688c-1.277,1.955 -2.998,3.467 -5.162,4.536c-2.164,1.069 -4.628,1.603 -7.391,1.603Zm2.033,-9.307c1.878,-0 3.507,-0.404 4.889,-1.212c1.382,-0.809 2.464,-1.93 3.246,-3.364c0.782,-1.434 1.173,-3.063 1.173,-4.888c-0,-1.877 -0.391,-3.52 -1.173,-4.928c-0.782,-1.408 -1.864,-2.516 -3.246,-3.324c-1.382,-0.808 -3.011,-1.212 -4.889,-1.212c-1.877,-0 -3.519,0.404 -4.927,1.212c-1.408,0.808 -2.503,1.929 -3.285,3.363c-0.782,1.434 -1.173,3.064 -1.173,4.889c-0,1.773 0.391,3.376 1.173,4.81c0.782,1.434 1.877,2.568 3.285,3.402c1.408,0.835 3.05,1.252 4.927,1.252Z" style="fill:#fff;fill-rule:nonzero;"/><path d="M307.337,88.04l0,-54.985l10.637,0l0,54.985l-10.637,0Zm7.822,0l-0,-9.464l28.001,0l-0,9.464l-28.001,0Z" style="fill:#fff;fill-rule:nonzero;"/><path d="M349.73,88.04l-0,-37.778l10.324,0l0,37.778l-10.324,0Zm5.162,-43.878c-1.669,-0 -3.05,-0.561 -4.145,-1.682c-1.095,-1.121 -1.643,-2.516 -1.643,-4.185c0,-1.616 0.548,-2.998 1.643,-4.145c1.095,-1.147 2.476,-1.721 4.145,-1.721c1.721,0 3.115,0.574 4.184,1.721c1.069,1.147 1.604,2.529 1.604,4.145c-0,1.669 -0.535,3.064 -1.604,4.185c-1.069,1.121 -2.463,1.682 -4.184,1.682Z" style="fill:#fff;fill-rule:nonzero;"/><path d="M394.547,88.04l-0,-21.665c-0,-2.243 -0.704,-4.068 -2.112,-5.475c-1.408,-1.408 -3.233,-2.112 -5.475,-2.112c-1.46,-0 -2.763,0.313 -3.911,0.938c-1.147,0.626 -2.046,1.513 -2.698,2.66c-0.652,1.147 -0.978,2.476 -0.978,3.989l-3.989,-2.034c0,-2.972 0.639,-5.566 1.917,-7.782c1.277,-2.216 3.05,-3.95 5.318,-5.202c2.268,-1.251 4.836,-1.877 7.704,-1.877c2.764,0 5.241,0.691 7.431,2.073c2.19,1.382 3.911,3.181 5.162,5.397c1.251,2.216 1.877,4.601 1.877,7.156l0,23.934l-10.246,0Zm-25.42,0l0,-37.778l10.246,0l0,37.778l-10.246,0Z" style="fill:#fff;fill-rule:nonzero;"/><path d="M437.174,88.04l-14.626,-19.475l14.548,-18.303l11.81,0l-17.05,20.649l0.391,-5.006l17.442,22.135l-12.515,0Zm-24.09,0l-0,-56.549l10.246,-0l0,56.549l-10.246,0Z" style="fill:#fff;fill-rule:nonzero;"/></g><path d="M25.176,96.816c-8.679,-9.38 -13.986,-21.925 -13.986,-35.699c-0,-29.027 23.566,-52.592 52.592,-52.592c29.027,-0 52.592,23.565 52.592,52.592c0,11.105 -3.449,21.411 -9.334,29.904l-0.048,-2.446c-0.087,-4.064 -0.992,-8.013 -2.564,-11.613c-2.355,-5.4 -6.187,-10.048 -10.968,-13.413c-1.015,-0.717 -2.084,-1.371 -3.186,-1.97l0.378,19.084c1.223,2.212 1.954,4.708 2.01,7.379l0.327,16.807c-2.697,1.806 -5.571,3.37 -8.589,4.659l-0.521,-56.659c-0.085,-4.066 -0.987,-8.013 -2.559,-11.613c-2.353,-5.408 -6.18,-10.05 -10.965,-13.41c-4.771,-3.371 -10.546,-5.447 -16.648,-5.675c-4.059,-0.15 -7.951,0.536 -11.464,1.908c-5.273,2.058 -9.701,5.631 -12.803,10.228c-3.097,4.603 -4.848,10.264 -4.733,16.366l0.469,46.163Zm23.137,14.577c-3.028,-0.931 -5.94,-2.13 -8.708,-3.566l-0.577,-56.636c-0.031,-2.131 0.348,-4.106 1.088,-5.892c1.095,-2.689 2.997,-4.972 5.4,-6.528c2.406,-1.553 5.297,-2.4 8.473,-2.285c2.13,0.079 4.128,0.582 5.97,1.417c2.743,1.256 5.13,3.286 6.82,5.792c1.698,2.503 2.709,5.444 2.772,8.624l0.58,61.01c-2.082,0.251 -4.2,0.38 -6.349,0.38c-0.372,0 -0.742,-0.004 -1.112,-0.012l-0.529,-26.78c-0.034,-2.134 0.349,-4.101 1.078,-5.903c0.188,-0.454 0.419,-0.901 0.647,-1.341l-0.375,-19.087c-4.462,2.122 -8.217,5.377 -10.945,9.43c-3.091,4.597 -4.861,10.255 -4.722,16.366l0.489,25.011Z" style="fill:url(#_Linear1);"/></g><g id="SVGRepo_iconCarrier"></g><defs><linearGradient id="_Linear1" x1="0" y1="0" x2="1" y2="0" gradientUnits="userSpaceOnUse" gradientTransform="matrix(8.74093e-15,-105.184,142.75,6.44068e-15,63.7821,113.709)"><stop offset="0" style="stop-color:#ff1f2b;stop-opacity:1"/><stop offset="1" style="stop-color:#ff682f;stop-opacity:1"/></linearGradient></defs></svg>
+      </div>
+    </header>
+
+    <!-- Main content -->
+    <div class="flex-1 flex items-center justify-center p-4 py-10">
+      <div class="max-w-2xl w-full space-y-4">
+
+        <!-- Leaving notice -->
+        <p class="text-sm text-gray-400 text-center">
+          <span v-if="referrerDomain">
+            Stai lasciando
+            <span class="text-orange-400 font-medium">{{ referrerDomain }}</span>
+          </span>
+          <span v-else>Stai per abbandonare la pagina corrente</span>
+        </p>
+
+        <!-- Main card -->
+        <div class="bg-[#191925] rounded-2xl border border-white/[0.08] overflow-hidden">
+
+          <!-- Card header -->
+          <div class="px-8 py-6 border-b border-white/[0.08] flex items-center gap-4">
+            <div class="bg-orange-500/10 p-3 rounded-xl">
+              <ExternalLink class="w-6 h-6 text-orange-500" />
             </div>
             <div>
-              <h1 class="text-2xl font-bold text-white">Stai lasciando MagLink</h1>
-              <p class="text-blue-100 text-sm mt-1">Conferma per continuare</p>
+              <h1 class="text-xl font-bold text-white">Reindirizzamento esterno</h1>
+              <p class="text-sm text-gray-400 mt-0.5">Conferma per continuare</p>
             </div>
           </div>
-        </div>
 
-        <!-- Corpo -->
-        <div class="px-8 py-8 space-y-6">
-          <!-- Messaggio principale -->
-          <div class="flex items-start gap-4 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-xl border border-blue-200 dark:border-blue-800">
-            <Info class="w-6 h-6 text-blue-600 dark:text-blue-400 flex-shrink-0 mt-0.5" />
-            <div>
-              <h2 class="font-semibold text-gray-900 dark:text-white mb-2">
-                Stai per essere reindirizzato su un sito esterno
-              </h2>
-              <p class="text-sm text-gray-600 dark:text-gray-300 mb-3">
-                Hai cliccato su un {{ getTypeLabel() }} che ti porterà a:
-              </p>
-              <div class="bg-white dark:bg-gray-900 p-4 rounded-lg border border-gray-200 dark:border-gray-700">
-                <p v-if="title" class="font-semibold text-gray-900 dark:text-white mb-1">{{ title }}</p>
-                <a :href="destination" 
-                   class="text-blue-600 dark:text-blue-400 hover:underline break-all text-sm"
-                   target="_blank">
+          <!-- Card body -->
+          <div class="px-8 py-8 space-y-6">
+
+            <!-- Destination URL -->
+            <div class="space-y-2">
+              <p class="text-sm text-gray-400">Verrai reindirizzato a:</p>
+              <div class="bg-[#13131c] rounded-xl border border-white/[0.08] px-5 py-4">
+                <a :href="destination"
+                   class="text-orange-400 hover:text-orange-300 break-all text-sm font-mono transition-colors"
+                   target="_blank"
+                   rel="noopener noreferrer">
                   {{ destination }}
                 </a>
               </div>
             </div>
-          </div>
 
-          <!-- Privacy notice -->
-          <div class="bg-gray-50 dark:bg-gray-900 rounded-xl p-6 border border-gray-200 dark:border-gray-700">
-            <div class="flex items-start gap-3 mb-4">
-              <Shield class="w-5 h-5 text-indigo-600 dark:text-indigo-400 flex-shrink-0 mt-0.5" />
-              <div class="flex-1">
-                <h3 class="font-semibold text-gray-900 dark:text-white">Raccolta dati e privacy</h3>
-                <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Versione {{ privacyVersion }}</p>
-              </div>
-            </div>
-            
-            <div class="space-y-3 text-sm text-gray-600 dark:text-gray-300">
-              <!-- Privacy Policy Text (GDPR Compliant) -->
-              <div class="bg-white dark:bg-gray-800 p-4 rounded-lg border border-blue-200 dark:border-blue-800">
-                <p class="text-sm leading-relaxed">{{ privacyText }}</p>
-              </div>
-              
-              <div class="bg-white dark:bg-gray-800 p-4 rounded-lg border border-gray-200 dark:border-gray-700">
-                <p class="font-medium text-gray-900 dark:text-white mb-2">Puoi scegliere se:</p>
-                <ul class="space-y-2">
-                  <li class="flex items-start gap-2">
-                    <span class="text-green-500 mt-0.5">✓</span>
-                    <span><strong>Accettare:</strong> verranno raccolti dati anonimi (browser, dispositivo, paese, lingua) per statistiche</span>
-                  </li>
-                  <li class="flex items-start gap-2">
-                    <span class="text-orange-500 mt-0.5">−</span>
-                    <span><strong>Rifiutare:</strong> verrà registrato solo un conteggio della visita, senza alcun dato personale</span>
-                  </li>
-                </ul>
+            <!-- Privacy notice -->
+            <div class="bg-[#13131c] rounded-xl border border-white/[0.08] p-5 space-y-4">
+              <div class="flex items-center gap-3">
+                <Shield class="w-5 h-5 text-orange-500 flex-shrink-0" />
+                <div>
+                  <h3 class="font-semibold text-white text-sm">Raccolta dati e privacy</h3>
+                  <p class="text-xs text-gray-500 mt-0.5">Versione {{ privacyVersion }}</p>
+                </div>
               </div>
 
-              <p class="text-xs text-gray-500 dark:text-gray-400 pt-2">
+              <p class="text-sm text-gray-400 leading-relaxed">{{ privacyText }}</p>
+
+              <div class="space-y-2 text-sm">
+                <div class="flex items-start gap-2 text-gray-300">
+                  <span class="text-green-400 mt-0.5 flex-shrink-0">✓</span>
+                  <span><strong class="text-white">Accettare:</strong> verranno raccolti dati anonimi (browser, dispositivo, paese, lingua) per statistiche</span>
+                </div>
+                <div class="flex items-start gap-2 text-gray-300">
+                  <span class="text-gray-500 mt-0.5 flex-shrink-0">−</span>
+                  <span><strong class="text-white">Rifiutare:</strong> verrà registrato solo un conteggio della visita, senza alcun dato personale</span>
+                </div>
+              </div>
+
+              <p class="text-xs text-gray-600">
                 Accettando, il tuo consenso sarà registrato insieme alla versione {{ privacyVersion }} dell'informativa privacy e al timestamp del {{ new Date().toLocaleDateString('it-IT') }}.
               </p>
             </div>
-          </div>
 
-          <!-- Buttons -->
-          <div class="flex flex-col sm:flex-row gap-3 pt-4">
-            <button
-              @click="acceptConsent"
-              class="flex-1 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold py-4 px-6 rounded-xl transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
-              <span class="flex items-center justify-center gap-2">
-                <Shield class="w-5 h-5" />
-                Accetta e continua
-              </span>
-            </button>
-            
-            <button
-              @click="declineConsent"
-              class="flex-1 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 font-semibold py-4 px-6 rounded-xl transition-all">
-              <span class="flex items-center justify-center gap-2">
-                <ExternalLink class="w-5 h-5" />
-                Rifiuta e continua
-              </span>
-            </button>
-          </div>
+            <!-- Buttons -->
+            <div class="flex flex-col sm:flex-row gap-3">
+              <button
+                @click="acceptConsent"
+                class="flex-1 bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-500 hover:to-orange-600 text-white font-semibold py-4 px-6 rounded-xl transition-all shadow-lg hover:shadow-orange-900/30 transform hover:-translate-y-0.5">
+                <span class="flex items-center justify-center gap-2">
+                  <Shield class="w-5 h-5" />
+                  Accetta e continua
+                </span>
+              </button>
 
-          <!-- Footer info -->
-          <p class="text-center text-xs text-gray-500 dark:text-gray-400 pt-4">
-            Scegliendo una delle opzioni accetti di essere reindirizzato al sito di destinazione
-          </p>
+              <button
+                @click="declineConsent"
+                class="flex-1 bg-white/[0.06] hover:bg-white/[0.10] text-gray-300 hover:text-white font-semibold py-4 px-6 rounded-xl transition-all border border-white/[0.08]">
+                <span class="flex items-center justify-center gap-2">
+                  <ExternalLink class="w-5 h-5" />
+                  Rifiuta e continua
+                </span>
+              </button>
+            </div>
+
+            <p class="text-center text-xs text-gray-600">
+              Scegliendo una delle opzioni accetti di essere reindirizzato al sito di destinazione
+            </p>
+          </div>
         </div>
-      </div>
 
-      <!-- Powered by -->
-      <p class="text-center text-sm text-gray-500 dark:text-gray-400 mt-6">
-        Powered by <strong>MagLink</strong> - Link & QR Code Management
-      </p>
+        <!-- Footer -->
+        <p class="text-center text-xs text-gray-600">
+          Powered by <strong class="text-gray-500">MagLink</strong>
+        </p>
+      </div>
     </div>
   </div>
 </template>
