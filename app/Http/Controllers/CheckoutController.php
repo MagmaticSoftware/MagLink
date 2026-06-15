@@ -69,16 +69,36 @@ class CheckoutController extends Controller
                 $user->save();
             }
             
-            $checkout = $user->newSubscription('default', $priceId)
-                ->checkout([
-                    'success_url' => route('checkout.success', ['tenant' => $user->tenant_id]) . '?session_id={CHECKOUT_SESSION_ID}',
-                    'cancel_url' => route('checkout.cancel', ['tenant' => $user->tenant_id]),
-                    'allow_promotion_codes' => true,
-                    'billing_address_collection' => 'required',
-                    'customer_update' => [
-                        'address' => 'auto'
-                    ],
-                ]);
+            // Verify the Stripe customer still exists in the current environment.
+            // If not (e.g. sandbox/live mismatch), clear the ID so Cashier creates a fresh one.
+            if ($user->hasStripeId()) {
+                try {
+                    $stripeClient = new \Stripe\StripeClient(config('cashier.secret'));
+                    $stripeClient->customers->retrieve($user->stripe_id);
+                } catch (\Stripe\Exception\InvalidRequestException $e) {
+                    Log::warning('Stripe customer not found, clearing stripe_id', [
+                        'user_id' => $user->id,
+                        'stripe_id' => $user->stripe_id,
+                        'error' => $e->getMessage(),
+                    ]);
+                    $user->stripe_id = null;
+                    $user->save();
+                }
+            }
+
+            $checkoutOptions = [
+                'success_url' => route('checkout.success', ['tenant' => $user->tenant_id]) . '?session_id={CHECKOUT_SESSION_ID}',
+                'cancel_url' => route('checkout.cancel', ['tenant' => $user->tenant_id]),
+                'allow_promotion_codes' => true,
+                'billing_address_collection' => 'required',
+            ];
+
+            // customer_update is only valid when a Stripe customer already exists
+            if ($user->hasStripeId()) {
+                $checkoutOptions['customer_update'] = ['address' => 'auto'];
+            }
+
+            $checkout = $user->newSubscription('default', $priceId)->checkout($checkoutOptions);
 
             Log::info('About to return checkout', ['checkout_class' => get_class($checkout)]);
             return $checkout;

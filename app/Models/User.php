@@ -271,10 +271,11 @@ class User extends Authenticatable implements MustVerifyEmail, FilamentUser, Has
         if ($this->onFreePlan()) {
             return 'free';
         }
-        
+
         $subscription = $this->subscription('default');
-        
-        if (!$subscription) {
+
+        // Only consider active subscriptions as the current plan
+        if (!$subscription || !$subscription->active()) {
             return null;
         }
 
