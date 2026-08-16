@@ -2,15 +2,16 @@
 
 namespace App\Policies;
 
+use App\Models\Admin;
 use App\Models\Link;
 use App\Models\User;
 use Illuminate\Auth\Access\Response;
 
 class LinkPolicy
 {
-    public function before(User $user, string $ability): bool|null
+    public function before(User|Admin $user, string $ability): bool|null
     {
-        if ($user->hasRole('superadmin')) {
+        if ($user instanceof Admin) {
             return true;
         }
         return null;

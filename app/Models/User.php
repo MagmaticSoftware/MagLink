@@ -11,11 +11,8 @@ use Laravel\Cashier\Billable;
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
 use Stancl\Tenancy\Database\Concerns\BelongsToTenant;
-use Filament\Models\Contracts\FilamentUser;
-use Filament\Models\Contracts\HasName;
-use Filament\Panel;
 
-class User extends Authenticatable implements MustVerifyEmail, FilamentUser, HasName
+class User extends Authenticatable implements MustVerifyEmail
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable, HasRoles, BelongsToTenant, HasApiTokens, SoftDeletes, Billable;
@@ -32,6 +29,7 @@ class User extends Authenticatable implements MustVerifyEmail, FilamentUser, Has
         'password',
         'trial_ends_at',
         'free_plan_started_at',
+        'pro_lifetime_started_at',
     ];
 
     /**
@@ -56,6 +54,7 @@ class User extends Authenticatable implements MustVerifyEmail, FilamentUser, Has
             'password' => 'hashed',
             'trial_ends_at' => 'datetime',
             'free_plan_started_at' => 'datetime',
+            'pro_lifetime_started_at' => 'datetime',
         ];
     }
 
@@ -89,20 +88,6 @@ class User extends Authenticatable implements MustVerifyEmail, FilamentUser, Has
     public function subscriptions()
     {
         return $this->hasMany(StripeSubscription::class, 'user_id')->orderBy('created_at', 'desc');
-    }
-
-    /**
-     * Determina se l'utente può accedere al pannello Filament admin.
-     * Richiede il ruolo superadmin (Spatie Permission).
-     */
-    public function canAccessPanel(Panel $panel): bool
-    {
-        return $this->hasRole('superadmin');
-    }
-
-    public function getFilamentName(): string
-    {
-        return trim($this->first_name . ' ' . $this->last_name) ?: $this->email;
     }
 
     // ==========================================
@@ -205,7 +190,20 @@ class User extends Authenticatable implements MustVerifyEmail, FilamentUser, Has
             return true;
         }
 
+        // Ha ricevuto un piano pro a vita, gestito internamente
+        if ($this->onProLifetime()) {
+            return true;
+        }
+
         return false;
+    }
+
+    /**
+     * Verifica se l'utente ha un piano pro a vita concesso manualmente (indipendente da Stripe)
+     */
+    public function onProLifetime(): bool
+    {
+        return $this->pro_lifetime_started_at !== null;
     }
 
     /**
@@ -237,11 +235,16 @@ class User extends Authenticatable implements MustVerifyEmail, FilamentUser, Has
      */
     public function currentPlanName(): ?string
     {
-        // Controlla prima se è sul piano free (gestito internamente)
+        // Controlla prima se ha un piano pro a vita (gestito internamente)
+        if ($this->onProLifetime()) {
+            return config('subscriptions.plans.enterprise.name');
+        }
+
+        // Controlla se è sul piano free (gestito internamente)
         if ($this->onFreePlan()) {
             return 'Free';
         }
-        
+
         $subscription = $this->subscription('default');
         
         if (!$subscription) {
@@ -267,7 +270,12 @@ class User extends Authenticatable implements MustVerifyEmail, FilamentUser, Has
      */
     public function currentPlanKey(): ?string
     {
-        // Controlla prima se è sul piano free (gestito internamente)
+        // Controlla prima se ha un piano pro a vita (gestito internamente)
+        if ($this->onProLifetime()) {
+            return 'enterprise';
+        }
+
+        // Controlla se è sul piano free (gestito internamente)
         if ($this->onFreePlan()) {
             return 'free';
         }

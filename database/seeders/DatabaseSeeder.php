@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Admin;
 use App\Models\Company;
 use App\Models\Tenant;
 use App\Models\User;
@@ -49,12 +50,14 @@ class DatabaseSeeder extends Seeder
 
         foreach ($permissions as $permission) {
             Permission::findOrCreate($permission, 'web');
+            Permission::findOrCreate($permission, 'admin');
         }
 
-        // Create roles
-        $superadmin = Role::findOrCreate('superadmin', 'web');
-        $superadmin->givePermissionTo(Permission::all());
+        // Create roles for the Filament admin panel (guard: admin)
+        $superadmin = Role::findOrCreate('superadmin', 'admin');
+        $superadmin->givePermissionTo(Permission::where('guard_name', 'admin')->get());
 
+        // Create roles for platform users (guard: web)
         $admin = Role::findOrCreate('admin', 'web');
         $admin->givePermissionTo([
             'manage tenants', 'view tenants', 'create tenants', 'edit tenants',
@@ -68,20 +71,19 @@ class DatabaseSeeder extends Seeder
     }
 
     /**
-     * Create superadmin user for production
+     * Create superadmin for production (Filament backend, separate from platform users)
      */
     private function createSuperadmin(): void
     {
         $email = env('SUPERADMIN_EMAIL', 'admin@maglink.it');
 
-        if (User::where('email', $email)->exists()) {
+        if (Admin::where('email', $email)->exists()) {
             $this->command->warn("Superadmin already exists: {$email}");
             return;
         }
 
-        $superadmin = User::create([
-            'first_name' => env('SUPERADMIN_FIRST_NAME', 'Super'),
-            'last_name' => env('SUPERADMIN_LAST_NAME', 'Admin'),
+        $superadmin = Admin::create([
+            'name' => trim(env('SUPERADMIN_FIRST_NAME', 'Super') . ' ' . env('SUPERADMIN_LAST_NAME', 'Admin')),
             'email' => $email,
             'password' => Hash::make(env('SUPERADMIN_PASSWORD', 'password')),
             'email_verified_at' => now(),
@@ -143,6 +145,17 @@ class DatabaseSeeder extends Seeder
         ]);
 
         $admin->assignRole('admin');
+
+        // Filament backend superadmin (separate table/guard from platform users)
+        $filamentAdmin = Admin::firstOrCreate(
+            ['email' => 'superadmin@demo.com'],
+            [
+                'name' => 'Super Admin',
+                'password' => Hash::make('password'),
+                'email_verified_at' => now(),
+            ]
+        );
+        $filamentAdmin->assignRole('superadmin');
 
         $this->call([
             LinkSeeder::class,

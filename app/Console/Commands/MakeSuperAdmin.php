@@ -2,7 +2,7 @@
 
 namespace App\Console\Commands;
 
-use App\Models\User;
+use App\Models\Admin;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Hash;
 use Spatie\Permission\Models\Role;
@@ -10,43 +10,42 @@ use Spatie\Permission\Models\Role;
 class MakeSuperAdmin extends Command
 {
     protected $signature = 'admin:make-superadmin
-                            {--email= : Email dell\'utente esistente o nuovo}
-                            {--name= : Nome (solo se creazione nuovo utente)}
-                            {--password= : Password (solo se creazione nuovo utente)}';
+                            {--email= : Email dell\'admin esistente o nuovo}
+                            {--name= : Nome (solo se creazione nuovo admin)}
+                            {--password= : Password (solo se creazione nuovo admin)}';
 
-    protected $description = 'Assegna o crea un utente con il ruolo superadmin per accedere al pannello Filament';
+    protected $description = 'Assegna o crea un account Admin con il ruolo superadmin per accedere al pannello Filament';
 
     public function handle(): int
     {
         $email = $this->option('email') ?? $this->ask('Email');
 
-        $user = User::withTrashed()->where('email', $email)->first();
+        $admin = Admin::withTrashed()->where('email', $email)->first();
 
-        if ($user) {
-            $this->info("Utente trovato: {$user->first_name} {$user->last_name} <{$user->email}>");
+        if ($admin) {
+            $this->info("Admin trovato: {$admin->name} <{$admin->email}>");
         } else {
-            $this->info('Utente non trovato. Creazione nuovo account superadmin...');
+            $this->info('Admin non trovato. Creazione nuovo account superadmin...');
 
-            $firstName = $this->option('name') ?? $this->ask('Nome');
+            $name = $this->option('name') ?? $this->ask('Nome');
             $password = $this->option('password') ?? $this->secret('Password');
 
-            $user = User::create([
-                'first_name' => $firstName,
-                'last_name'  => 'Admin',
-                'email'      => $email,
-                'password'   => Hash::make($password),
+            $admin = Admin::create([
+                'name'     => $name,
+                'email'    => $email,
+                'password' => Hash::make($password),
                 'email_verified_at' => now(),
             ]);
 
-            $this->info("Utente creato: {$user->email}");
+            $this->info("Admin creato: {$admin->email}");
         }
 
-        // Assicura che il ruolo esista
-        Role::findOrCreate('superadmin', 'web');
+        // Assicura che il ruolo esista sul guard admin
+        Role::findOrCreate('superadmin', 'admin');
 
-        $user->assignRole('superadmin');
+        $admin->assignRole('superadmin');
 
-        $this->info("Ruolo superadmin assegnato a {$user->email}.");
+        $this->info("Ruolo superadmin assegnato a {$admin->email}.");
         $this->line('');
         $this->line('Accedi al pannello admin su: <fg=cyan>/admin</>');
 

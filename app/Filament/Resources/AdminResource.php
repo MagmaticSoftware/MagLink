@@ -2,8 +2,8 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\UserResource\Pages;
-use App\Models\User;
+use App\Filament\Resources\AdminResource\Pages;
+use App\Models\Admin;
 use Filament\Forms;
 
 use Filament\Resources\Resource;
@@ -15,19 +15,19 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
-class UserResource extends Resource
+class AdminResource extends Resource
 {
-    protected static ?string $model = User::class;
+    protected static ?string $model = Admin::class;
 
-    protected static \BackedEnum|string|null $navigationIcon = 'heroicon-o-users';
+    protected static \BackedEnum|string|null $navigationIcon = 'heroicon-o-shield-check';
 
-    protected static \UnitEnum|string|null $navigationGroup = 'Utenti';
+    protected static \UnitEnum|string|null $navigationGroup = 'Amministrazione';
 
-    protected static ?string $navigationLabel = 'Utenti';
+    protected static ?string $navigationLabel = 'Amministratori';
 
-    protected static ?string $modelLabel = 'Utente';
+    protected static ?string $modelLabel = 'Amministratore';
 
-    protected static ?string $pluralModelLabel = 'Utenti';
+    protected static ?string $pluralModelLabel = 'Amministratori';
 
     protected static ?int $navigationSort = 1;
 
@@ -35,14 +35,10 @@ class UserResource extends Resource
     {
         return $schema
             ->components([
-                Schemas\Components\Section::make('Informazioni Personali')
+                Schemas\Components\Section::make('Informazioni')
                     ->components([
-                        Forms\Components\TextInput::make('first_name')
+                        Forms\Components\TextInput::make('name')
                             ->label('Nome')
-                            ->required()
-                            ->maxLength(255),
-                        Forms\Components\TextInput::make('last_name')
-                            ->label('Cognome')
                             ->required()
                             ->maxLength(255),
                         Forms\Components\TextInput::make('email')
@@ -55,16 +51,15 @@ class UserResource extends Resource
                             ->label('Email verificata il'),
                     ])->columns(2),
 
-                Schemas\Components\Section::make('Abbonamento & Trial')
+                Schemas\Components\Section::make('Ruoli')
                     ->components([
-                        Forms\Components\DateTimePicker::make('trial_ends_at')
-                            ->label('Fine Trial'),
-                        Forms\Components\DateTimePicker::make('free_plan_started_at')
-                            ->label('Inizio Piano Free'),
-                        Forms\Components\DateTimePicker::make('pro_lifetime_started_at')
-                            ->label('Inizio Pro Lifetime')
-                            ->helperText('Concede permanentemente i limiti del piano Enterprise, indipendentemente da Stripe.'),
-                    ])->columns(2),
+                        Forms\Components\Select::make('roles')
+                            ->label('Ruoli')
+                            ->relationship('roles', 'name', fn (Builder $query) => $query->where('guard_name', 'admin'))
+                            ->multiple()
+                            ->preload()
+                            ->searchable(),
+                    ]),
 
                 Schemas\Components\Section::make('Sicurezza')
                     ->components([
@@ -87,32 +82,22 @@ class UserResource extends Resource
                     ->label('ID')
                     ->sortable()
                     ->searchable(),
-                Tables\Columns\TextColumn::make('first_name')
+                Tables\Columns\TextColumn::make('name')
                     ->label('Nome')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('last_name')
-                    ->label('Cognome')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('email')
                     ->label('Email')
                     ->searchable()
                     ->copyable(),
+                Tables\Columns\TextColumn::make('roles.name')
+                    ->label('Ruoli')
+                    ->badge(),
                 Tables\Columns\IconColumn::make('email_verified_at')
                     ->label('Verificato')
                     ->boolean()
-                    ->getStateUsing(fn (User $record) => $record->email_verified_at !== null),
-                Tables\Columns\TextColumn::make('links_count')
-                    ->label('Link')
-                    ->counts('links')
-                    ->badge()
-                    ->color('info'),
-                Tables\Columns\TextColumn::make('trial_ends_at')
-                    ->label('Fine Trial')
-                    ->dateTime('d/m/Y')
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->getStateUsing(fn (Admin $record) => $record->email_verified_at !== null),
                 Tables\Columns\TextColumn::make('created_at')
-                    ->label('Registrato')
+                    ->label('Creato')
                     ->dateTime('d/m/Y H:i')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('deleted_at')
@@ -123,18 +108,6 @@ class UserResource extends Resource
             ])
             ->filters([
                 Tables\Filters\TrashedFilter::make(),
-                Tables\Filters\Filter::make('email_verified')
-                    ->label('Email Verificata')
-                    ->query(fn (Builder $query) => $query->whereNotNull('email_verified_at')),
-                Tables\Filters\Filter::make('on_trial')
-                    ->label('In Trial')
-                    ->query(fn (Builder $query) => $query->where('trial_ends_at', '>', now())),
-                Tables\Filters\Filter::make('on_free_plan')
-                    ->label('Piano Free')
-                    ->query(fn (Builder $query) => $query->whereNotNull('free_plan_started_at')),
-                Tables\Filters\Filter::make('on_pro_lifetime')
-                    ->label('Pro Lifetime')
-                    ->query(fn (Builder $query) => $query->whereNotNull('pro_lifetime_started_at')),
             ])
             ->actions([
                 Actions\ViewAction::make(),
@@ -160,10 +133,10 @@ class UserResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListUsers::route('/'),
-            'create' => Pages\CreateUser::route('/create'),
-            'view' => Pages\ViewUser::route('/{record}'),
-            'edit' => Pages\EditUser::route('/{record}/edit'),
+            'index' => Pages\ListAdmins::route('/'),
+            'create' => Pages\CreateAdmin::route('/create'),
+            'view' => Pages\ViewAdmin::route('/{record}'),
+            'edit' => Pages\EditAdmin::route('/{record}/edit'),
         ];
     }
 
