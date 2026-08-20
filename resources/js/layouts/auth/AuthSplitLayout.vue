@@ -10,6 +10,7 @@ import {
     LucideGlobe,
     LucideCheckCircle2
 } from 'lucide-vue-next';
+import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 const { t } = useI18n();
@@ -19,7 +20,7 @@ defineProps<{
     description?: string;
 }>();
 
-const features = [
+const features = computed(() => [
     {
         icon: LucideLink2,
         title: t('auth.features.linkShortening.title'),
@@ -40,7 +41,7 @@ const features = [
         title: t('auth.features.blockPages.title'),
         description: t('auth.features.blockPages.description')
     }
-];
+]);
 </script>
 
 <template>

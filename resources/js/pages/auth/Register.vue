@@ -16,6 +16,9 @@ import StepPanel from '@/components/volt//StepPanel.vue';
 import Select from '@/components/volt//Select.vue';
 import Checkbox from '@/components/volt//Checkbox.vue';
 import { ref, computed } from 'vue';
+import { useI18n } from 'vue-i18n';
+
+const { t } = useI18n();
 
 const props = defineProps<{
     honeypot: {
@@ -215,8 +218,8 @@ const checkSlug = throttle(async () => {
 </script>
 
 <template>
-    <AuthBase title="Create an account" description="Complete the steps below to create your account">
-        <Head title="Register" />
+    <AuthBase :title="t('auth.register.title')" :description="t('auth.register.description')">
+        <Head :title="t('auth.register.headTitle')" />
 
         <div class="container mx-auto">
             <!-- Honeypot fields (hidden from users, visible to bots) -->
@@ -241,149 +244,149 @@ const checkSlug = throttle(async () => {
 
             <Stepper v-model:value="currentStep" class="mb-8">
                 <StepList>
-                    <Step :value="1">Account</Step>
-                    <Step :value="2">Company</Step>
-                    <Step :value="3">Preferences</Step>
+                    <Step :value="1">{{ t('auth.register.steps.account') }}</Step>
+                    <Step :value="2">{{ t('auth.register.steps.company') }}</Step>
+                    <Step :value="3">{{ t('auth.register.steps.preferences') }}</Step>
                 </StepList>
 
                 <StepPanels>
                     <StepPanel :value="1" class="!bg-transparent">
                         <div class="flex flex-col gap-6">
-                            <Fieldset legend="Account Information">
+                            <Fieldset :legend="t('auth.register.accountInfo')">
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     <div class="flex flex-col gap-2">
-                                        <label for="first_name" class="text-gray-700 dark:text-gray-300">First Name</label>
+                                        <label for="first_name" class="text-gray-700 dark:text-gray-300">{{ t('auth.register.firstName') }}</label>
                                         <InputText id="first_name" v-model="form.first_name" class="dark:bg-gray-900 dark:border-gray-700 dark:text-white" />
                                         <Message v-if="form.errors.first_name" size="small" severity="error" variant="simple">{{ form.errors.first_name }}</Message>
                                     </div>
-                                    
+
                                     <div class="flex flex-col gap-2">
-                                        <label for="last_name" class="text-gray-700 dark:text-gray-300">Last Name</label>
+                                        <label for="last_name" class="text-gray-700 dark:text-gray-300">{{ t('auth.register.lastName') }}</label>
                                         <InputText id="last_name" v-model="form.last_name" class="dark:bg-gray-900 dark:border-gray-700 dark:text-white" />
                                         <Message v-if="form.errors.last_name" size="small" severity="error" variant="simple">{{ form.errors.last_name }}</Message>
                                     </div>
-                                    
+
                                     <div class="flex flex-col gap-2 md:col-span-2">
-                                        <label for="email" class="text-gray-700 dark:text-gray-300">Email</label>
+                                        <label for="email" class="text-gray-700 dark:text-gray-300">{{ t('auth.register.email') }}</label>
                                         <InputText id="email" v-model="form.email" type="email" class="dark:bg-gray-900 dark:border-gray-700 dark:text-white" />
                                         <Message v-if="form.errors.email" size="small" severity="error" variant="simple">{{ form.errors.email }}</Message>
                                     </div>
-                                    
+
                                     <div class="flex flex-col gap-2">
-                                        <label for="password" class="text-gray-700 dark:text-gray-300">Password</label>
+                                        <label for="password" class="text-gray-700 dark:text-gray-300">{{ t('auth.register.password') }}</label>
                                         <Password v-model="form.password" toggleMask fluid />
                                         <Message v-if="form.errors.password" size="small" severity="error" variant="simple">{{ form.errors.password }}</Message>
                                     </div>
-                                    
+
                                     <div class="flex flex-col gap-2">
-                                        <label for="password_confirmation" class="text-gray-700 dark:text-gray-300">Confirm Password</label>
+                                        <label for="password_confirmation" class="text-gray-700 dark:text-gray-300">{{ t('auth.register.confirmPassword') }}</label>
                                         <Password v-model="form.password_confirmation" toggleMask fluid />
                                         <Message v-if="form.errors.password_confirmation" size="small" severity="error" variant="simple">{{ form.errors.password_confirmation }}</Message>
                                     </div>
                                 </div>
                             </Fieldset>
-                            
+
                             <div class="flex justify-end">
                                 <Button @click="nextStep" :disabled="!canProceedStep1">
-                                    Next <ChevronRight class="w-4 h-4 ml-2" />
+                                    {{ t('auth.register.next') }} <ChevronRight class="w-4 h-4 ml-2" />
                                 </Button>
                             </div>
                         </div>
                     </StepPanel>
-                    
+
                     <StepPanel :value="2" class="!bg-transparent">
                         <div class="flex flex-col gap-6">
-                            <Fieldset legend="Company Information">
+                            <Fieldset :legend="t('auth.register.companyInfo')">
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     <div class="flex flex-col gap-2 md:col-span-2">
-                                        <label for="slug" class="text-gray-700 dark:text-gray-300">Public URL</label>
+                                        <label for="slug" class="text-gray-700 dark:text-gray-300">{{ t('auth.register.publicUrl') }}</label>
                                         <div class="flex items-stretch w-full">
                                             <span class="flex items-center justify-center px-3 border-y border-s border-surface-300 dark:border-surface-700 bg-surface-0 dark:bg-surface-950 text-surface-400 dark:text-surface-500 rounded-s-md text-sm">maglink.com/</span>
                                             <InputText id="slug" v-model="form.slug" pt:root="flex-1 rounded-s-none rounded-e-md dark:bg-gray-900 dark:border-gray-700 dark:text-white" placeholder="yourcompany" @keyup="checkSlug" />
                                         </div>
                                         <Message v-if="form.errors.slug" size="small" severity="error" variant="simple">{{ form.errors.slug }}</Message>
                                     </div>
-                                    
+
                                     <div class="flex flex-col gap-2 md:col-span-2">
-                                        <label for="company_name" class="text-gray-700 dark:text-gray-300">Company Name</label>
+                                        <label for="company_name" class="text-gray-700 dark:text-gray-300">{{ t('auth.register.companyName') }}</label>
                                         <InputText id="company_name" v-model="form.company_name" class="dark:bg-gray-900 dark:border-gray-700 dark:text-white" />
                                         <Message v-if="form.errors.company_name" size="small" severity="error" variant="simple">{{ form.errors.company_name }}</Message>
                                     </div>
-                                    
+
                                     <div class="flex flex-col gap-2">
-                                        <label for="company_email" class="text-gray-700 dark:text-gray-300">Company Email</label>
+                                        <label for="company_email" class="text-gray-700 dark:text-gray-300">{{ t('auth.register.companyEmail') }}</label>
                                         <InputText id="company_email" v-model="form.company_email" type="email" class="dark:bg-gray-900 dark:border-gray-700 dark:text-white" />
                                         <Message v-if="form.errors.company_email" size="small" severity="error" variant="simple">{{ form.errors.company_email }}</Message>
                                     </div>
-                                    
+
                                     <div class="flex flex-col gap-2">
-                                        <label for="company_phone" class="text-gray-700 dark:text-gray-300">Company Phone</label>
+                                        <label for="company_phone" class="text-gray-700 dark:text-gray-300">{{ t('auth.register.companyPhone') }}</label>
                                         <InputText id="company_phone" v-model="form.company_phone" class="dark:bg-gray-900 dark:border-gray-700 dark:text-white" />
                                         <Message v-if="form.errors.company_phone" size="small" severity="error" variant="simple">{{ form.errors.company_phone }}</Message>
                                     </div>
-                                    
+
                                     <div class="flex flex-col gap-2">
-                                        <label for="company_industry" class="text-gray-700 dark:text-gray-300">Industry</label>
-                                        <Select v-model="form.company_industry" :options="industries" option-label="label" option-value="value" placeholder="Select industry" />
+                                        <label for="company_industry" class="text-gray-700 dark:text-gray-300">{{ t('auth.register.industry') }}</label>
+                                        <Select v-model="form.company_industry" :options="industries" option-label="label" option-value="value" :placeholder="t('auth.register.selectIndustry')" />
                                         <Message v-if="form.errors.company_industry" size="small" severity="error" variant="simple">{{ form.errors.company_industry }}</Message>
                                     </div>
-                                    
+
                                     <div class="flex flex-col gap-2">
-                                        <label for="company_size" class="text-gray-700 dark:text-gray-300">Company Size</label>
-                                        <Select v-model="form.company_size" :options="companySizes" option-label="label" option-value="value" placeholder="Select size" />
+                                        <label for="company_size" class="text-gray-700 dark:text-gray-300">{{ t('auth.register.companySize') }}</label>
+                                        <Select v-model="form.company_size" :options="companySizes" option-label="label" option-value="value" :placeholder="t('auth.register.selectSize')" />
                                         <Message v-if="form.errors.company_size" size="small" severity="error" variant="simple">{{ form.errors.company_size }}</Message>
                                     </div>
                                 </div>
                             </Fieldset>
-                            
+
                             <div class="flex justify-between">
                                 <Button variant="outline" @click="prevStep">
-                                    <ChevronLeft class="w-4 h-4 mr-2" /> Back
+                                    <ChevronLeft class="w-4 h-4 mr-2" /> {{ t('auth.register.back') }}
                                 </Button>
                                 <Button @click="nextStep" :disabled="!canProceedStep2">
-                                    Next <ChevronRight class="w-4 h-4 ml-2" />
+                                    {{ t('auth.register.next') }} <ChevronRight class="w-4 h-4 ml-2" />
                                 </Button>
                             </div>
                         </div>
                     </StepPanel>
-                    
+
                     <StepPanel :value="3" class="!bg-transparent">
                         <div class="flex flex-col gap-6">
-                            <Fieldset legend="Preferences & Configuration">
+                            <Fieldset :legend="t('auth.register.preferencesTitle')">
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     <div class="flex flex-col gap-2">
-                                        <label for="usage_type" class="text-gray-700 dark:text-gray-300">Tipo di utilizzo</label>
-                                        <Select v-model="form.usage_type" :options="usageTypes" option-label="label" option-value="value" placeholder="Seleziona tipo" />
+                                        <label for="usage_type" class="text-gray-700 dark:text-gray-300">{{ t('auth.register.usageType') }}</label>
+                                        <Select v-model="form.usage_type" :options="usageTypes" option-label="label" option-value="value" :placeholder="t('auth.register.selectUsageType')" />
                                         <Message v-if="form.errors.usage_type" size="small" severity="error" variant="simple">{{ form.errors.usage_type }}</Message>
                                     </div>
                                     <div class="flex flex-col gap-2">
-                                        <label for="referral_source" class="text-gray-700 dark:text-gray-300">Come ci hai scoperto?</label>
-                                        <Select v-model="form.referral_source" :options="referralSources" option-label="label" option-value="value" placeholder="Seleziona fonte" />
+                                        <label for="referral_source" class="text-gray-700 dark:text-gray-300">{{ t('auth.register.referralSource') }}</label>
+                                        <Select v-model="form.referral_source" :options="referralSources" option-label="label" option-value="value" :placeholder="t('auth.register.selectReferralSource')" />
                                         <Message v-if="form.errors.referral_source" size="small" severity="error" variant="simple">{{ form.errors.referral_source }}</Message>
                                     </div>
                                     <div class="flex flex-col gap-2">
-                                        <label for="main_goal" class="text-gray-700 dark:text-gray-300">Obiettivo principale</label>
-                                        <Select v-model="form.main_goal" :options="mainGoals" option-label="label" option-value="value" placeholder="Seleziona obiettivo" />
+                                        <label for="main_goal" class="text-gray-700 dark:text-gray-300">{{ t('auth.register.mainGoal') }}</label>
+                                        <Select v-model="form.main_goal" :options="mainGoals" option-label="label" option-value="value" :placeholder="t('auth.register.selectMainGoal')" />
                                         <Message v-if="form.errors.main_goal" size="small" severity="error" variant="simple">{{ form.errors.main_goal }}</Message>
                                     </div>
                                     <div class="flex flex-col gap-2">
-                                        <label for="estimated_usage" class="text-gray-700 dark:text-gray-300">Utilizzo stimato</label>
-                                        <Select v-model="form.estimated_usage" :options="estimatedUsages" option-label="label" option-value="value" placeholder="Seleziona utilizzo" />
+                                        <label for="estimated_usage" class="text-gray-700 dark:text-gray-300">{{ t('auth.register.estimatedUsage') }}</label>
+                                        <Select v-model="form.estimated_usage" :options="estimatedUsages" option-label="label" option-value="value" :placeholder="t('auth.register.selectEstimatedUsage')" />
                                         <Message v-if="form.errors.estimated_usage" size="small" severity="error" variant="simple">{{ form.errors.estimated_usage }}</Message>
                                     </div>
                                     <div class="flex flex-col gap-2">
-                                        <label for="team_size" class="text-gray-700 dark:text-gray-300">Dimensione team</label>
-                                        <Select v-model="form.team_size" :options="teamSizes" option-label="label" option-value="value" placeholder="Seleziona dimensione" />
+                                        <label for="team_size" class="text-gray-700 dark:text-gray-300">{{ t('auth.register.teamSize') }}</label>
+                                        <Select v-model="form.team_size" :options="teamSizes" option-label="label" option-value="value" :placeholder="t('auth.register.selectTeamSize')" />
                                         <Message v-if="form.errors.team_size" size="small" severity="error" variant="simple">{{ form.errors.team_size }}</Message>
                                     </div>
                                     <div class="flex flex-col gap-2">
-                                        <label for="timezone" class="text-gray-700 dark:text-gray-300">Fuso orario</label>
-                                        <Select v-model="form.timezone" :options="timezones" option-label="label" option-value="value" placeholder="Seleziona fuso orario" />
+                                        <label for="timezone" class="text-gray-700 dark:text-gray-300">{{ t('auth.register.timezone') }}</label>
+                                        <Select v-model="form.timezone" :options="timezones" option-label="label" option-value="value" :placeholder="t('auth.register.selectTimezone')" />
                                         <Message v-if="form.errors.timezone" size="small" severity="error" variant="simple">{{ form.errors.timezone }}</Message>
                                     </div>
                                     <div class="flex flex-col gap-2">
-                                        <label for="language" class="text-gray-700 dark:text-gray-300">Lingua</label>
-                                        <Select v-model="form.language" :options="languages" option-label="label" option-value="value" placeholder="Seleziona lingua" />
+                                        <label for="language" class="text-gray-700 dark:text-gray-300">{{ t('auth.register.language') }}</label>
+                                        <Select v-model="form.language" :options="languages" option-label="label" option-value="value" :placeholder="t('auth.register.selectLanguage')" />
                                         <Message v-if="form.errors.language" size="small" severity="error" variant="simple">{{ form.errors.language }}</Message>
                                     </div>
                                 </div>
@@ -392,31 +395,31 @@ const checkSlug = throttle(async () => {
                                     <div class="flex items-center gap-3">
                                         <Checkbox v-model="form.terms_accepted" binary />
                                         <label class="text-sm text-gray-700 dark:text-gray-300">
-                                            Accetto i <TextLink :href="route('terms-of-service')" target="_blank" class="underline text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300">Termini di servizio</TextLink>
+                                            {{ t('auth.register.acceptTermsPrefix') }} <TextLink :href="route('terms-of-service')" target="_blank" class="underline text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300">{{ t('auth.register.termsOfService') }}</TextLink>
                                         </label>
                                     </div>
                                     <Message v-if="form.errors.terms_accepted" size="small" severity="error" variant="simple">{{ form.errors.terms_accepted }}</Message>
                                     <div class="flex items-center gap-3">
                                         <Checkbox v-model="form.privacy_policy" binary />
                                         <label class="text-sm text-gray-700 dark:text-gray-300">
-                                            Accetto la <TextLink :href="route('privacy-policy')" target="_blank" class="underline text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300">Privacy Policy</TextLink>
+                                            {{ t('auth.register.acceptPrivacyPrefix') }} <TextLink :href="route('privacy-policy')" target="_blank" class="underline text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300">{{ t('auth.register.privacyPolicy') }}</TextLink>
                                         </label>
                                     </div>
                                     <Message v-if="form.errors.privacy_policy" size="small" severity="error" variant="simple">{{ form.errors.privacy_policy }}</Message>
                                     <div class="flex items-center gap-3">
                                         <Checkbox v-model="form.newsletter_opt_in" binary />
-                                        <label class="text-sm text-gray-700 dark:text-gray-300">Iscrivimi alla newsletter</label>
+                                        <label class="text-sm text-gray-700 dark:text-gray-300">{{ t('auth.register.newsletter') }}</label>
                                     </div>
                                 </div>
                             </Fieldset>
-                            
+
                             <div class="flex justify-between">
                                 <Button variant="outline" @click="prevStep">
-                                    <ChevronLeft class="w-4 h-4 mr-2" /> Back
+                                    <ChevronLeft class="w-4 h-4 mr-2" /> {{ t('auth.register.back') }}
                                 </Button>
                                 <Button @click="submit" :disabled="!canProceedStep3 || form.processing">
                                     <LoaderCircle v-if="form.processing" class="w-4 h-4 mr-2 animate-spin" />
-                                    Create Account
+                                    {{ t('auth.register.createAccount') }}
                                 </Button>
                             </div>
                         </div>
@@ -425,8 +428,8 @@ const checkSlug = throttle(async () => {
             </Stepper>
 
             <div class="text-center text-sm text-gray-600 dark:text-gray-400 mt-6">
-                Already have an account?
-                <TextLink :href="route('login')" class="underline underline-offset-4 text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium">Log in</TextLink>
+                {{ t('auth.register.alreadyHaveAccount') }}
+                <TextLink :href="route('login')" class="underline underline-offset-4 text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium">{{ t('auth.register.logIn') }}</TextLink>
             </div>
         </div>
     </AuthBase>

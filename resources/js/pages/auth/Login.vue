@@ -8,6 +8,9 @@ import { Label } from '@/components/ui/label';
 import AuthBase from '@/layouts/AuthLayout.vue';
 import { Head, useForm } from '@inertiajs/vue3';
 import { LoaderCircle, LogIn } from 'lucide-vue-next';
+import { useI18n } from 'vue-i18n';
+
+const { t } = useI18n();
 
 defineProps<{
     status?: string;
@@ -28,8 +31,8 @@ const submit = () => {
 </script>
 
 <template>
-    <AuthBase title="Log in to your account" description="Enter your email and password below to log in">
-        <Head title="Log in" />
+    <AuthBase :title="t('auth.login.title')" :description="t('auth.login.description')">
+        <Head :title="t('auth.login.headTitle')" />
 
         <div v-if="status" class="mb-4 text-center text-sm font-medium text-green-600 dark:text-green-400">
             {{ status }}
@@ -38,7 +41,7 @@ const submit = () => {
         <form @submit.prevent="submit" class="flex flex-col gap-6">
             <div class="grid gap-6">
                 <div class="grid gap-2">
-                    <Label for="email" class="text-gray-700 dark:text-gray-300">Email address</Label>
+                    <Label for="email" class="text-gray-700 dark:text-gray-300">{{ t('auth.login.emailLabel') }}</Label>
                     <InputText
                         id="email"
                         type="email"
@@ -47,7 +50,7 @@ const submit = () => {
                         :tabindex="1"
                         autocomplete="email"
                         v-model="form.email"
-                        placeholder="email@example.com"
+                        :placeholder="t('auth.login.emailPlaceholder')"
                         class="dark:bg-gray-900 dark:border-gray-700 dark:text-white dark:placeholder-gray-500"
                     />
                     <InputError :message="form.errors.email" />
@@ -55,9 +58,9 @@ const submit = () => {
 
                 <div class="grid gap-2">
                     <div class="flex items-center justify-between">
-                        <Label for="password" class="text-gray-700 dark:text-gray-300">Password</Label>
+                        <Label for="password" class="text-gray-700 dark:text-gray-300">{{ t('auth.login.passwordLabel') }}</Label>
                         <TextLink v-if="canResetPassword" :href="route('password.request')" class="text-sm text-orange-600 dark:text-orange-400 hover:text-orange-700 dark:hover:text-orange-300" :tabindex="5">
-                            Forgot password?
+                            {{ t('auth.login.forgotPassword') }}
                         </TextLink>
                     </div>
                     <InputText
@@ -67,7 +70,7 @@ const submit = () => {
                         :tabindex="2"
                         autocomplete="current-password"
                         v-model="form.password"
-                        placeholder="Password"
+                        :placeholder="t('auth.login.passwordPlaceholder')"
                         class="dark:bg-gray-900 dark:border-gray-700 dark:text-white dark:placeholder-gray-500"
                     />
                     <InputError :message="form.errors.password" />
@@ -76,20 +79,20 @@ const submit = () => {
                 <div class="flex items-center justify-between" :tabindex="3">
                     <Label for="remember" class="flex items-center space-x-3 text-gray-700 dark:text-gray-300">
                         <Checkbox id="remember" v-model="form.remember" :tabindex="4" />
-                        <span>Remember me</span>
+                        <span>{{ t('auth.login.rememberMe') }}</span>
                     </Label>
                 </div>
 
                 <Button type="submit" class="mt-4 w-full bg-gradient-to-r from-orange-600 to-orange-800 hover:from-orange-600 hover:to-orange-700 dark:from-orange-600 dark:to-orange-700 dark:hover:from-orange-700 dark:hover:to-orange-800 text-white" :tabindex="4" :disabled="form.processing">
                     <LogIn v-if="!form.processing" class="h-4 w-4" />
                     <LoaderCircle v-if="form.processing" class="h-4 w-4 animate-spin" />
-                    Log in
+                    {{ t('auth.login.submit') }}
                 </Button>
             </div>
 
             <div class="text-center text-sm text-gray-600 dark:text-gray-400">
-                Don't have an account?
-                <TextLink :href="route('register')" :tabindex="5" class="text-orange-600 dark:text-orange-400 hover:text-orange-700 dark:hover:text-orange-300 font-medium">Sign up</TextLink>
+                {{ t('auth.login.noAccount') }}
+                <TextLink :href="route('register')" :tabindex="5" class="text-orange-600 dark:text-orange-400 hover:text-orange-700 dark:hover:text-orange-300 font-medium">{{ t('auth.login.signUp') }}</TextLink>
             </div>
         </form>
     </AuthBase>

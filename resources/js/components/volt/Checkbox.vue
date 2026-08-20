@@ -31,10 +31,10 @@ const theme = ref<CheckboxPassThroughOptions>({
         absolute start-0 top-0 w-full h-full m-0 p-0 opacity-0 z-10
         border border-transparent rounded-xs`,
     box: `flex justify-center items-center rounded-sm w-5 h-5
-        border border-surface-300 dark:border-surface-700
-        bg-surface-0 dark:bg-surface-950
+        border border-surface-300 dark:border-surface-500
+        bg-surface-0 dark:bg-surface-900
         text-surface-700 dark:text-surface-0
-        peer-enabled:peer-hover:border-surface-400 dark:peer-enabled:peer-hover:border-surface-600
+        peer-enabled:peer-hover:border-surface-400 dark:peer-enabled:peer-hover:border-surface-400
         p-checked:border-primary p-checked:bg-primary p-checked:text-primary-contrast
         peer-enabled:peer-hover:p-checked:bg-primary-emphasis peer-enabled:peer-hover:p-checked:border-primary-emphasis
         peer-focus-visible:outline-1 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-primary peer-focus-visible:outline
