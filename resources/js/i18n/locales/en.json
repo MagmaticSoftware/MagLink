@@ -280,7 +280,7 @@
       "title": "Log in to your account",
       "description": "Enter your email and password below to log in",
       "emailLabel": "Email address",
-      "emailPlaceholder": "email@example.com",
+      "emailPlaceholder": "email{'@'}example.com",
       "passwordLabel": "Password",
       "passwordPlaceholder": "Password",
       "forgotPassword": "Forgot password?",

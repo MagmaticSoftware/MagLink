@@ -269,7 +269,7 @@
       "title": "Accedi al tuo account",
       "description": "Inserisci email e password per accedere",
       "emailLabel": "Indirizzo email",
-      "emailPlaceholder": "email@esempio.com",
+      "emailPlaceholder": "email{'@'}esempio.com",
       "passwordLabel": "Password",
       "passwordPlaceholder": "Password",
       "forgotPassword": "Password dimenticata?",
