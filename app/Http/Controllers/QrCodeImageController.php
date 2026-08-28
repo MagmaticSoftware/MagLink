@@ -4,11 +4,21 @@ namespace App\Http\Controllers;
 
 use App\Models\QrCode;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use SimpleSoftwareIO\QrCode\Facades\QrCode as QrCodeGenerator;
 
 class QrCodeImageController extends Controller
 {
+    /**
+     * Raster formats (PNG/JPG) require the imagick PHP extension via BaconQrCode.
+     * SVG is generated in pure PHP and always works.
+     */
+    private function rasterSupported(): bool
+    {
+        return extension_loaded('imagick');
+    }
+
     /**
      * Generate QR code preview image (SVG for crisp rendering)
      */
@@ -36,14 +46,27 @@ class QrCodeImageController extends Controller
         // Generate the content based on format and type
         $qrContent = $this->getQrContent($format, $content, $slug, $type);
 
-        // Use PNG if logo is specified (SVG doesn't support logo overlay)
-        $previewFormat = !empty($customization['logo']) ? 'png' : 'svg';
+        // Use PNG if a logo is specified (SVG doesn't support logo overlay).
+        // Fall back to SVG when the imagick extension is unavailable so the
+        // preview keeps working (the logo simply won't be rendered).
+        $wantsLogo = !empty($customization['logo']);
+        $previewFormat = ($wantsLogo && $this->rasterSupported()) ? 'png' : 'svg';
+
+        try {
+            $qrCode = $this->generateQrCodeWithCustomization($qrContent, $customization, $previewFormat, 300);
+        } catch (\Throwable $e) {
+            Log::warning('QR preview generation failed, falling back to plain SVG', [
+                'error' => $e->getMessage(),
+            ]);
+            $previewFormat = 'svg';
+            $qrCode = $this->generateQrCodeWithCustomization($qrContent, $customization, 'svg', 300);
+        }
+
         $mimeType = $previewFormat === 'png' ? 'image/png' : 'image/svg+xml';
 
-        // Generate QR code with customizations
-        $qrCode = $this->generateQrCodeWithCustomization($qrContent, $customization, $previewFormat, 300);
-
-        return response($qrCode)->header('Content-Type', $mimeType);
+        return response($qrCode)
+            ->header('Content-Type', $mimeType)
+            ->header('X-QR-Logo-Applied', ($wantsLogo && $previewFormat === 'png') ? '1' : '0');
     }
 
     /**
@@ -61,18 +84,47 @@ class QrCodeImageController extends Controller
             $format = 'jpg';
         }
 
+        // Raster formats need imagick; return a clear error instead of a 500.
+        if (in_array($format, ['png', 'jpg'], true) && !$this->rasterSupported()) {
+            Log::error('QR download requested in raster format but imagick extension is missing', [
+                'qrcode' => $qrcode->slug,
+                'format' => $format,
+            ]);
+
+            return response(
+                'Il download in ' . strtoupper($format) . ' non è al momento disponibile su questo server. '
+                . 'Usa il formato SVG oppure contatta il supporto.',
+                503
+            )->header('Content-Type', 'text/plain; charset=utf-8');
+        }
+
         // Generate the QR content
         $qrContent = $this->getQrContentFromModel($qrcode);
 
-        // Get customization from qrcode options
-        $customization = $qrcode->options['customization'] ?? [];
+        // Get customization from qrcode options (options column may be null)
+        $customization = is_array($qrcode->options)
+            ? ($qrcode->options['customization'] ?? [])
+            : [];
 
         // Determine size based on user plan
         $user = $qrcode->user;
         $maxSize = $user ? $user->getQrMaxSize() : 512;
 
         // Generate QR code with customizations
-        $qrCode = $this->generateQrCodeWithCustomization($qrContent, $customization, $format, $maxSize);
+        try {
+            $qrCode = $this->generateQrCodeWithCustomization($qrContent, $customization, $format, $maxSize);
+        } catch (\Throwable $e) {
+            Log::error('QR download generation failed', [
+                'qrcode' => $qrcode->slug,
+                'format' => $format,
+                'error' => $e->getMessage(),
+            ]);
+
+            return response(
+                'Impossibile generare il QR Code in questo formato. Riprova con SVG o contatta il supporto.',
+                500
+            )->header('Content-Type', 'text/plain; charset=utf-8');
+        }
 
         $mimeType = match($format) {
             'svg' => 'image/svg+xml',
@@ -80,7 +132,8 @@ class QrCodeImageController extends Controller
             default => 'image/png',
         };
 
-        $fileName = ($qrcode->name ?? $qrcode->slug) . '-qrcode.' . $format;
+        $safeName = preg_replace('/[^\w.-]+/u', '_', (string) ($qrcode->name ?: $qrcode->slug));
+        $fileName = trim($safeName, '_') . '-qrcode.' . $format;
 
         return response($qrCode)
             ->header('Content-Type', $mimeType)
@@ -201,6 +254,11 @@ class QrCodeImageController extends Controller
      */
     private function generateQrCodeWithCustomization(string $content, array $customization, string $format, int $size = 1000): string
     {
+        // BaconQrCode uses the imagick back end for raster output.
+        if (in_array($format, ['png', 'jpg'], true) && !$this->rasterSupported()) {
+            throw new \RuntimeException('The imagick PHP extension is required to render QR codes as ' . $format . '.');
+        }
+
         $generator = QrCodeGenerator::format($format)
             ->size($size)
             ->margin(2)
@@ -277,8 +335,15 @@ class QrCodeImageController extends Controller
             return $qrImageData;
         }
 
-        // Determine logo file type and create image
-        $imageInfo = getimagesize($logoFullPath);
+        // Determine logo file type and create image.
+        // getimagesize() returns false for non-raster files (e.g. SVG) or
+        // corrupt uploads — bail out gracefully instead of crashing.
+        $imageInfo = @getimagesize($logoFullPath);
+        if ($imageInfo === false || !isset($imageInfo['mime'])) {
+            imagedestroy($qrImage);
+            return $qrImageData;
+        }
+
         $logoImage = match($imageInfo['mime']) {
             'image/png' => imagecreatefrompng($logoFullPath),
             'image/jpeg' => imagecreatefromjpeg($logoFullPath),

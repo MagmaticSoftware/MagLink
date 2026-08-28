@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, computed, watch, onMounted } from 'vue';
 import { usePage } from '@inertiajs/vue3';
+import { useI18n } from 'vue-i18n';
 import { 
     LucidePalette, 
     LucideImage, 
@@ -14,6 +15,7 @@ import { type PageProps } from '@/types/inertia';
 import axios from 'axios';
 
 const page = usePage<PageProps>();
+const { t } = useI18n();
 
 const props = defineProps<{
     modelValue: any;
@@ -65,11 +67,11 @@ const logoPreview = ref<string | null>(null);
 const uploading = ref(false);
 const previousRemoveBackground = ref(false);
 
-const logoSizes = [
-    { value: 'small', label: 'Small (15%)' },
-    { value: 'medium', label: 'Medium (20%)' },
-    { value: 'large', label: 'Large (25%)' },
-];
+const logoSizes = computed(() => [
+    { value: 'small', label: t('qrcodes.customization.sizeSmall') },
+    { value: 'medium', label: t('qrcodes.customization.sizeMedium') },
+    { value: 'large', label: t('qrcodes.customization.sizeLarge') },
+]);
 
 // Watch customization changes and emit
 watch(customization, (newVal) => {
@@ -145,7 +147,7 @@ const uploadLogo = async () => {
         updatePreviewUrl();
     } catch (error: any) {
         console.error('Logo upload failed:', error);
-        alert(error.response?.data?.error || 'Failed to upload logo');
+        alert(error.response?.data?.error || t('qrcodes.customization.uploadFailed'));
     } finally {
         uploading.value = false;
     }
@@ -175,9 +177,9 @@ const removeLogo = async () => {
 // Get upgrade message for locked features
 const getUpgradeMessage = (feature: string) => {
     if (feature === 'logo') {
-        return currentPlan.value === 'free' ? 'Upgrade to Professional or Enterprise' : '';
+        return currentPlan.value === 'free' ? t('qrcodes.customization.upgradeToPro') : '';
     }
-    return 'Upgrade to unlock';
+    return t('qrcodes.customization.upgradeToUnlock');
 };
 
 // Initialize logo preview on mount if logo exists
@@ -196,23 +198,23 @@ onMounted(() => {
     <div class="space-y-6">
         <div class="flex items-center gap-2 text-lg font-semibold text-surface-900 dark:text-surface-50">
             <LucidePalette :size="20" />
-            QR Code Customization
+            {{ t('qrcodes.customization.title') }}
         </div>
 
         <!-- Colors Section (Available to all) -->
         <div class="space-y-4">
             <div class="flex items-center gap-2">
                 <LucidePalette :size="18" class="text-surface-600 dark:text-surface-400" />
-                <h3 class="font-medium text-surface-900 dark:text-surface-50">Colors</h3>
+                <h3 class="font-medium text-surface-900 dark:text-surface-50">{{ t('qrcodes.customization.colors') }}</h3>
                 <span class="text-xs px-2 py-0.5 rounded-full bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400">
-                    All Plans
+                    {{ t('qrcodes.customization.allPlans') }}
                 </span>
             </div>
 
             <div class="space-y-4">
                 <div>
                     <label class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-2">
-                        Foreground Color
+                        {{ t('qrcodes.customization.foregroundColor') }}
                     </label>
                     <div class="flex items-center gap-2">
                         <input 
@@ -230,7 +232,7 @@ onMounted(() => {
 
                 <div>
                     <label class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-2">
-                        Background Color
+                        {{ t('qrcodes.customization.backgroundColor') }}
                     </label>
                     <div class="flex items-center gap-2">
                         <input 
@@ -253,12 +255,12 @@ onMounted(() => {
             <div class="flex items-center justify-between">
                 <div class="flex items-center gap-2">
                     <LucideImage :size="18" class="text-surface-600 dark:text-surface-400" />
-                    <h3 class="font-medium text-surface-900 dark:text-surface-50">Logo</h3>
-                    <span 
+                    <h3 class="font-medium text-surface-900 dark:text-surface-50">{{ t('qrcodes.customization.logo') }}</h3>
+                    <span
                         v-if="qrCustomization.logo"
                         class="text-xs px-2 py-0.5 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400"
                     >
-                        Professional+
+                        {{ t('qrcodes.customization.professionalPlus') }}
                     </span>
                     <div 
                         v-else
@@ -275,18 +277,18 @@ onMounted(() => {
                 <div v-if="!logoPreview" class="border-2 border-dashed border-surface-300 dark:border-surface-600 rounded-lg p-6 text-center">
                     <LucideUpload :size="32" class="mx-auto mb-2 text-surface-400" />
                     <p class="text-sm text-surface-600 dark:text-surface-400 mb-3">
-                        Upload your logo (PNG, JPG, SVG)
+                        {{ t('qrcodes.customization.uploadHint') }}
                     </p>
-                    <input 
-                        type="file" 
-                        accept="image/png,image/jpeg,image/jpg,image/svg+xml"
+                    <input
+                        type="file"
+                        accept="image/png,image/jpeg,image/jpg"
                         @change="handleLogoSelect"
                         class="hidden"
                         id="logo-upload"
                     />
                     <label for="logo-upload">
                         <Button as="span" variant="outline" size="sm" class="cursor-pointer">
-                            Choose File
+                            {{ t('qrcodes.customization.chooseFile') }}
                         </Button>
                     </label>
                 </div>
@@ -295,7 +297,7 @@ onMounted(() => {
                 <div v-else class="flex items-center gap-4 p-4 bg-surface-50 dark:bg-surface-800 rounded-lg border border-surface-200 dark:border-surface-700">
                     <img :src="logoPreview" alt="Logo preview" class="w-16 h-16 object-contain bg-white rounded" />
                     <div class="flex-1">
-                        <p class="text-sm font-medium text-surface-900 dark:text-surface-50">Logo uploaded</p>
+                        <p class="text-sm font-medium text-surface-900 dark:text-surface-50">{{ t('qrcodes.customization.logoUploaded') }}</p>
                         <p class="text-xs text-surface-500 dark:text-surface-400">{{ logoFile?.name }}</p>
                     </div>
                     <Button variant="ghost" size="sm" @click="removeLogo">
@@ -306,7 +308,7 @@ onMounted(() => {
                 <!-- Logo Size -->
                 <div v-if="logoPreview">
                     <label class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-2">
-                        Logo Size
+                        {{ t('qrcodes.customization.logoSize') }}
                     </label>
                     <div class="grid grid-cols-3 gap-2">
                         <button
@@ -335,7 +337,7 @@ onMounted(() => {
                         class="w-4 h-4 rounded border-surface-300 dark:border-surface-600"
                     />
                     <label for="logo-rounded" class="text-sm text-surface-700 dark:text-surface-300">
-                        Rounded corners
+                        {{ t('qrcodes.customization.roundedCorners') }}
                     </label>
                 </div>
             </template>
@@ -343,13 +345,13 @@ onMounted(() => {
             <!-- Locked State -->
             <div v-else class="p-4 bg-surface-50 dark:bg-surface-800 rounded-lg border border-surface-200 dark:border-surface-700 text-center">
                 <LucideCrown :size="32" class="mx-auto mb-2 text-amber-500" />
-                <p class="text-sm font-medium text-surface-900 dark:text-surface-50 mb-1">Logo customization locked</p>
+                <p class="text-sm font-medium text-surface-900 dark:text-surface-50 mb-1">{{ t('qrcodes.customization.lockedTitle') }}</p>
                 <p class="text-xs text-surface-600 dark:text-surface-400 mb-3">
-                    Upgrade to Professional or Enterprise to add your logo
+                    {{ t('qrcodes.customization.lockedBody') }}
                 </p>
                 <Button variant="primary" size="sm" :href="route('billing.portal')" as="a">
                     <LucideCrown :size="14" class="mr-1" />
-                    Upgrade Plan
+                    {{ t('qrcodes.customization.upgradePlan') }}
                 </Button>
             </div>
         </div>
@@ -357,7 +359,8 @@ onMounted(() => {
         <!-- Export Quality Info -->
         <div class="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
             <p class="text-xs text-blue-900 dark:text-blue-200">
-                <strong>Export Quality:</strong> Your plan allows exports up to {{ qrCustomization.max_size }}px
+                <strong>{{ t('qrcodes.customization.exportQuality') }}</strong>
+                {{ t('qrcodes.customization.exportQualityInfo', { size: qrCustomization.max_size }) }}
             </p>
         </div>
     </div>

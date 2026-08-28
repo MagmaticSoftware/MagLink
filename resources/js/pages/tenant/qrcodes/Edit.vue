@@ -262,10 +262,10 @@ const submitForm = () => {
                                     </div>
                                     <div>
                                         <div class="font-medium text-surface-900 dark:text-surface-50 text-sm">
-                                            {{ form.require_consent ? 'Consent page enabled' : 'Consent page disabled' }}
+                                            {{ form.require_consent ? t('qrcodes.consent.enabled') : t('qrcodes.consent.disabled') }}
                                         </div>
                                         <div class="text-xs text-surface-500 dark:text-surface-400">
-                                            GDPR-compliant tracking
+                                            {{ t('qrcodes.consent.gdpr') }}
                                         </div>
                                     </div>
                                 </div>
@@ -283,9 +283,7 @@ const submitForm = () => {
                                 <div class="flex gap-2">
                                     <LucideShield :size="16" class="text-blue-600 dark:text-blue-400 flex-shrink-0 mt-0.5" />
                                     <div class="text-xs text-blue-900 dark:text-blue-200">
-                                        <strong>When enabled:</strong> Users scanning this QR code will see a consent page before redirect (like LinkedIn). 
-                                        If they accept, detailed analytics are collected (browser, device, country, etc.). 
-                                        If they decline, only a scan count is saved.
+                                        <strong>{{ t('qrcodes.consent.infoTitle') }}</strong> {{ t('qrcodes.consent.infoBody') }}
                                     </div>
                                 </div>
                             </div>

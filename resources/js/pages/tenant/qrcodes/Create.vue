@@ -177,14 +177,14 @@ const submitForm = () => {
                     <div class="bg-white dark:bg-surface-900 rounded-xl p-6 shadow-sm border border-surface-200 dark:border-surface-800">
                         <h2 class="text-lg font-semibold text-surface-900 dark:text-surface-50 mb-4 flex items-center gap-2">
                             <LucideSettings :size="20" />
-                            Settings
+                            {{ t('qrcodes.settingsTitle') }}
                         </h2>
-                        
+
                         <div class="space-y-4">
                             <!-- Type -->
                             <div>
                                 <label class="text-sm font-medium text-surface-700 dark:text-surface-300 block mb-2">
-                                    Type
+                                    {{ t('qrcodes.typeLabel') }}
                                 </label>
                                 <Select
                                     v-model="form.type"
@@ -196,6 +196,12 @@ const submitForm = () => {
                                 <p class="text-xs text-surface-500 dark:text-surface-400 mt-1">
                                     {{ t('qrcodes.staticCannotEdit') }}
                                 </p>
+                                <div v-if="form.type === 'static'" class="mt-2 flex gap-2 rounded-lg border border-amber-200 dark:border-amber-800 bg-amber-50 dark:bg-amber-900/20 p-3">
+                                    <LucideInfo :size="16" class="text-amber-600 dark:text-amber-400 flex-shrink-0 mt-0.5" />
+                                    <p class="text-xs text-amber-900 dark:text-amber-200">
+                                        {{ t('qrcodes.staticNotTracked') }}
+                                    </p>
+                                </div>
                             </div>
 
                             <!-- Active Status -->
@@ -210,7 +216,7 @@ const submitForm = () => {
                                             {{ form.is_active ? t('qrcodes.active') : t('qrcodes.inactive') }}
                                         </div>
                                         <div class="text-xs text-surface-500 dark:text-surface-400">
-                                            QR Code status
+                                            {{ t('qrcodes.statusHint') }}
                                         </div>
                                     </div>
                                 </div>
@@ -232,10 +238,10 @@ const submitForm = () => {
                                     </div>
                                     <div>
                                         <div class="font-medium text-surface-900 dark:text-surface-50 text-sm">
-                                            {{ form.require_consent ? 'Consent page enabled' : 'Consent page disabled' }}
+                                            {{ form.require_consent ? t('qrcodes.consent.enabled') : t('qrcodes.consent.disabled') }}
                                         </div>
                                         <div class="text-xs text-surface-500 dark:text-surface-400">
-                                            GDPR-compliant tracking
+                                            {{ t('qrcodes.consent.gdpr') }}
                                         </div>
                                     </div>
                                 </div>
@@ -253,9 +259,7 @@ const submitForm = () => {
                                 <div class="flex gap-2">
                                     <LucideShield :size="16" class="text-blue-600 dark:text-blue-400 flex-shrink-0 mt-0.5" />
                                     <div class="text-xs text-blue-900 dark:text-blue-200">
-                                        <strong>When enabled:</strong> Users scanning this QR code will see a consent page before redirect (like LinkedIn). 
-                                        If they accept, detailed analytics are collected (browser, device, country, etc.). 
-                                        If they decline, only a scan count is saved.
+                                        <strong>{{ t('qrcodes.consent.infoTitle') }}</strong> {{ t('qrcodes.consent.infoBody') }}
                                     </div>
                                 </div>
                             </div>
@@ -275,7 +279,7 @@ const submitForm = () => {
                             class="w-full justify-center"
                         >
                             <LucideSave :size="16" class="mr-2" />
-                            {{ form.processing ? 'Creating...' : t('qrcodes.addNew') }}
+                            {{ form.processing ? t('qrcodes.creating') : t('qrcodes.addNew') }}
                         </Button>
                         <Button 
                             variant="outline"

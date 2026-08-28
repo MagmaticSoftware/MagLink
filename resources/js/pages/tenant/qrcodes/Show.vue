@@ -124,7 +124,7 @@ const downloadQrCode = (format: 'png' | 'jpg' | 'svg' = 'png') => {
     window.open(`/api/qrcode/${props.qrcode.slug}/download/${format}`, '_blank');
 };
 
-// QR Code image URL
+// QR Code image URL (includes saved colour / logo customization)
 const qrImageUrl = computed(() => {
     const content = props.qrcode.payload?.content || props.qrcode.payload?.url || '';
     const params = new URLSearchParams({
@@ -133,6 +133,18 @@ const qrImageUrl = computed(() => {
         content: content,
         type: props.qrcode.type // dynamic or static
     });
+
+    const c = props.qrcode.options?.customization;
+    if (c) {
+        if (c.colors?.foreground) params.set('color_fg', c.colors.foreground);
+        if (c.colors?.background) params.set('color_bg', c.colors.background);
+        if (c.logo) {
+            params.set('logo', c.logo);
+            params.set('logo_size', c.logo_size || 'medium');
+            if (c.logo_rounded) params.set('logo_rounded', '1');
+        }
+    }
+
     return `/api/qrcode/preview?${params.toString()}`;
 });
 
@@ -202,14 +214,14 @@ const shareQrCode = async () => {
                         class="px-4 py-2 bg-blue-100 dark:bg-blue-900/30 hover:bg-blue-200 dark:hover:bg-blue-900/50 text-blue-700 dark:text-blue-400 rounded-lg flex items-center gap-2 transition-colors"
                     >
                         <LucideShare2 :size="16" />
-                        <span class="hidden sm:inline">Share</span>
+                        <span class="hidden sm:inline">{{ t('qrcodes.share') }}</span>
                     </button>
                     <button
                         @click="downloadQrCode"
                         class="px-4 py-2 bg-green-100 dark:bg-green-900/30 hover:bg-green-200 dark:hover:bg-green-900/50 text-green-700 dark:text-green-400 rounded-lg flex items-center gap-2 transition-colors"
                     >
                         <LucideDownload :size="16" />
-                        <span class="hidden sm:inline">Download</span>
+                        <span class="hidden sm:inline">{{ t('qrcodes.download') }}</span>
                     </button>
                     <Link
                         :href="route('qrcodes.edit', qrcode.slug)"
@@ -237,7 +249,7 @@ const shareQrCode = async () => {
                     <div class="bg-white dark:bg-surface-900 rounded-xl p-6 shadow-sm border border-surface-200 dark:border-surface-800 sticky top-6">
                         <h2 class="text-lg font-semibold text-surface-900 dark:text-surface-50 mb-4 flex items-center gap-2">
                             <LucideQrCode :size="20" />
-                            QR Code Preview
+                            {{ t('qrcodes.previewTitle') }}
                         </h2>
                         
                         <!-- QR Code Image -->
@@ -310,6 +322,9 @@ const shareQrCode = async () => {
                             <p class="text-xs text-green-600 dark:text-green-500">
                                 {{ t('qrcodes.embeddedDirectly') }}. {{ t('qrcodes.worksOffline') }}.
                             </p>
+                            <p class="text-xs text-amber-700 dark:text-amber-400 mt-2">
+                                {{ t('qrcodes.staticNotTracked') }}
+                            </p>
                         </div>
                     </div>
                 </div>
@@ -321,7 +336,7 @@ const shareQrCode = async () => {
                         <div class="bg-white dark:bg-surface-900 rounded-xl p-6 shadow-sm border border-surface-200 dark:border-surface-800">
                             <div class="flex items-center justify-between">
                                 <div>
-                                    <p class="text-sm font-medium text-surface-600 dark:text-surface-400">Total Scans</p>
+                                    <p class="text-sm font-medium text-surface-600 dark:text-surface-400">{{ t('qrcodes.totalScans') }}</p>
                                     <p class="text-3xl font-bold text-surface-900 dark:text-surface-50 mt-2">{{ qrcode.scans }}</p>
                                 </div>
                                 <div class="p-3 bg-purple-100 dark:bg-purple-900/30 rounded-lg">
@@ -333,9 +348,9 @@ const shareQrCode = async () => {
                         <div class="bg-white dark:bg-surface-900 rounded-xl p-6 shadow-sm border border-surface-200 dark:border-surface-800">
                             <div class="flex items-center justify-between">
                                 <div>
-                                    <p class="text-sm font-medium text-surface-600 dark:text-surface-400">Type</p>
+                                    <p class="text-sm font-medium text-surface-600 dark:text-surface-400">{{ t('qrcodes.typeStat') }}</p>
                                     <p class="text-2xl font-bold text-surface-900 dark:text-surface-50 mt-2 capitalize">
-                                        {{ qrcode.type }}
+                                        {{ qrcode.type === 'static' ? t('qrcodes.static') : t('qrcodes.dynamic') }}
                                     </p>
                                 </div>
                                 <div class="p-3 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
@@ -347,9 +362,9 @@ const shareQrCode = async () => {
                         <div class="bg-white dark:bg-surface-900 rounded-xl p-6 shadow-sm border border-surface-200 dark:border-surface-800">
                             <div class="flex items-center justify-between">
                                 <div>
-                                    <p class="text-sm font-medium text-surface-600 dark:text-surface-400">Last Scan</p>
+                                    <p class="text-sm font-medium text-surface-600 dark:text-surface-400">{{ t('qrcodes.lastScan') }}</p>
                                     <p class="text-sm font-semibold text-surface-900 dark:text-surface-50 mt-2">
-                                        {{ qrcode.last_scanned_at ? formatRelativeTime(qrcode.last_scanned_at) : 'Never' }}
+                                        {{ qrcode.last_scanned_at ? formatRelativeTime(qrcode.last_scanned_at) : t('qrcodes.never') }}
                                     </p>
                                 </div>
                                 <div class="p-3 bg-orange-100 dark:bg-orange-900/30 rounded-lg">

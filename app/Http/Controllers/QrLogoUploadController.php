@@ -24,7 +24,13 @@ class QrLogoUploadController extends Controller
         }
 
         $request->validate([
-            'logo' => 'required|image|mimes:png,jpg,jpeg,svg|max:2048', // max 2MB
+            // SVG is intentionally excluded: the QR renderer works on raster
+            // images only (getimagesize/GD) and cannot overlay vector logos.
+            'logo' => 'required|image|mimes:png,jpg,jpeg|max:2048', // max 2MB
+        ], [
+            'logo.mimes' => 'Il logo deve essere un file PNG o JPG.',
+            'logo.image' => 'Il logo deve essere un\'immagine PNG o JPG.',
+            'logo.max' => 'Il logo non può superare i 2 MB.',
         ]);
 
         $file = $request->file('logo');
