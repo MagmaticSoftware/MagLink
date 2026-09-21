@@ -2,6 +2,7 @@
 import { Link, usePage } from '@inertiajs/vue3';
 import { LayoutGrid, LayoutTemplate, Link as LinkIcon, QrCode, Settings, HelpCircle } from 'lucide-vue-next';
 import { computed, ref } from 'vue';
+import { useDark } from '@vueuse/core';
 import { useI18n } from 'vue-i18n';
 import { useRoute } from '@/composables/useRoute';
 import ApplicationLogo from './ApplicationLogo.vue';
@@ -10,6 +11,14 @@ import PlanSelectionModal from './PlanSelectionModal.vue';
 import type { PageProps } from '@/types/inertia';
 
 const { t } = useI18n();
+
+// Stesse opzioni di AppTopBar, così il logo segue il toggle del tema
+const isDark = useDark({
+    selector: 'html',
+    attribute: 'class',
+    valueDark: 'dark',
+    valueLight: 'light',
+});
 const page = usePage<PageProps>();
 const route = useRoute();
 
@@ -69,7 +78,7 @@ const isActive = (href: string) => {
         <!-- Header con Logo -->
         <div class="flex h-16 items-center px-6">
             <Link :href="route('tenant.index')">
-                <ApplicationLogo class="h-12"/>
+                <ApplicationLogo class="h-12" :is-dark="isDark" />
             </Link>
         </div>
 
