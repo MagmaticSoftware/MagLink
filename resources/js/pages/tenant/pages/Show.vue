@@ -139,7 +139,7 @@ const pageStats = computed(() => ({
     <AppLayout :breadcrumbs="breadcrumbs">
         <div class="flex h-full flex-1 flex-col gap-6 p-6">
             <!-- Page Header -->
-            <div class="bg-white dark:bg-surface-900 rounded-xl p-6 shadow-sm border border-surface-200 dark:border-surface-800">
+            <div class="bg-white dark:bg-surface-800 rounded-xl p-6 shadow-sm border border-surface-200 dark:border-surface-700">
                 <div class="flex items-start justify-between">
                     <div class="flex-1">
                         <div class="flex items-center gap-3 mb-2">
@@ -207,7 +207,7 @@ const pageStats = computed(() => ({
             </div>
 
             <!-- Page Preview -->
-            <div class="bg-white dark:bg-surface-900 rounded-xl shadow-sm border border-surface-200 dark:border-surface-800 overflow-hidden">
+            <div class="bg-white dark:bg-surface-800 rounded-xl shadow-sm border border-surface-200 dark:border-surface-700 overflow-hidden">
                 <div class="bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-950/30 dark:to-purple-950/30 px-6 py-4 border-b border-surface-200 dark:border-surface-800">
                     <div class="flex items-center justify-between">
                         <h2 class="text-lg font-semibold text-surface-900 dark:text-surface-50">

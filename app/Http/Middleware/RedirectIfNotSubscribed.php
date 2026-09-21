@@ -21,6 +21,11 @@ class RedirectIfNotSubscribed
         $user = $request->user();
         
         if ($user) {
+            // Piano pro a vita: accesso sempre garantito
+            if ($user->onProLifetime()) {
+                return $next($request);
+            }
+
             // Se l'utente ha un abbonamento attivo, procedi
             if ($user->subscribed('default')) {
                 // "Brucia" il diritto al trial se non è stato ancora fatto

@@ -27,6 +27,7 @@ interface BillingData {
     currentPlanKey: string | null;
     isSubscribed: boolean;
     onFreePlan: boolean;
+    onProLifetime?: boolean;
 }
 
 const props = defineProps<{
@@ -41,11 +42,12 @@ const emit = defineEmits<{
 
 // Determina se mostrare il banner (sempre, tranne se non c'è né trial né subscription)
 const shouldShow = computed(() => {
-    return props.trial?.active || props.subscription?.active || props.billing?.onFreePlan;
+    return props.billing?.onProLifetime || props.trial?.active || props.subscription?.active || props.billing?.onFreePlan;
 });
 
 // Tipo di banner: trial, subscription, free
 const bannerType = computed(() => {
+    if (props.billing?.onProLifetime) return 'lifetime';
     if (props.trial?.active) return 'trial';
     if (props.subscription?.active) return 'subscription';
     if (props.billing?.onFreePlan) return 'free';
@@ -138,6 +140,7 @@ const getIconClass = () => {
 };
 
 const planName = computed(() => {
+    if (bannerType.value === 'lifetime') return 'Pro Lifetime';
     if (bannerType.value === 'trial') return 'Prova Gratuita';
     if (bannerType.value === 'free') return 'Piano Free';
     return props.subscription?.name || props.billing?.currentPlanName || 'Piano Attivo';
@@ -203,6 +206,7 @@ const billingTypeLabel = computed(() => {
             
             <!-- CTA Button -->
             <button 
+                v-if="bannerType !== 'lifetime'"
                 @click="emit('show-plan-modal')"
                 :class="bannerType === 'trial' || bannerType === 'free' 
                     ? 'from-green-500 to-green-600 hover:from-green-600 hover:to-green-700' 

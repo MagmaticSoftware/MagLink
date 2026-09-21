@@ -67,7 +67,7 @@ const formatLimit = (limit: number) => {
 </script>
 
 <template>
-    <div class="bg-white dark:bg-surface-900 rounded-xl p-6 shadow-sm border border-surface-200 dark:border-surface-800">
+    <div class="bg-white dark:bg-surface-800 rounded-xl p-6 shadow-sm border border-surface-200 dark:border-surface-700">
         <div class="flex items-center justify-between mb-4">
             <h3 class="text-lg font-semibold text-surface-900 dark:text-surface-50">
                 Utilizzo Piano

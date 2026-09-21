@@ -48,6 +48,18 @@ class ShareTrialData
                 }
             }
             
+            $lapsed = $user->lapsedSubscription();
+            $lapsedPlanName = null;
+            if ($lapsed) {
+                foreach (config('subscriptions.plans', []) as $planData) {
+                    if (($planData['monthly']['price_id'] ?? null) === $lapsed->stripe_price
+                        || ($planData['yearly']['price_id'] ?? null) === $lapsed->stripe_price) {
+                        $lapsedPlanName = $planData['name'];
+                        break;
+                    }
+                }
+            }
+
             Inertia::share([
                 'trial' => [
                     'active' => $user->onTrial(),
@@ -78,9 +90,15 @@ class ShareTrialData
                     'canStartTrial' => $user->canStartTrial(),
                     'isSubscribed' => $user->subscribed('default'),
                     'onFreePlan' => $user->onFreePlan(),
+                    'onProLifetime' => $user->onProLifetime(),
                     'currentPlanName' => $user->currentPlanName(),
                     'currentPlanKey' => $user->currentPlanKey(),
                     'hasAccess' => $user->hasAccess(),
+                    'lapsedSubscription' => $lapsed ? [
+                        'plan_name' => $lapsedPlanName,
+                        'ended_at' => ($lapsed->ends_at ?? $lapsed->current_period_end)?->toISOString(),
+                        'status' => $lapsed->stripe_status,
+                    ] : null,
                     'limits' => $user->getPlanLimits(),
                     // QR Code customization
                     'plan' => $user->currentPlanKey() ?? 'free',

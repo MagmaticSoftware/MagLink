@@ -204,7 +204,7 @@ const getPublicUrl = (slug: string) => {
             <!-- Statistics Cards -->
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                 <!-- Total Pages -->
-                <div class="bg-white dark:bg-surface-900 rounded-xl p-6 shadow-sm border border-surface-200 dark:border-surface-800">
+                <div class="bg-white dark:bg-surface-800 rounded-xl p-6 shadow-sm border border-surface-200 dark:border-surface-700">
                     <div class="flex items-center justify-between mb-2">
                         <p class="text-sm font-medium text-surface-600 dark:text-surface-400">{{ t('pages.stats.totalPages') }}</p>
                         <div class="p-3 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
@@ -225,7 +225,7 @@ const getPublicUrl = (slug: string) => {
                 </div>
 
                 <!-- Published Pages -->
-                <div class="bg-white dark:bg-surface-900 rounded-xl p-6 shadow-sm border border-surface-200 dark:border-surface-800">
+                <div class="bg-white dark:bg-surface-800 rounded-xl p-6 shadow-sm border border-surface-200 dark:border-surface-700">
                     <div class="flex items-center justify-between mb-2">
                         <p class="text-sm font-medium text-surface-600 dark:text-surface-400">{{ t('pages.stats.published') }}</p>
                         <div class="p-3 bg-green-100 dark:bg-green-900/30 rounded-lg">
@@ -236,7 +236,7 @@ const getPublicUrl = (slug: string) => {
                 </div>
 
                 <!-- Total Blocks -->
-                <div class="bg-white dark:bg-surface-900 rounded-xl p-6 shadow-sm border border-surface-200 dark:border-surface-800">
+                <div class="bg-white dark:bg-surface-800 rounded-xl p-6 shadow-sm border border-surface-200 dark:border-surface-700">
                     <div class="flex items-center justify-between mb-2">
                         <p class="text-sm font-medium text-surface-600 dark:text-surface-400">{{ t('pages.stats.totalBlocks') }}</p>
                         <div class="p-3 bg-purple-100 dark:bg-purple-900/30 rounded-lg">
@@ -257,7 +257,7 @@ const getPublicUrl = (slug: string) => {
                 </div>
 
                 <!-- Average Blocks Per Page -->
-                <div class="bg-white dark:bg-surface-900 rounded-xl p-6 shadow-sm border border-surface-200 dark:border-surface-800">
+                <div class="bg-white dark:bg-surface-800 rounded-xl p-6 shadow-sm border border-surface-200 dark:border-surface-700">
                     <div class="flex items-center justify-between mb-2">
                         <p class="text-sm font-medium text-surface-600 dark:text-surface-400">{{ t('pages.stats.avgBlocks') }}</p>
                         <div class="p-3 bg-orange-100 dark:bg-orange-900/30 rounded-lg">
@@ -269,7 +269,7 @@ const getPublicUrl = (slug: string) => {
             </div>
 
             <!-- Search and Filters -->
-            <div class="bg-white dark:bg-surface-900 rounded-xl p-4 shadow-sm border border-surface-200 dark:border-surface-800">
+            <div class="bg-white dark:bg-surface-800 rounded-xl p-4 shadow-sm border border-surface-200 dark:border-surface-700">
                 <div class="flex flex-col md:flex-row gap-4">
                     <!-- Search -->
                     <div class="flex-1">
@@ -320,7 +320,7 @@ const getPublicUrl = (slug: string) => {
                 <div
                     v-for="page in filteredPages"
                     :key="page.id"
-                    class="bg-white dark:bg-surface-900 rounded-xl p-6 shadow-sm border border-surface-200 dark:border-surface-800 hover:shadow-md transition-all hover:scale-[1.01]"
+                    class="bg-white dark:bg-surface-800 rounded-xl p-6 shadow-sm border border-surface-200 dark:border-surface-700 hover:shadow-md transition-all hover:scale-[1.01]"
                 >
                     <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
                         <!-- Page Info -->

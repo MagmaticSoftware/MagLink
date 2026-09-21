@@ -30,7 +30,10 @@ class SyncSubscriptionPeriods extends Command
         $this->info('Sincronizzazione current_period_end delle subscription...');
         
         // Ottieni tutte le subscription attive (anche quelle già sincronizzate per aggiornare i dati)
-        $subscriptions = StripeSubscription::whereIn('stripe_status', ['active', 'trialing'])
+        // Includiamo anche past_due/unpaid/incomplete: se Stripe ha perso un webhook lo stato locale
+        // può essere rimasto indietro, quindi allineiamo stato, prezzo e scadenza da Stripe.
+        $subscriptions = StripeSubscription::whereIn('stripe_status', ['active', 'trialing', 'past_due', 'unpaid', 'incomplete'])
+            ->orWhere(fn ($q) => $q->where('stripe_status', 'canceled')->whereNull('ends_at'))
             ->get();
         
         if ($subscriptions->isEmpty()) {
@@ -54,6 +57,28 @@ class SyncSubscriptionPeriods extends Command
                 // Converti l'oggetto Stripe in array usando json_decode/encode
                 $data = json_decode(json_encode($stripeSubscription), true);
                 
+                $dirty = false;
+
+                // Allinea stato, prezzo e data di fine (subscription annullata su Stripe)
+                if (($data['status'] ?? null) && $data['status'] !== $subscription->stripe_status) {
+                    $subscription->stripe_status = $data['status'];
+                    $dirty = true;
+                }
+                $stripePrice = $data['items']['data'][0]['price']['id'] ?? null;
+                if ($stripePrice && $stripePrice !== $subscription->stripe_price) {
+                    $subscription->stripe_price = $stripePrice;
+                    $dirty = true;
+                }
+                $endedAt = $data['ended_at'] ?? $data['cancel_at'] ?? null;
+                if ($endedAt && !$subscription->ends_at) {
+                    $subscription->ends_at = Carbon::createFromTimestamp($endedAt);
+                    $dirty = true;
+                }
+                if ($dirty) {
+                    $subscription->save();
+                    $synced++;
+                }
+
                 // Il current_period_end è negli items, non nella subscription root
                 $currentPeriodEnd = $data['items']['data'][0]['current_period_end'] ?? null;
                 

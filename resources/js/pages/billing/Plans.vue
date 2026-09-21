@@ -38,6 +38,7 @@ interface Props {
     currentPlanKey: string | null;
     isSubscribed: boolean;
     onFreePlan: boolean;
+    onProLifetime?: boolean;
     subscriptionEndsAt: string | null;
     trialEndsAt: string | null;
 }
@@ -183,7 +184,7 @@ const formatDate = (date: string | null) => {
                 <div class="flex items-start justify-between">
                     <div class="flex-1">
                         <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">
-                            Piano Attivo: {{ currentPlan }}
+                            Piano Attivo: {{ onProLifetime ? 'Pro Lifetime' : currentPlan }}
                         </h3>
                         <div class="space-y-1 text-sm text-gray-600 dark:text-gray-300">
                             <p v-if="hasActiveTrial && trialEndsAt">
@@ -191,6 +192,9 @@ const formatDate = (date: string | null) => {
                             </p>
                             <p v-else-if="isSubscribed && subscriptionEndsAt">
                                 📅 Prossimo rinnovo: <strong>{{ formatDate(subscriptionEndsAt) }}</strong>
+                            </p>
+                            <p v-else-if="onProLifetime">
+                                ♾️ Piano concesso a vita: non serve alcun abbonamento e non ha scadenza
                             </p>
                             <p v-else-if="onFreePlan">
                                 ✨ Stai usando il piano gratuito
@@ -200,6 +204,7 @@ const formatDate = (date: string | null) => {
                 </div>
             </div>
 
+            <template v-if="!onProLifetime">
             <!-- Trial Banner (se può iniziare trial) -->
             <div 
                 v-if="canStartTrial" 
@@ -367,6 +372,7 @@ const formatDate = (date: string | null) => {
                     </div>
                 </div>
             </div>
+            </template>
         </div>
     </AppLayout>
 </template>

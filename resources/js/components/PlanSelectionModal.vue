@@ -95,6 +95,14 @@ const canCloseModal = computed(() => {
     return true;
 });
 
+const lapsed = computed(() => page.props.billing?.lapsedSubscription ?? null);
+
+const lapsedEndDate = computed(() => {
+    if (!lapsed.value?.ended_at) return null;
+    return new Intl.DateTimeFormat('it-IT', { day: '2-digit', month: '2-digit', year: 'numeric' })
+        .format(new Date(lapsed.value.ended_at));
+});
+
 const formatPrice = (price: number) => {
     return (price / 100).toFixed(2);
 };
@@ -131,7 +139,7 @@ const selectPlan = (planKey: string) => {
 
 <template>
     <Dialog 
-        :visible="visible"
+        :visible="visible && !page.props.billing?.onProLifetime"
         @update:visible="$emit('update:visible', $event)"
         :closable="canCloseModal"
         modal
@@ -157,6 +165,17 @@ const selectPlan = (planKey: string) => {
                 <!-- Header -->
                 <div class="text-center mb-1">
                     <h2 class="text-3xl font-bold text-gray-900 dark:text-white">Benvenuto in MagLink</h2>
+                </div>
+
+                <!-- Avviso: abbonamento a pagamento scaduto/annullato -->
+                <div
+                    v-if="lapsed"
+                    class="mt-4 mb-6 mx-auto max-w-2xl rounded-lg border border-amber-300 bg-amber-50 p-4 text-center text-sm text-amber-900 dark:border-amber-700 dark:bg-amber-900/20 dark:text-amber-200"
+                >
+                    Il tuo abbonamento <strong>{{ lapsed.plan_name ?? '' }}</strong>
+                    <template v-if="lapsedEndDate"> è terminato il {{ lapsedEndDate }}</template>
+                    <template v-else> non è più attivo</template>.
+                    Rinnovalo scegliendo di nuovo un piano a pagamento, oppure passa al piano Free (con i relativi limiti).
                 </div>
 
                 <template v-if="canStartTrial">

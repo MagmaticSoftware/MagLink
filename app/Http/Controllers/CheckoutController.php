@@ -19,6 +19,11 @@ class CheckoutController extends Controller
             'billing' => 'required|string|in:monthly,yearly',
         ]);
         
+        if ($request->user()->onProLifetime()) {
+            return redirect()->route('tenant.index', ['tenant' => $request->user()->tenant_id])
+                ->with('info', 'Hai il piano Pro Lifetime: non serve alcun abbonamento.');
+        }
+
         $planName = $request->plan;
         $billingType = $request->billing;
         
@@ -120,6 +125,11 @@ class CheckoutController extends Controller
     public function handleFreePlan(Request $request)
     {
         $user = $request->user();
+
+        if ($user->onProLifetime()) {
+            return redirect()->route('tenant.index', ['tenant' => $user->tenant_id])
+                ->with('info', 'Hai il piano Pro Lifetime: non serve alcun abbonamento.');
+        }
         
         // Se già abbonato a un piano a pagamento, non può passare al piano gratuito tramite checkout
         if ($user->subscribed('default') && !$user->onFreePlan()) {

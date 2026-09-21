@@ -117,7 +117,7 @@ const submitForm = () => {
                 <!-- Left Column - Main Details -->
                 <div class="lg:col-span-2 space-y-6">
                     <!-- Basic Information -->
-                    <div class="bg-white dark:bg-surface-900 rounded-xl p-6 shadow-sm border border-surface-200 dark:border-surface-800">
+                    <div class="bg-white dark:bg-surface-800 rounded-xl p-6 shadow-sm border border-surface-200 dark:border-surface-700">
                         <h2 class="text-lg font-semibold text-surface-900 dark:text-surface-50 mb-4 flex items-center gap-2">
                             <LucideInfo :size="20" />
                             Basic Information
@@ -206,7 +206,7 @@ const submitForm = () => {
 
                     <!-- Statistics -->
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div class="bg-white dark:bg-surface-900 rounded-xl p-6 shadow-sm border border-surface-200 dark:border-surface-800">
+                        <div class="bg-white dark:bg-surface-800 rounded-xl p-6 shadow-sm border border-surface-200 dark:border-surface-700">
                             <div class="flex items-center justify-between">
                                 <div>
                                     <p class="text-sm font-medium text-surface-600 dark:text-surface-400">Total Clicks</p>
@@ -218,7 +218,7 @@ const submitForm = () => {
                             </div>
                         </div>
 
-                        <div class="bg-white dark:bg-surface-900 rounded-xl p-6 shadow-sm border border-surface-200 dark:border-surface-800">
+                        <div class="bg-white dark:bg-surface-800 rounded-xl p-6 shadow-sm border border-surface-200 dark:border-surface-700">
                             <div class="flex items-center justify-between">
                                 <div>
                                     <p class="text-sm font-medium text-surface-600 dark:text-surface-400">Created</p>
@@ -237,7 +237,7 @@ const submitForm = () => {
                 <!-- Right Column - Settings -->
                 <div class="lg:col-span-1 space-y-6">
                     <!-- Settings -->
-                    <div class="bg-white dark:bg-surface-900 rounded-xl p-6 shadow-sm border border-surface-200 dark:border-surface-800">
+                    <div class="bg-white dark:bg-surface-800 rounded-xl p-6 shadow-sm border border-surface-200 dark:border-surface-700">
                         <h2 class="text-lg font-semibold text-surface-900 dark:text-surface-50 mb-4 flex items-center gap-2">
                             <LucideSettings :size="20" />
                             Settings
@@ -322,7 +322,7 @@ const submitForm = () => {
                     </div>
 
                     <!-- Link Preview Card -->
-                    <div class="bg-white dark:bg-surface-900 rounded-xl p-6 shadow-sm border border-surface-200 dark:border-surface-800">
+                    <div class="bg-white dark:bg-surface-800 rounded-xl p-6 shadow-sm border border-surface-200 dark:border-surface-700">
                         <h2 class="text-lg font-semibold text-surface-900 dark:text-surface-50 mb-4">
                             Preview
                         </h2>

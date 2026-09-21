@@ -498,7 +498,7 @@ function handleBlockDeleted(blockId: number) {
 
             <!-- Statistics Cards -->
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div class="bg-white dark:bg-surface-900 rounded-xl p-6 shadow-sm border border-surface-200 dark:border-surface-800">
+                <div class="bg-white dark:bg-surface-800 rounded-xl p-6 shadow-sm border border-surface-200 dark:border-surface-700">
                     <div class="flex items-center justify-between">
                         <div>
                             <p class="text-sm font-medium text-surface-600 dark:text-surface-400">{{ t('pages.stats.totalBlocks') }}</p>
@@ -523,7 +523,7 @@ function handleBlockDeleted(blockId: number) {
                     </div>
                 </div>
 
-                <div class="bg-white dark:bg-surface-900 rounded-xl p-6 shadow-sm border border-surface-200 dark:border-surface-800">
+                <div class="bg-white dark:bg-surface-800 rounded-xl p-6 shadow-sm border border-surface-200 dark:border-surface-700">
                     <div class="flex items-center justify-between">
                         <div>
                             <p class="text-sm font-medium text-surface-600 dark:text-surface-400">{{ t('pages.stats.activeBlocks') }}</p>
@@ -535,7 +535,7 @@ function handleBlockDeleted(blockId: number) {
                     </div>
                 </div>
 
-                <div class="bg-white dark:bg-surface-900 rounded-xl p-6 shadow-sm border border-surface-200 dark:border-surface-800">
+                <div class="bg-white dark:bg-surface-800 rounded-xl p-6 shadow-sm border border-surface-200 dark:border-surface-700">
                     <div class="flex items-center justify-between">
                         <div>
                             <p class="text-sm font-medium text-surface-600 dark:text-surface-400">{{ t('pages.stats.views') }}</p>
@@ -552,7 +552,7 @@ function handleBlockDeleted(blockId: number) {
             <div class="grid grid-cols-1 lg:grid-cols-5 gap-6">
                 <!-- Settings Sidebar -->
                 <div class="lg:col-span-1">
-                    <div class="bg-white dark:bg-surface-900 rounded-xl p-4 shadow-sm border border-surface-200 dark:border-surface-800 sticky top-6">
+                    <div class="bg-white dark:bg-surface-800 rounded-xl p-4 shadow-sm border border-surface-200 dark:border-surface-700 sticky top-6">
                         <h3 class="text-lg font-semibold text-surface-900 dark:text-surface-50 mb-4">
                             {{ t('pages.settings') }}
                         </h3>
@@ -684,7 +684,7 @@ function handleBlockDeleted(blockId: number) {
 
                 <!-- Block Editor -->
                 <div class="lg:col-span-4">
-                    <div class="bg-white dark:bg-surface-900 rounded-xl p-6 shadow-sm border border-surface-200 dark:border-surface-800">
+                    <div class="bg-white dark:bg-surface-800 rounded-xl p-6 shadow-sm border border-surface-200 dark:border-surface-700">
                         <div class="flex items-center justify-between mb-6">
                             <h3 class="text-lg font-semibold text-surface-900 dark:text-surface-50">
                                 {{ t('pages.blockEditor') }}

@@ -174,7 +174,7 @@ const submitForm = () => {
                     />
                     
                     <!-- Settings -->
-                    <div class="bg-white dark:bg-surface-900 rounded-xl p-6 shadow-sm border border-surface-200 dark:border-surface-800">
+                    <div class="bg-white dark:bg-surface-800 rounded-xl p-6 shadow-sm border border-surface-200 dark:border-surface-700">
                         <h2 class="text-lg font-semibold text-surface-900 dark:text-surface-50 mb-4 flex items-center gap-2">
                             <LucideSettings :size="20" />
                             {{ t('qrcodes.settingsTitle') }}
@@ -267,7 +267,7 @@ const submitForm = () => {
                     </div>
 
                     <!-- QR Customization -->
-                    <div class="bg-white dark:bg-surface-900 rounded-xl p-6 shadow-sm border border-surface-200 dark:border-surface-800">
+                    <div class="bg-white dark:bg-surface-800 rounded-xl p-6 shadow-sm border border-surface-200 dark:border-surface-700">
                         <QrCustomization v-model="form.options" :previewUrl="baseQrPreviewUrl || ''" @update:previewUrl="qrPreviewUrl = $event" />
                     </div>
 
@@ -296,7 +296,7 @@ const submitForm = () => {
                 <!-- Center Column - Basic Information -->
                 <div class="lg:col-span-5 space-y-6">
                     <!-- Basic Information -->
-                    <div class="bg-white dark:bg-surface-900 rounded-xl p-6 shadow-sm border border-surface-200 dark:border-surface-800">
+                    <div class="bg-white dark:bg-surface-800 rounded-xl p-6 shadow-sm border border-surface-200 dark:border-surface-700">
                         <h2 class="text-lg font-semibold text-surface-900 dark:text-surface-50 mb-4 flex items-center gap-2">
                             <LucideInfo :size="20" />
                             Basic Information
@@ -395,7 +395,7 @@ const submitForm = () => {
                 <div class="lg:col-span-3 space-y-6">
 
                     <!-- QR Code Preview -->
-                    <div class="bg-white dark:bg-surface-900 rounded-xl p-6 shadow-sm border border-surface-200 dark:border-surface-800 sticky top-6">
+                    <div class="bg-white dark:bg-surface-800 rounded-xl p-6 shadow-sm border border-surface-200 dark:border-surface-700 sticky top-6">
                         <h2 class="text-lg font-semibold text-surface-900 dark:text-surface-50 mb-4">
                             Preview
                         </h2>

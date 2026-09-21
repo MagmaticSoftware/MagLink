@@ -51,6 +51,7 @@ class PlanController extends Controller
             'currentPlanKey' => $currentPlanKey,
             'isSubscribed' => $user ? $user->subscribed('default') : false,
             'onFreePlan' => $onFreePlan,
+            'onProLifetime' => $user ? $user->onProLifetime() : false,
             'subscriptionEndsAt' => $subscriptionEndsAt,
             'trialEndsAt' => $user ? $user->trial_ends_at : null,
         ]);

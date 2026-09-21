@@ -231,13 +231,35 @@ class User extends Authenticatable implements MustVerifyEmail
     }
 
     /**
+     * Restituisce la subscription a pagamento non più valida (annullata, scaduta,
+     * non pagata) se l'utente non ha ripiegato su free/lifetime, altrimenti null.
+     * Serve a spiegare all'utente perché deve scegliere di nuovo un piano.
+     */
+    public function lapsedSubscription(): ?\Laravel\Cashier\Subscription
+    {
+        if ($this->onProLifetime() || $this->free_plan_started_at !== null) {
+            return null;
+        }
+
+        $subscription = $this->subscription('default');
+
+        if (!$subscription || $subscription->valid()) {
+            return null;
+        }
+
+        $freePriceIds = [config('subscriptions.plans.free.monthly.price_id')];
+
+        return in_array($subscription->stripe_price, $freePriceIds) ? null : $subscription;
+    }
+
+    /**
      * Ottiene il nome del piano corrente
      */
     public function currentPlanName(): ?string
     {
         // Controlla prima se ha un piano pro a vita (gestito internamente)
         if ($this->onProLifetime()) {
-            return config('subscriptions.plans.enterprise.name');
+            return 'Pro Lifetime';
         }
 
         // Controlla se è sul piano free (gestito internamente)
@@ -247,7 +269,8 @@ class User extends Authenticatable implements MustVerifyEmail
 
         $subscription = $this->subscription('default');
         
-        if (!$subscription) {
+        // Una subscription scaduta/annullata non è più il piano corrente
+        if (!$subscription || !$subscription->valid()) {
             return null;
         }
 
@@ -282,8 +305,8 @@ class User extends Authenticatable implements MustVerifyEmail
 
         $subscription = $this->subscription('default');
 
-        // Only consider active subscriptions as the current plan
-        if (!$subscription || !$subscription->active()) {
+        // Only consider valid subscriptions (active, on trial or in grace period) as the current plan
+        if (!$subscription || !$subscription->valid()) {
             return null;
         }
 

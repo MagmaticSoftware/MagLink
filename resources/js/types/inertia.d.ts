@@ -38,9 +38,15 @@ export interface PageProps {
         canStartTrial: boolean;
         isSubscribed: boolean;
         onFreePlan: boolean;
+        onProLifetime?: boolean;
         currentPlanName: string | null;
         currentPlanKey: string | null;
         hasAccess: boolean;
+        lapsedSubscription?: {
+            plan_name: string | null;
+            ended_at: string | null;
+            status: string;
+        } | null;
         limits: {
             links: number;
             qrcodes: number;

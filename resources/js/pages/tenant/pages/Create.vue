@@ -141,7 +141,7 @@ watch(() => form.is_active, (isActive, oldValue) => {
                 <!-- Form -->
                 <div class="lg:col-span-2">
                     <div
-                        class="bg-white dark:bg-surface-900 rounded-xl p-6 shadow-sm border border-surface-200 dark:border-surface-800">
+                        class="bg-white dark:bg-surface-800 rounded-xl p-6 shadow-sm border border-surface-200 dark:border-surface-700">
                         <div class="flex items-center gap-3 mb-6">
                             <div class="p-3 bg-primary/10 rounded-lg">
                                 <LucideFileText :size="24" class="text-primary" />
@@ -208,7 +208,7 @@ watch(() => form.is_active, (isActive, oldValue) => {
                 <!-- Settings Sidebar -->
                 <div class="lg:col-span-1">
                     <div
-                        class="bg-white dark:bg-surface-900 rounded-xl p-6 shadow-sm border border-surface-200 dark:border-surface-800 sticky top-6">
+                        class="bg-white dark:bg-surface-800 rounded-xl p-6 shadow-sm border border-surface-200 dark:border-surface-700 sticky top-6">
                         <h3 class="text-lg font-semibold text-surface-900 dark:text-surface-50 mb-4">
                             {{ t('pages.settings') }}
                         </h3>

@@ -109,7 +109,7 @@ console.log('Performance data:', props.performance);
                 <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
                     <!-- Welcome Banner: span 2 colonne -->
                     <div
-                        class="lg:col-span-2 rounded-xl bg-primary-50 dark:bg-gray-900 shadow-sm p-7 flex flex-row items-center border border-primary-100 dark:border-gray-800 min-h-[170px]">
+                        class="lg:col-span-2 rounded-xl bg-primary-50 dark:bg-surface-800 shadow-sm p-7 flex flex-row items-center border border-primary-100 dark:border-surface-700 min-h-[170px]">
                         <div class="flex flex-col sm:flex-row items-center gap-6 w-full">
                             <div class="flex flex-col items-center justify-center mr-0 sm:mr-4">
                                 <span class="text-5xl">👋</span>
@@ -138,8 +138,8 @@ console.log('Performance data:', props.performance);
                     <PlanLimitsCard :stats="stats" />
                     <!-- Riepilogo attività -->
                     <div
-                        class="rounded-xl bg-white dark:bg-gray-900 shadow-sm p-7 flex flex-col gap-4 border border-gray-200 dark:border-gray-800">
-                        <div class="flex items-center gap-2 font-semibold mb-3 text-lg">
+                        class="rounded-xl bg-white dark:bg-surface-800 shadow-sm p-7 flex flex-col gap-4 border border-gray-200 dark:border-surface-700">
+                        <div class="flex items-center gap-2 font-semibold mb-3 text-lg text-surface-900 dark:text-white">
                             <TrendingUp class="w-5 h-5 text-indigo-500" /> Riepilogo attività
                         </div>
                         <div class="space-y-3 text-sm">
@@ -164,7 +164,7 @@ console.log('Performance data:', props.performance);
                 </div>
                 <!-- Statistiche principali -->
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mt-4">
-                  <div class="rounded-xl bg-white dark:bg-gray-900 shadow-sm p-7 flex flex-col items-center relative overflow-hidden group border border-gray-200 dark:border-gray-800 hover:shadow-md transition-shadow">
+                  <div class="rounded-xl bg-white dark:bg-surface-800 shadow-sm p-7 flex flex-col items-center relative overflow-hidden group border border-gray-200 dark:border-surface-700 hover:shadow-md transition-shadow">
                     <div class="absolute right-4 top-4">
                       <span class="inline-flex items-center justify-center w-9 h-9 rounded-full bg-blue-100 dark:bg-blue-900">
                         <Link2 class="w-6 h-6 text-blue-600 dark:text-blue-300" />
@@ -173,7 +173,7 @@ console.log('Performance data:', props.performance);
                     <div class="text-4xl font-extrabold text-blue-700 dark:text-blue-400 mb-1">{{ formatNumber(stats.links_count) }}</div>
                     <div class="text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">Link creati</div>
                   </div>
-                  <div class="rounded-xl bg-white dark:bg-gray-900 shadow-sm p-7 flex flex-col items-center relative overflow-hidden group border border-gray-200 dark:border-gray-800 hover:shadow-md transition-shadow">
+                  <div class="rounded-xl bg-white dark:bg-surface-800 shadow-sm p-7 flex flex-col items-center relative overflow-hidden group border border-gray-200 dark:border-surface-700 hover:shadow-md transition-shadow">
                     <div class="absolute right-4 top-4">
                       <span class="inline-flex items-center justify-center w-9 h-9 rounded-full bg-green-100 dark:bg-green-900">
                         <QrCode class="w-6 h-6 text-green-600 dark:text-green-300" />
@@ -182,7 +182,7 @@ console.log('Performance data:', props.performance);
                     <div class="text-4xl font-extrabold text-green-700 dark:text-green-400 mb-1">{{ formatNumber(stats.qrcodes_count) }}</div>
                     <div class="text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">QR Code generati</div>
                   </div>
-                  <div class="rounded-xl bg-white dark:bg-gray-900 shadow-sm p-7 flex flex-col items-center relative overflow-hidden group border border-gray-200 dark:border-gray-800 hover:shadow-md transition-shadow">
+                  <div class="rounded-xl bg-white dark:bg-surface-800 shadow-sm p-7 flex flex-col items-center relative overflow-hidden group border border-gray-200 dark:border-surface-700 hover:shadow-md transition-shadow">
                     <div class="absolute right-4 top-4">
                       <span class="inline-flex items-center justify-center w-9 h-9 rounded-full bg-purple-100 dark:bg-purple-900">
                         <FileText class="w-6 h-6 text-purple-600 dark:text-purple-300" />
@@ -191,7 +191,7 @@ console.log('Performance data:', props.performance);
                     <div class="text-4xl font-extrabold text-purple-700 dark:text-purple-400 mb-1">{{ formatNumber(stats.pages_count) }}</div>
                     <div class="text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">Pagine create</div>
                   </div>
-                  <div class="rounded-xl bg-white dark:bg-gray-900 shadow-sm p-7 flex flex-col items-center relative overflow-hidden group border border-gray-200 dark:border-gray-800 hover:shadow-md transition-shadow">
+                  <div class="rounded-xl bg-white dark:bg-surface-800 shadow-sm p-7 flex flex-col items-center relative overflow-hidden group border border-gray-200 dark:border-surface-700 hover:shadow-md transition-shadow">
                     <div class="absolute right-4 top-4">
                       <span class="inline-flex items-center justify-center w-9 h-9 rounded-full bg-orange-100 dark:bg-orange-900">
                         <Box class="w-6 h-6 text-orange-600 dark:text-orange-300" />
@@ -200,7 +200,7 @@ console.log('Performance data:', props.performance);
                     <div class="text-4xl font-extrabold text-orange-700 dark:text-orange-400 mb-1">{{ formatNumber(stats.blocks_count) }}</div>
                     <div class="text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">Blocchi totali</div>
                   </div>
-                  <div class="rounded-xl bg-white dark:bg-gray-900 shadow-sm p-7 flex flex-col items-center relative overflow-hidden group border border-gray-200 dark:border-gray-800 hover:shadow-md transition-shadow">
+                  <div class="rounded-xl bg-white dark:bg-surface-800 shadow-sm p-7 flex flex-col items-center relative overflow-hidden group border border-gray-200 dark:border-surface-700 hover:shadow-md transition-shadow">
                     <div class="absolute right-4 top-4">
                       <span class="inline-flex items-center justify-center w-9 h-9 rounded-full bg-indigo-100 dark:bg-indigo-900">
                         <TrendingUp class="w-6 h-6 text-indigo-600 dark:text-indigo-300" />
@@ -213,8 +213,8 @@ console.log('Performance data:', props.performance);
                 <!-- Performance recenti -->
                 <div class="grid grid-cols-1 gap-6">
                     <div
-                        class="rounded-xl bg-white dark:bg-gray-900 shadow-sm p-7 flex flex-col border border-gray-200 dark:border-gray-800">
-                        <div class="flex items-center gap-2 font-semibold mb-4 text-lg">
+                        class="rounded-xl bg-white dark:bg-surface-800 shadow-sm p-7 flex flex-col border border-gray-200 dark:border-surface-700">
+                        <div class="flex items-center gap-2 font-semibold mb-4 text-lg text-surface-900 dark:text-white">
                             <BarChart2 class="w-5 h-5 text-blue-500" /> Attività ultimi 7 giorni (link creati)
                         </div>
                         <PerformanceChart v-if="performance.length > 0" :data="performance" />
@@ -226,12 +226,12 @@ console.log('Performance data:', props.performance);
                 <!-- Ultimi contenuti -->
                 <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
                     <div
-                        class="rounded-xl bg-white dark:bg-gray-900 shadow-sm p-7 flex flex-col gap-3 border border-gray-200 dark:border-gray-800">
-                        <div class="flex items-center gap-2 font-semibold mb-3 text-lg">
+                        class="rounded-xl bg-white dark:bg-surface-800 shadow-sm p-7 flex flex-col gap-3 border border-gray-200 dark:border-surface-700">
+                        <div class="flex items-center gap-2 font-semibold mb-3 text-lg text-surface-900 dark:text-white">
                             <Link2 class="w-5 h-5 text-blue-500" /> Ultimi link
                         </div>
                         <ul v-if="latest_links.length > 0" class="space-y-3 text-sm">
-                            <li v-for="link in latest_links" :key="link.id" class="border-b border-gray-100 dark:border-gray-800 pb-2">
+                            <li v-for="link in latest_links" :key="link.id" class="border-b border-gray-100 dark:border-surface-700 pb-2">
                                 <div class="flex items-center justify-between mb-1">
                                     <span class="font-semibold text-gray-900 dark:text-white truncate flex-1">{{ link.title }}</span>
                                 </div>
@@ -242,12 +242,12 @@ console.log('Performance data:', props.performance);
                         <p v-else class="text-gray-500 dark:text-gray-400 text-sm">Nessun link creato</p>
                     </div>
                     <div
-                        class="rounded-xl bg-white dark:bg-gray-900 shadow-sm p-7 flex flex-col gap-3 border border-gray-200 dark:border-gray-800">
-                        <div class="flex items-center gap-2 font-semibold mb-3 text-lg">
+                        class="rounded-xl bg-white dark:bg-surface-800 shadow-sm p-7 flex flex-col gap-3 border border-gray-200 dark:border-surface-700">
+                        <div class="flex items-center gap-2 font-semibold mb-3 text-lg text-surface-900 dark:text-white">
                             <QrCode class="w-5 h-5 text-green-500" /> Ultimi QR Code
                         </div>
                         <ul v-if="latest_qrcodes.length > 0" class="space-y-3 text-sm">
-                            <li v-for="qr in latest_qrcodes" :key="qr.id" class="border-b border-gray-100 dark:border-gray-800 pb-2">
+                            <li v-for="qr in latest_qrcodes" :key="qr.id" class="border-b border-gray-100 dark:border-surface-700 pb-2">
                                 <div class="flex items-center justify-between mb-1">
                                     <span class="font-semibold text-gray-900 dark:text-white truncate flex-1">{{ qr.name || 'QR Code senza nome' }}</span>
                                     <span class="bg-green-100 dark:bg-green-900 text-green-600 dark:text-green-300 px-2 py-0.5 rounded-full text-xs font-bold ml-2">{{ qr.scans }} scan</span>
@@ -258,12 +258,12 @@ console.log('Performance data:', props.performance);
                         <p v-else class="text-gray-500 dark:text-gray-400 text-sm">Nessun QR Code generato</p>
                     </div>
                     <div
-                        class="rounded-xl bg-white dark:bg-gray-900 shadow-sm p-7 flex flex-col gap-3 border border-gray-200 dark:border-gray-800">
-                        <div class="flex items-center gap-2 font-semibold mb-3 text-lg">
+                        class="rounded-xl bg-white dark:bg-surface-800 shadow-sm p-7 flex flex-col gap-3 border border-gray-200 dark:border-surface-700">
+                        <div class="flex items-center gap-2 font-semibold mb-3 text-lg text-surface-900 dark:text-white">
                             <FileText class="w-5 h-5 text-purple-500" /> Ultime pagine
                         </div>
                         <ul v-if="latest_pages.length > 0" class="space-y-3 text-sm">
-                            <li v-for="page in latest_pages" :key="page.id" class="border-b border-gray-100 dark:border-gray-800 pb-2">
+                            <li v-for="page in latest_pages" :key="page.id" class="border-b border-gray-100 dark:border-surface-700 pb-2">
                                 <div class="flex items-center justify-between mb-1">
                                     <span class="font-semibold text-gray-900 dark:text-white truncate flex-1">{{ page.title }}</span>
                                     <span v-if="page.is_active" class="bg-green-100 dark:bg-green-900 text-green-600 dark:text-green-300 px-2 py-0.5 rounded-full text-xs font-bold ml-2">Attiva</span>
@@ -277,12 +277,12 @@ console.log('Performance data:', props.performance);
                         <p v-else class="text-gray-500 dark:text-gray-400 text-sm">Nessuna pagina creata</p>
                     </div>
                     <div
-                        class="rounded-xl bg-white dark:bg-gray-900 shadow-sm p-7 flex flex-col gap-3 border border-gray-200 dark:border-gray-800">
-                        <div class="flex items-center gap-2 font-semibold mb-3 text-lg">
+                        class="rounded-xl bg-white dark:bg-surface-800 shadow-sm p-7 flex flex-col gap-3 border border-gray-200 dark:border-surface-700">
+                        <div class="flex items-center gap-2 font-semibold mb-3 text-lg text-surface-900 dark:text-white">
                             <Box class="w-5 h-5 text-orange-500" /> Ultimi blocchi
                         </div>
                         <ul v-if="latest_blocks.length > 0" class="space-y-3 text-sm">
-                            <li v-for="block in latest_blocks" :key="block.id" class="border-b border-gray-100 dark:border-gray-800 pb-2">
+                            <li v-for="block in latest_blocks" :key="block.id" class="border-b border-gray-100 dark:border-surface-700 pb-2">
                                 <div class="flex items-center justify-between mb-1">
                                     <span class="font-semibold text-gray-900 dark:text-white truncate flex-1">{{ block.title || 'Blocco senza titolo' }}</span>
                                     <span class="bg-orange-100 dark:bg-orange-900 text-orange-600 dark:text-orange-300 px-2 py-0.5 rounded-full text-xs font-bold ml-2">{{ block.type }}</span>
