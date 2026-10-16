@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import ApplicationLogo from '@/components/ApplicationLogo.vue';
-import { Link } from '@inertiajs/vue3';
+import { useDark } from '@vueuse/core';
 import { 
     LucideLink2, 
     LucideQrCode, 
@@ -14,6 +14,14 @@ import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 const { t } = useI18n();
+
+// Stesse opzioni di AppSidebar, così il logo segue il tema
+const isDark = useDark({
+    selector: 'html',
+    attribute: 'class',
+    valueDark: 'dark',
+    valueLight: 'light',
+});
 
 defineProps<{
     title?: string;
@@ -106,16 +114,14 @@ const features = computed(() => [
         </div>
 
         <!-- Right Side - Form -->
-        <div class="flex items-center justify-center p-8 bg-white dark:bg-gray-950">
-            <div class="mx-auto flex w-full max-w-xl flex-col justify-center space-y-6">
+        <div class="flex items-start sm:items-center justify-center px-4 py-8 sm:p-8 bg-white dark:bg-gray-950">
+            <div class="mx-auto flex w-full min-w-0 max-w-xl flex-col justify-center space-y-6">
                 <!-- Mobile Logo -->
-                <div class="lg:hidden flex flex-col items-center space-y-3 mb-6">
-                    <Link :href="route('home')" class="flex items-center gap-3">
-                        <div class="w-12 h-12 rounded-xl bg-orange-600 dark:bg-orange-500 flex items-center justify-center">
-                            <LucideLink2 :size="24" class="text-white" />
-                        </div>
-                        <span class="text-2xl font-bold text-gray-900 dark:text-white">MagLink</span>
-                    </Link>
+                <!-- La home è su un dominio diverso (maglink.it): link classico, non Inertia, per evitare errori CORS -->
+                <div class="lg:hidden flex flex-col items-center mb-2 sm:mb-6">
+                    <a :href="route('home')" class="block w-44 sm:w-52" aria-label="MagLink">
+                        <ApplicationLogo class="h-auto w-full" :is-dark="isDark" />
+                    </a>
                 </div>
 
                 <!-- Form Header -->

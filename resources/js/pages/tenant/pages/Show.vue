@@ -137,9 +137,9 @@ const pageStats = computed(() => ({
     </Head>
 
     <AppLayout :breadcrumbs="breadcrumbs">
-        <div class="flex h-full flex-1 flex-col gap-6 p-6">
+        <div class="flex h-full flex-1 flex-col gap-4 sm:gap-6 p-0 sm:p-2 lg:p-6">
             <!-- Page Header -->
-            <div class="bg-white dark:bg-surface-800 rounded-xl p-6 shadow-sm border border-surface-200 dark:border-surface-700">
+            <div class="bg-white dark:bg-surface-800 rounded-xl p-4 sm:p-6 shadow-sm border border-surface-200 dark:border-surface-700">
                 <div class="flex items-start justify-between">
                     <div class="flex-1">
                         <div class="flex items-center gap-3 mb-2">
@@ -149,7 +149,7 @@ const pageStats = computed(() => ({
                             >
                                 <LucideArrowLeft :size="20" />
                             </Link>
-                            <h1 class="text-3xl font-bold text-surface-900 dark:text-surface-50">
+                            <h1 class="text-2xl sm:text-3xl font-bold text-surface-900 dark:text-surface-50">
                                 {{ props.page.title }}
                             </h1>
                             <span 

@@ -29,6 +29,15 @@ class UserPreferences extends Model
         'newsletter_accepted_at',
     ];
 
+    protected $casts = [
+        'terms_and_conditions' => 'boolean',
+        'terms_and_conditions_accepted_at' => 'datetime',
+        'privacy_policy' => 'boolean',
+        'privacy_policy_accepted_at' => 'datetime',
+        'newsletter' => 'boolean',
+        'newsletter_accepted_at' => 'datetime',
+    ];
+
     /**
      * Get relationship with User model.
      */

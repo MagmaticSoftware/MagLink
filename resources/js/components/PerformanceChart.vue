@@ -17,6 +17,8 @@ ChartJS.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale)
 
 interface PerformanceData {
   date: string;
+  link_views: number;
+  qrcode_views: number;
   total_items: number;
 }
 
@@ -31,12 +33,18 @@ const chartData = computed<ChartData<'bar'>>(() => ({
   }),
   datasets: [
     {
-      label: 'Link creati',
+      label: 'Click sui link',
       backgroundColor: 'rgba(59, 130, 246, 0.8)',
       hoverBackgroundColor: 'rgba(37, 99, 235, 0.9)',
-      data: props.data.map(d => d.total_items),
-      borderRadius: 8,
-      borderSkipped: false,
+      data: props.data.map(d => d.link_views),
+      borderRadius: 6,
+    },
+    {
+      label: 'Scansioni QR',
+      backgroundColor: 'rgba(16, 185, 129, 0.8)',
+      hoverBackgroundColor: 'rgba(5, 150, 105, 0.9)',
+      data: props.data.map(d => d.qrcode_views),
+      borderRadius: 6,
     }
   ]
 }));
@@ -46,18 +54,17 @@ const chartOptions = computed<ChartOptions<'bar'>>(() => ({
   maintainAspectRatio: false,
   plugins: {
     legend: {
-      display: false
+      display: true,
+      position: 'bottom'
     },
     tooltip: {
-      callbacks: {
-        label: (context) => {
-          return `${context.parsed.y} link`;
-        }
-      }
+      mode: 'index',
+      intersect: false
     }
   },
   scales: {
     y: {
+      stacked: true,
       beginAtZero: true,
       ticks: {
         precision: 0
@@ -67,6 +74,7 @@ const chartOptions = computed<ChartOptions<'bar'>>(() => ({
       }
     },
     x: {
+      stacked: true,
       grid: {
         display: false
       }
@@ -76,7 +84,7 @@ const chartOptions = computed<ChartOptions<'bar'>>(() => ({
 </script>
 
 <template>
-  <div class="h-48 w-full">
+  <div class="h-56 w-full">
     <Bar :data="chartData" :options="chartOptions" />
   </div>
 </template>

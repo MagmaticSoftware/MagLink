@@ -6,6 +6,9 @@ use App\Models\Link;
 use App\Models\QrCode;
 use App\Models\Page;
 use App\Models\PageBlock;
+use App\Models\View;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Collection;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Auth;
@@ -17,18 +20,21 @@ class DashboardController extends Controller
     {
         $user = Auth::user();
         
+        $linkIds = Link::where('user_id', $user->id)->pluck('id');
+        $qrcodeIds = QrCode::where('user_id', $user->id)->pluck('id');
+
         // Statistiche generali
         $stats = [
-            'links_count' => Link::where('user_id', $user->id)->count(),
-            'qrcodes_count' => QrCode::where('user_id', $user->id)->count(),
+            'links_count' => $linkIds->count(),
+            'qrcodes_count' => $qrcodeIds->count(),
             'pages_count' => Page::where('user_id', $user->id)->count(),
             'blocks_count' => PageBlock::whereHas('page', function ($query) use ($user) {
                 $query->where('user_id', $user->id);
             })->count(),
-            'total_views' => QrCode::where('user_id', $user->id)->sum('scans') + 
+            'total_views' => $this->viewsQuery($linkIds, $qrcodeIds)->count() +
                            Page::where('user_id', $user->id)->sum('views'),
         ];
-        
+
         // Ultimi link creati
         $latest_links = Link::where('user_id', $user->id)
             ->orderBy('created_at', 'desc')
@@ -56,26 +62,31 @@ class DashboardController extends Controller
             ->take(5)
             ->get(['id', 'page_id', 'type', 'title', 'position', 'created_at']);
         
-        // Performance ultimi 7 giorni (conteggio creazioni per giorno)
-        $performanceData = Link::where('user_id', $user->id)
+        // Attività ultimi 7 giorni: click sui link e scansioni QR registrati nella tabella views
+        $performanceData = $this->viewsQuery($linkIds, $qrcodeIds)
             ->where('created_at', '>=', now()->subDays(6)->startOfDay())
-            ->selectRaw('DATE(created_at) as date, COUNT(*) as total_items')
+            ->selectRaw('DATE(created_at) as date')
+            ->selectRaw('SUM(CASE WHEN viewable_type = ? THEN 1 ELSE 0 END) as link_views', [Link::class])
+            ->selectRaw('SUM(CASE WHEN viewable_type = ? THEN 1 ELSE 0 END) as qrcode_views', [QrCode::class])
             ->groupBy('date')
-            ->orderBy('date', 'asc')
             ->get()
             ->keyBy('date');
-        
-        // Assicurati che tutti i 7 giorni siano inclusi, anche con 0 link
+
+        // Assicurati che tutti i 7 giorni siano inclusi, anche senza visite
         $performance = collect();
         for ($i = 6; $i >= 0; $i--) {
             $date = now()->subDays($i)->format('Y-m-d');
             $dayData = $performanceData->get($date);
+            $linkViews = $dayData ? (int) $dayData->link_views : 0;
+            $qrcodeViews = $dayData ? (int) $dayData->qrcode_views : 0;
             $performance->push([
                 'date' => $date,
-                'total_items' => $dayData ? (int)$dayData->total_items : 0
+                'link_views' => $linkViews,
+                'qrcode_views' => $qrcodeViews,
+                'total_items' => $linkViews + $qrcodeViews,
             ]);
         }
-        
+
         return Inertia::render('tenant/Dashboard', [
             'stats' => $stats,
             'latest_links' => $latest_links,
@@ -84,5 +95,19 @@ class DashboardController extends Controller
             'latest_blocks' => $latest_blocks,
             'performance' => $performance,
         ]);
+    }
+
+    /**
+     * Query sulle views (click link + scansioni QR) dei contenuti dell'utente.
+     */
+    private function viewsQuery(Collection $linkIds, Collection $qrcodeIds): Builder
+    {
+        return View::query()->where(function (Builder $query) use ($linkIds, $qrcodeIds) {
+            $query->where(function (Builder $q) use ($linkIds) {
+                $q->where('viewable_type', Link::class)->whereIn('viewable_id', $linkIds);
+            })->orWhere(function (Builder $q) use ($qrcodeIds) {
+                $q->where('viewable_type', QrCode::class)->whereIn('viewable_id', $qrcodeIds);
+            });
+        });
     }
 }

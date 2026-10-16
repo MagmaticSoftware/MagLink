@@ -124,14 +124,14 @@ watch(() => form.is_active, (isActive, oldValue) => {
     </Head>
 
     <AppLayout :breadcrumbs="breadcrumbs">
-        <div class="flex h-full flex-1 flex-col gap-6 p-6">
+        <div class="flex h-full flex-1 flex-col gap-4 sm:gap-6 p-0 sm:p-2 lg:p-6">
             <!-- Limit Warning -->
             <LimitWarning type="pages" :currentCount="pageCount" />
             
             <!-- Page Header -->
-            <div class="flex items-center justify-between">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
-                    <h1 class="text-3xl font-bold text-surface-900 dark:text-surface-50">{{ t('pages.create') }}</h1>
+                    <h1 class="text-2xl sm:text-3xl font-bold text-surface-900 dark:text-surface-50">{{ t('pages.create') }}</h1>
                     <p class="text-surface-600 dark:text-surface-400 mt-1">{{ t('pages.createDescription') }}</p>
                 </div>
             </div>
@@ -141,7 +141,7 @@ watch(() => form.is_active, (isActive, oldValue) => {
                 <!-- Form -->
                 <div class="lg:col-span-2">
                     <div
-                        class="bg-white dark:bg-surface-800 rounded-xl p-6 shadow-sm border border-surface-200 dark:border-surface-700">
+                        class="bg-white dark:bg-surface-800 rounded-xl p-4 sm:p-6 shadow-sm border border-surface-200 dark:border-surface-700">
                         <div class="flex items-center gap-3 mb-6">
                             <div class="p-3 bg-primary/10 rounded-lg">
                                 <LucideFileText :size="24" class="text-primary" />
@@ -208,7 +208,7 @@ watch(() => form.is_active, (isActive, oldValue) => {
                 <!-- Settings Sidebar -->
                 <div class="lg:col-span-1">
                     <div
-                        class="bg-white dark:bg-surface-800 rounded-xl p-6 shadow-sm border border-surface-200 dark:border-surface-700 sticky top-6">
+                        class="bg-white dark:bg-surface-800 rounded-xl p-4 sm:p-6 shadow-sm border border-surface-200 dark:border-surface-700 sticky top-6">
                         <h3 class="text-lg font-semibold text-surface-900 dark:text-surface-50 mb-4">
                             {{ t('pages.settings') }}
                         </h3>

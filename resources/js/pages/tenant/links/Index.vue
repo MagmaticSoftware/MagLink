@@ -16,7 +16,9 @@ import {
     LucideCopy,
     LucideExternalLink,
     LucideCalendar,
-    LucideBarChart3
+    LucideBarChart3,
+    LucideDownload,
+    LucideCrown
 } from 'lucide-vue-next';
 import { useI18n } from 'vue-i18n';
 import { ref, computed } from 'vue';
@@ -26,6 +28,7 @@ import InputText from '@/components/volt/InputText.vue';
 import Select from '@/components/volt/Select.vue';
 import LimitReachedDialog from '@/components/LimitReachedDialog.vue';
 import PlanSelectionModal from '@/components/PlanSelectionModal.vue';
+import AnalyticsExportDialog from '@/components/AnalyticsExportDialog.vue';
 import type { PageProps } from '@/types/inertia';
 
 const { t } = useI18n();
@@ -34,6 +37,7 @@ const route = useRoute();
 
 const showLimitDialog = ref(false);
 const showPlanModal = ref(false);
+const showExportDialog = ref(false);
 
 const handleShowPlans = () => {
     showPlanModal.value = true;
@@ -48,6 +52,7 @@ const props = defineProps<{
         totalClicks: number;
         avgClicksPerLink: number;
     };
+    canExportAnalytics?: boolean;
 }>();
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -138,9 +143,9 @@ const filteredLinks = computed(() => {
             case 'created_asc':
                 return new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
             case 'clicks_desc':
-                return (b.clicks || 0) - (a.clicks || 0);
+                return (b.views_count || 0) - (a.views_count || 0);
             case 'clicks_asc':
-                return (a.clicks || 0) - (b.clicks || 0);
+                return (a.views_count || 0) - (b.views_count || 0);
             case 'title_asc':
                 return (a.title || '').localeCompare(b.title || '');
             default:
@@ -150,6 +155,14 @@ const filteredLinks = computed(() => {
     
     return result;
 });
+
+// Export: preseleziona i 5 link più visitati tra quelli filtrati
+const exportPreselected = computed(() =>
+    [...filteredLinks.value]
+        .sort((a, b) => (b.views_count || 0) - (a.views_count || 0))
+        .slice(0, 5)
+        .map((l) => l.id)
+);
 
 // Copy link to clipboard
 const copyToClipboard = (slug: string) => {
@@ -193,6 +206,14 @@ const formatDate = (date: string) => {
         @show-plans="handleShowPlans"
     />
 
+    <AnalyticsExportDialog
+        v-model:visible="showExportDialog"
+        :links="props.links"
+        :can-export="!!props.canExportAnalytics"
+        :preselected="exportPreselected"
+        @show-plans="handleShowPlans"
+    />
+
     <PlanSelectionModal
         v-model:visible="showPlanModal"
         :plans="page.props.plans || {}"
@@ -205,14 +226,22 @@ const formatDate = (date: string) => {
     />
 
     <AppLayout :breadcrumbs="breadcrumbs">
-        <div class="flex h-full flex-1 flex-col gap-6 p-6">
+        <div class="flex h-full flex-1 flex-col gap-4 sm:gap-6 p-0 sm:p-2 lg:p-6">
             <!-- Page Header -->
-            <div class="flex items-center justify-between">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
-                    <h1 class="text-3xl font-bold text-surface-900 dark:text-surface-50">{{ t('links.title') }}</h1>
+                    <h1 class="text-2xl sm:text-3xl font-bold text-surface-900 dark:text-surface-50">{{ t('links.title') }}</h1>
                     <p class="text-surface-600 dark:text-surface-400 mt-1">{{ t('links.subtitle') }}</p>
                 </div>
-                <div>
+                <div class="flex flex-wrap items-center gap-2">
+                    <button
+                        v-if="props.links.length > 0"
+                        @click="showExportDialog = true"
+                        class="px-4 py-2 rounded-lg border border-surface-300 dark:border-surface-600 bg-white dark:bg-surface-800 text-surface-700 dark:text-surface-200 hover:bg-surface-100 dark:hover:bg-surface-700 flex items-center gap-2 text-sm font-medium transition-colors"
+                    >
+                        <LucideDownload class="w-4 h-4" /> {{ t('analytics.export.button') }}
+                        <LucideCrown v-if="!props.canExportAnalytics" class="w-4 h-4 text-amber-500" />
+                    </button>
                     <button
                         @click="handleCreateClick"
                         class="button-primary flex items-center gap-2"
@@ -225,7 +254,7 @@ const formatDate = (date: string) => {
             <!-- Statistics Cards -->
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                 <!-- Total Links -->
-                <div class="bg-white dark:bg-surface-800 rounded-xl p-6 shadow-sm border border-surface-200 dark:border-surface-700">
+                <div class="bg-white dark:bg-surface-800 rounded-xl p-4 sm:p-6 shadow-sm border border-surface-200 dark:border-surface-700">
                     <div class="flex items-center justify-between mb-2">
                         <p class="text-sm font-medium text-surface-600 dark:text-surface-400">{{ t('links.stats.totalLinks') }}</p>
                         <div class="p-3 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
@@ -246,7 +275,7 @@ const formatDate = (date: string) => {
                 </div>
 
                 <!-- Active Links -->
-                <div class="bg-white dark:bg-surface-800 rounded-xl p-6 shadow-sm border border-surface-200 dark:border-surface-700">
+                <div class="bg-white dark:bg-surface-800 rounded-xl p-4 sm:p-6 shadow-sm border border-surface-200 dark:border-surface-700">
                     <div class="flex items-center justify-between mb-2">
                         <p class="text-sm font-medium text-surface-600 dark:text-surface-400">{{ t('links.stats.activeLinks') }}</p>
                         <div class="p-3 bg-green-100 dark:bg-green-900/30 rounded-lg">
@@ -257,7 +286,7 @@ const formatDate = (date: string) => {
                 </div>
 
                 <!-- Total Clicks -->
-                <div class="bg-white dark:bg-surface-800 rounded-xl p-6 shadow-sm border border-surface-200 dark:border-surface-700">
+                <div class="bg-white dark:bg-surface-800 rounded-xl p-4 sm:p-6 shadow-sm border border-surface-200 dark:border-surface-700">
                     <div class="flex items-center justify-between mb-2">
                         <p class="text-sm font-medium text-surface-600 dark:text-surface-400">{{ t('links.stats.totalClicks') }}</p>
                         <div class="p-3 bg-purple-100 dark:bg-purple-900/30 rounded-lg">
@@ -268,7 +297,7 @@ const formatDate = (date: string) => {
                 </div>
 
                 <!-- Average Clicks -->
-                <div class="bg-white dark:bg-surface-800 rounded-xl p-6 shadow-sm border border-surface-200 dark:border-surface-700">
+                <div class="bg-white dark:bg-surface-800 rounded-xl p-4 sm:p-6 shadow-sm border border-surface-200 dark:border-surface-700">
                     <div class="flex items-center justify-between mb-2">
                         <p class="text-sm font-medium text-surface-600 dark:text-surface-400">{{ t('links.stats.avgClicks') }}</p>
                         <div class="p-3 bg-orange-100 dark:bg-orange-900/30 rounded-lg">
@@ -331,7 +360,7 @@ const formatDate = (date: string) => {
                 <div
                     v-for="link in filteredLinks"
                     :key="link.id"
-                    class="bg-white dark:bg-surface-800 rounded-xl p-6 shadow-sm border border-surface-200 dark:border-surface-700 hover:shadow-md transition-all hover:scale-[1.01]"
+                    class="bg-white dark:bg-surface-800 rounded-xl p-4 sm:p-6 shadow-sm border border-surface-200 dark:border-surface-700 hover:shadow-md transition-all md:hover:scale-[1.01]"
                 >
                     <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
                         <!-- Link Info -->
@@ -349,9 +378,9 @@ const formatDate = (date: string) => {
                                     </p>
                                     
                                     <!-- Link URL -->
-                                    <div class="flex items-center gap-2 mt-3 text-sm">
+                                    <div class="flex flex-wrap items-center gap-2 mt-3 text-sm">
                                         <span class="font-medium text-surface-700 dark:text-surface-300">{{ t('links.url') }}:</span>
-                                        <code class="px-2 py-1 bg-surface-100 dark:bg-surface-800 rounded text-primary font-mono text-xs">
+                                        <code class="px-2 py-1 bg-surface-100 dark:bg-surface-800 rounded text-primary font-mono text-xs break-all">
                                             {{ shortUrl }}/{{ link.slug }}
                                         </code>
                                         <button

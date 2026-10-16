@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { usePage, Link } from '@inertiajs/vue3';
-import { Moon, Sun, ChevronRight, Home } from 'lucide-vue-next';
+import { Moon, Sun, ChevronRight, Home, Menu as MenuIcon } from 'lucide-vue-next';
 import { computed, ref } from 'vue';
 import { useDark, useToggle } from '@vueuse/core';
 import { useI18n } from 'vue-i18n';
@@ -17,6 +17,8 @@ interface Props {
 const props = withDefaults(defineProps<Props>(), {
     breadcrumbs: () => [],
 });
+
+const emit = defineEmits<{ (e: 'toggle-sidebar'): void }>();
 
 const page = usePage();
 const user = computed(() => (page.props as any).auth?.user);
@@ -95,9 +97,19 @@ const getUserInitials = () => {
 </script>
 
 <template>
-    <header class="sticky top-0 z-20 flex h-16 items-center justify-between gap-4 bg-white/80 dark:bg-surface-950/80 backdrop-blur-md shadow-sm px-6">
-        <!-- Breadcrumbs -->
-        <div class="flex-1 flex flex-row justify-start items-center">
+    <header class="sticky top-0 z-20 flex h-16 items-center justify-between gap-2 sm:gap-4 bg-white/80 dark:bg-surface-950/80 backdrop-blur-md shadow-sm px-3 sm:px-6">
+        <!-- Mobile menu button -->
+        <button
+            type="button"
+            class="md:hidden flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-surface-700 dark:text-surface-200 hover:bg-surface-100 dark:hover:bg-surface-800 transition-colors"
+            aria-label="Menu"
+            @click="emit('toggle-sidebar')"
+        >
+            <MenuIcon :size="20" />
+        </button>
+
+        <!-- Breadcrumbs (nascosti su mobile, troppo stretti) -->
+        <div class="hidden sm:flex min-w-0 flex-1 flex-row justify-start items-center overflow-hidden">
             <Link :href="route('tenant.index', { tenant: page.props.auth.tenant })" class="inline-flex items-center mr-3">
                 <Home :size="18" class="text-surface-400 dark:text-surface-400 hover:text-primary dark:hover:text-primary transition-colors" />
             </Link>
@@ -113,8 +125,10 @@ const getUserInitials = () => {
             </Breadcrumb>
         </div>
 
+        <div class="flex-1 sm:hidden"></div>
+
         <!-- Right Side Actions -->
-        <div class="flex items-center gap-3">
+        <div class="flex shrink-0 items-center gap-1 sm:gap-3">
             <!-- Language Selector -->
             <LanguageSelector />
             
@@ -132,7 +146,7 @@ const getUserInitials = () => {
             <div class="relative">
                 <button
                     @click="toggleUserMenu"
-                    class="flex items-center gap-3 rounded-lg px-3 py-2 hover:bg-surface-100 dark:hover:bg-surface-800 transition-colors"
+                    class="flex items-center gap-3 rounded-lg px-1 sm:px-3 py-2 hover:bg-surface-100 dark:hover:bg-surface-800 transition-colors"
                 >
                     <div class="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-primary-contrast text-sm font-semibold">
                         {{ getUserInitials() }}

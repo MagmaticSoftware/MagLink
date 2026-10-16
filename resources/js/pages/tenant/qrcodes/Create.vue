@@ -136,18 +136,18 @@ const submitForm = () => {
     <Head :title="t('qrcodes.addNew')" />
 
     <AppLayout :breadcrumbs="breadcrumbs">
-        <div class="flex h-full flex-1 flex-col gap-6 p-6">
+        <div class="flex h-full flex-1 flex-col gap-4 sm:gap-6 p-0 sm:p-2 lg:p-6">
             <!-- Limit Warning -->
             <LimitWarning type="qrcodes" :currentCount="totalQrCodeCount" />
             
             <!-- Header -->
-            <div class="flex items-center justify-between">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div class="flex items-center gap-4">
                     <div class="flex-shrink-0 w-16 h-16 bg-gradient-to-br from-primary/20 to-primary/5 rounded-xl flex items-center justify-center">
                         <LucideQrCode :size="32" class="text-primary" />
                     </div>
                     <div>
-                        <h1 class="text-3xl font-bold text-surface-900 dark:text-surface-50">{{ t('qrcodes.addNew') }}</h1>
+                        <h1 class="text-2xl sm:text-3xl font-bold text-surface-900 dark:text-surface-50">{{ t('qrcodes.addNew') }}</h1>
                         <p class="text-surface-600 dark:text-surface-400 mt-1">{{ t('qrcodes.createDescription') }}</p>
                     </div>
                 </div>
@@ -174,7 +174,7 @@ const submitForm = () => {
                     />
                     
                     <!-- Settings -->
-                    <div class="bg-white dark:bg-surface-800 rounded-xl p-6 shadow-sm border border-surface-200 dark:border-surface-700">
+                    <div class="bg-white dark:bg-surface-800 rounded-xl p-4 sm:p-6 shadow-sm border border-surface-200 dark:border-surface-700">
                         <h2 class="text-lg font-semibold text-surface-900 dark:text-surface-50 mb-4 flex items-center gap-2">
                             <LucideSettings :size="20" />
                             {{ t('qrcodes.settingsTitle') }}
@@ -267,7 +267,7 @@ const submitForm = () => {
                     </div>
 
                     <!-- QR Customization -->
-                    <div class="bg-white dark:bg-surface-800 rounded-xl p-6 shadow-sm border border-surface-200 dark:border-surface-700">
+                    <div class="bg-white dark:bg-surface-800 rounded-xl p-4 sm:p-6 shadow-sm border border-surface-200 dark:border-surface-700">
                         <QrCustomization v-model="form.options" :previewUrl="baseQrPreviewUrl || ''" @update:previewUrl="qrPreviewUrl = $event" />
                     </div>
 
@@ -296,7 +296,7 @@ const submitForm = () => {
                 <!-- Center Column - Basic Information -->
                 <div class="lg:col-span-5 space-y-6">
                     <!-- Basic Information -->
-                    <div class="bg-white dark:bg-surface-800 rounded-xl p-6 shadow-sm border border-surface-200 dark:border-surface-700">
+                    <div class="bg-white dark:bg-surface-800 rounded-xl p-4 sm:p-6 shadow-sm border border-surface-200 dark:border-surface-700">
                         <h2 class="text-lg font-semibold text-surface-900 dark:text-surface-50 mb-4 flex items-center gap-2">
                             <LucideInfo :size="20" />
                             Basic Information
@@ -395,7 +395,7 @@ const submitForm = () => {
                 <div class="lg:col-span-3 space-y-6">
 
                     <!-- QR Code Preview -->
-                    <div class="bg-white dark:bg-surface-800 rounded-xl p-6 shadow-sm border border-surface-200 dark:border-surface-700 sticky top-6">
+                    <div class="bg-white dark:bg-surface-800 rounded-xl p-4 sm:p-6 shadow-sm border border-surface-200 dark:border-surface-700 sticky top-6">
                         <h2 class="text-lg font-semibold text-surface-900 dark:text-surface-50 mb-4">
                             Preview
                         </h2>

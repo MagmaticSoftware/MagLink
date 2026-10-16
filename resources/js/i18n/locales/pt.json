@@ -20,7 +20,8 @@
     "next": "Próximo",
     "previous": "Anterior",
     "loading": "Carregando...",
-    "noResults": "Nenhum resultado encontrado"
+    "noResults": "Nenhum resultado encontrado",
+    "close": "Fechar"
   },
   "nav": {
     "dashboard": "Painel",
@@ -252,7 +253,96 @@
       "part2": "Seus Links"
     },
     "subtitle": "O encurtador de URL moderno criado para empresas e criadores",
-    "copyright": "© 2025 MagLink. Todos os direitos reservados."
+    "copyright": "© 2025 MagLink. Todos os direitos reservados.",
+    "register": {
+      "slugTooShort": "O URL deve ter pelo menos 3 caracteres.",
+      "slugInvalid": "O URL só pode conter letras minúsculas, números e hífens.",
+      "slugTaken": "Este URL já está em uso.",
+      "slugCheckError": "Erro ao verificar o URL.",
+      "options": {
+        "other": "Outro",
+        "industries": {
+          "technology": "Tecnologia",
+          "marketing": "Marketing e publicidade",
+          "ecommerce": "E-commerce",
+          "education": "Educação",
+          "healthcare": "Saúde",
+          "finance": "Finanças",
+          "real_estate": "Imobiliário",
+          "food": "Alimentação e bebidas",
+          "other": "Outro"
+        },
+        "companySizes": {
+          "solo": "Só eu",
+          "1-10": "1-10 funcionários",
+          "11-50": "11-50 funcionários",
+          "51-200": "51-200 funcionários",
+          "200+": "Mais de 200 funcionários"
+        },
+        "usageTypes": {
+          "personal": "Pessoal",
+          "company": "Empresa",
+          "agency": "Agência",
+          "other": "Outro",
+          "freelancer": "Profissional"
+        },
+        "referralSources": {
+          "google": "Google",
+          "social": "Redes sociais",
+          "word_of_mouth": "Boca a boca",
+          "ad": "Publicidade",
+          "blog": "Blog/Artigo",
+          "other": "Outro"
+        },
+        "mainGoals": {
+          "monitorare_campagne": "Monitorizar campanhas",
+          "gestire_qr": "Gerir códigos QR",
+          "accorciare_link": "Encurtar links",
+          "altro": "Outro"
+        },
+        "estimatedUsages": {
+          "low": "Baixo",
+          "medium": "Médio",
+          "high": "Alto"
+        }
+      },
+      "profileQuestion": "Como vais usar o MagLink?",
+      "profiles": {
+        "personal": {
+          "title": "Particular",
+          "description": "Para uso pessoal: links, códigos QR e páginas para ti"
+        },
+        "business": {
+          "title": "Empresa ou profissional",
+          "description": "Para um negócio, um escritório ou uma agência"
+        }
+      },
+      "activityType": "Tipo de atividade",
+      "activities": {
+        "company": {
+          "title": "Empresa",
+          "description": "Usas para a tua empresa. Poderás dar acesso aos links à tua equipa."
+        },
+        "freelancer": {
+          "title": "Profissional",
+          "description": "Trabalhas sozinho, como profissional independente."
+        },
+        "agency": {
+          "title": "Agência",
+          "description": "Crias links e códigos QR para os teus clientes. Poderás dar a cada cliente acesso aos seus links."
+        }
+      },
+      "steps": {
+        "space": "O teu espaço"
+      },
+      "spaceInfo": "O teu espaço MagLink",
+      "publicUrlHint": "Será o endereço das tuas páginas públicas.",
+      "businessName": {
+        "freelancer": "Nome da atividade ou escritório",
+        "agency": "Nome da agência"
+      },
+      "consentsTitle": "Consentimentos"
+    }
   },
   "welcome": {
     "nav": {
@@ -469,6 +559,45 @@
       "marketing": {
         "title": "Cookies de marketing",
         "description": "Usados para mostrar anúncios relevantes e medir a eficácia das campanhas publicitárias. Nenhum dado é partilhado com terceiros sem o seu consentimento."
+      }
+    }
+  },
+  "analytics": {
+    "export": {
+      "button": "Exportar estatísticas",
+      "title": "Exportar relatório",
+      "premiumTitle": "Funcionalidade Premium",
+      "premiumDescription": "A exportação em PDF e CSV, com comparação de links e filtros por período, está incluída nos planos Professional e Enterprise.",
+      "upgrade": "Ver planos",
+      "format": "Formato",
+      "pdf": "Relatório PDF",
+      "pdfHint": "Gráficos, KPIs e comparação",
+      "csv": "Dados CSV",
+      "csvHint": "Para Excel e ferramentas de análise",
+      "datasetDaily": "Visitas diárias por link",
+      "datasetViews": "Detalhe de cada visita",
+      "period": "Período",
+      "presets": {
+        "7d": "Últimos 7 dias",
+        "30d": "Últimos 30 dias",
+        "90d": "Últimos 90 dias",
+        "thisMonth": "Este mês",
+        "lastMonth": "Mês passado",
+        "custom": "Personalizado"
+      },
+      "from": "De",
+      "to": "Até",
+      "previousPeriodHint": "O relatório compara os dados com o período anterior de igual duração.",
+      "links": "Links a incluir",
+      "compareWith": "Comparar com outros links (opcional)",
+      "searchLinks": "Pesquisar links...",
+      "comparisonHint": "Com vários links o PDF inclui gráfico e tabela de comparação.",
+      "download": "Transferir",
+      "errors": {
+        "period": "Seleciona um período válido.",
+        "order": "A data de início deve ser anterior à data de fim.",
+        "tooLong": "O período máximo é de 2 anos.",
+        "noLinks": "Seleciona pelo menos um link."
       }
     }
   }

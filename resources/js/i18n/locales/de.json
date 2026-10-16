@@ -20,7 +20,8 @@
     "next": "Weiter",
     "previous": "Vorherige",
     "loading": "Laden...",
-    "noResults": "Keine Ergebnisse gefunden"
+    "noResults": "Keine Ergebnisse gefunden",
+    "close": "Schließen"
   },
   "nav": {
     "dashboard": "Dashboard",
@@ -79,11 +80,13 @@
     "description": "Beschreibung",
     "search": "Links suchen...",
     "sortBy": "Sortieren nach",
-    "filterBy": "Filtern nach",    "placeholders": {
+    "filterBy": "Filtern nach",
+    "placeholders": {
       "title": "Mein toller Link",
       "description": "Fügen Sie eine Beschreibung für diesen Link hinzu...",
       "url": "https://beispiel.de"
-    },    "stats": {
+    },
+    "stats": {
       "totalLinks": "Gesamte Links",
       "activeLinks": "Aktive Links",
       "totalClicks": "Gesamte Klicks",
@@ -250,7 +253,96 @@
       "part2": "Deine Links"
     },
     "subtitle": "Der moderne URL-Kürzer für Unternehmen und Creators",
-    "copyright": "© 2025 MagLink. Alle Rechte vorbehalten."
+    "copyright": "© 2025 MagLink. Alle Rechte vorbehalten.",
+    "register": {
+      "slugTooShort": "Die URL muss mindestens 3 Zeichen lang sein.",
+      "slugInvalid": "Die URL darf nur Kleinbuchstaben, Zahlen und Bindestriche enthalten.",
+      "slugTaken": "Diese URL ist bereits vergeben.",
+      "slugCheckError": "Fehler bei der Überprüfung der URL.",
+      "options": {
+        "other": "Andere",
+        "industries": {
+          "technology": "Technologie",
+          "marketing": "Marketing & Werbung",
+          "ecommerce": "E-Commerce",
+          "education": "Bildung",
+          "healthcare": "Gesundheitswesen",
+          "finance": "Finanzen",
+          "real_estate": "Immobilien",
+          "food": "Gastronomie",
+          "other": "Andere"
+        },
+        "companySizes": {
+          "solo": "Nur ich",
+          "1-10": "1-10 Mitarbeiter",
+          "11-50": "11-50 Mitarbeiter",
+          "51-200": "51-200 Mitarbeiter",
+          "200+": "Über 200 Mitarbeiter"
+        },
+        "usageTypes": {
+          "personal": "Privat",
+          "company": "Unternehmen",
+          "agency": "Agentur",
+          "other": "Andere",
+          "freelancer": "Selbstständig"
+        },
+        "referralSources": {
+          "google": "Google",
+          "social": "Soziale Medien",
+          "word_of_mouth": "Mundpropaganda",
+          "ad": "Werbung",
+          "blog": "Blog/Artikel",
+          "other": "Andere"
+        },
+        "mainGoals": {
+          "monitorare_campagne": "Kampagnen verfolgen",
+          "gestire_qr": "QR-Codes verwalten",
+          "accorciare_link": "Links kürzen",
+          "altro": "Andere"
+        },
+        "estimatedUsages": {
+          "low": "Gering",
+          "medium": "Mittel",
+          "high": "Hoch"
+        }
+      },
+      "profileQuestion": "Wie wirst du MagLink nutzen?",
+      "profiles": {
+        "personal": {
+          "title": "Privat",
+          "description": "Für den privaten Gebrauch: Links, QR-Codes und Seiten für dich"
+        },
+        "business": {
+          "title": "Unternehmen oder Selbstständige",
+          "description": "Für ein Unternehmen, ein Büro oder eine Agentur"
+        }
+      },
+      "activityType": "Art der Tätigkeit",
+      "activities": {
+        "company": {
+          "title": "Unternehmen",
+          "description": "Du nutzt es für dein Unternehmen. Du kannst deinem Team Zugriff auf die Links geben."
+        },
+        "freelancer": {
+          "title": "Selbstständig",
+          "description": "Du arbeitest allein, als Freiberufler."
+        },
+        "agency": {
+          "title": "Agentur",
+          "description": "Du erstellst Links und QR-Codes für deine Kunden. Du kannst jedem Kunden Zugriff auf seine Links geben."
+        }
+      },
+      "steps": {
+        "space": "Dein Bereich"
+      },
+      "spaceInfo": "Dein MagLink-Bereich",
+      "publicUrlHint": "Das wird die Adresse deiner öffentlichen Seiten.",
+      "businessName": {
+        "freelancer": "Name der Tätigkeit oder des Büros",
+        "agency": "Name der Agentur"
+      },
+      "consentsTitle": "Einwilligungen"
+    }
   },
   "welcome": {
     "nav": {
@@ -467,6 +559,45 @@
       "marketing": {
         "title": "Marketing-Cookies",
         "description": "Werden verwendet, um relevante Werbung anzuzeigen und die Effektivität von Werbekampagnen zu messen. Keine Daten werden ohne deine Zustimmung an Dritte weitergegeben."
+      }
+    }
+  },
+  "analytics": {
+    "export": {
+      "button": "Statistiken exportieren",
+      "title": "Bericht exportieren",
+      "premiumTitle": "Premium-Funktion",
+      "premiumDescription": "Der PDF- und CSV-Export mit Linkvergleich und Zeitraumfiltern ist in den Tarifen Professional und Enterprise enthalten.",
+      "upgrade": "Tarife ansehen",
+      "format": "Format",
+      "pdf": "PDF-Bericht",
+      "pdfHint": "Diagramme, KPIs und Vergleich",
+      "csv": "CSV-Daten",
+      "csvHint": "Für Excel und Analysetools",
+      "datasetDaily": "Tägliche Besuche pro Link",
+      "datasetViews": "Einzelne Besuche",
+      "period": "Zeitraum",
+      "presets": {
+        "7d": "Letzte 7 Tage",
+        "30d": "Letzte 30 Tage",
+        "90d": "Letzte 90 Tage",
+        "thisMonth": "Dieser Monat",
+        "lastMonth": "Letzter Monat",
+        "custom": "Benutzerdefiniert"
+      },
+      "from": "Von",
+      "to": "Bis",
+      "previousPeriodHint": "Der Bericht vergleicht die Daten mit dem vorherigen gleich langen Zeitraum.",
+      "links": "Einzuschließende Links",
+      "compareWith": "Mit anderen Links vergleichen (optional)",
+      "searchLinks": "Links suchen...",
+      "comparisonHint": "Bei mehreren Links enthält das PDF ein Vergleichsdiagramm und eine Tabelle.",
+      "download": "Herunterladen",
+      "errors": {
+        "period": "Wähle einen gültigen Zeitraum.",
+        "order": "Das Startdatum muss vor dem Enddatum liegen.",
+        "tooLong": "Der maximale Zeitraum beträgt 2 Jahre.",
+        "noLinks": "Wähle mindestens einen Link."
       }
     }
   }

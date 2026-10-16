@@ -150,20 +150,21 @@ setInterval(() => {
                         </div>
                         
                         <div class="flex flex-col space-y-2 pt-4 border-t border-white/[0.08]">
-                            <Link
+                            <!-- Login/dashboard sono su app.maglink.it: link classici (non Inertia) per evitare errori CORS -->
+                            <a
                                 v-if="isAuthenticated"
                                 :href="dashboardUrl || route('verification.notice')"
                                 class="bg-gradient-to-r from-orange-600 to-orange-700 text-white px-4 py-2 rounded-lg font-medium transition-colors text-center"
                             >
                                 {{ isAdmin ? t('welcome.nav.adminDashboard') : t('welcome.nav.dashboard') }}
-                            </Link>
+                            </a>
                             <template v-else-if="!isAuthenticated">
-                                <Link
+                                <a
                                     :href="route('login')"
                                     class="text-gray-300 hover:text-white transition-colors text-center"
                                 >
                                     {{ t('welcome.nav.signIn') }}
-                                </Link>
+                                </a>
                                 <a
                                     :href="route('register')"
                                     class="bg-gradient-to-r from-orange-600 to-orange-700 text-white px-4 py-2 rounded-lg font-medium transition-colors text-center"
@@ -210,13 +211,13 @@ setInterval(() => {
                             >
                                 {{ t('welcome.hero.getStarted') }}
                             </a>
-                            <Link
+                            <a
                                 v-else
                                 :href="dashboardUrl || route('verification.notice')"
                                 class="inline-flex items-center justify-center bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-500 hover:to-orange-800 text-white px-8 py-4 rounded-lg font-semibold transition-all text-lg"
                             >
                                 {{ t('welcome.hero.goToDashboard') }}
-                            </Link>
+                            </a>
                         </div>
                     </div>
                     
@@ -609,12 +610,12 @@ setInterval(() => {
                 </h2>
                 <p class="text-xl text-gray-300 mb-10 max-w-2xl mx-auto leading-relaxed">{{ t('welcome.cta.subtitle') }}</p>
                 <div class="flex flex-col sm:flex-row gap-4 justify-center">
-                    <Link
+                    <a
                         :href="route('register')"
                         class="inline-flex items-center justify-center px-8 py-4 bg-orange-500 hover:bg-orange-600 text-white font-semibold rounded-xl transition-all duration-200 shadow-lg shadow-orange-500/25 hover:shadow-orange-500/40 text-lg"
                     >
                         {{ t('welcome.cta.button') }}
-                    </Link>
+                    </a>
                     <a
                         href="#pricing"
                         class="inline-flex items-center justify-center px-8 py-4 bg-white/[0.08] hover:bg-white/[0.14] border border-white/[0.12] text-white font-semibold rounded-xl transition-all duration-200 text-lg"

@@ -39,6 +39,7 @@ class LinkController extends Controller
             'links' => $links,
             'shortUrl' => config('app.short_url'),
             'stats' => $stats,
+            'canExportAnalytics' => Auth::user()->canExportAnalytics(),
         ]);
     }
 

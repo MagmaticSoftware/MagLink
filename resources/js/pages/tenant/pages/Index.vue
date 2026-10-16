@@ -184,11 +184,11 @@ const getPublicUrl = (slug: string) => {
     </Head>
 
     <AppLayout :breadcrumbs="breadcrumbs">
-        <div class="flex h-full flex-1 flex-col gap-6 p-6">
+        <div class="flex h-full flex-1 flex-col gap-4 sm:gap-6 p-0 sm:p-2 lg:p-6">
             <!-- Page Header -->
-            <div class="flex items-center justify-between">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
-                    <h1 class="text-3xl font-bold text-surface-900 dark:text-surface-50">{{ t('pages.title') }}</h1>
+                    <h1 class="text-2xl sm:text-3xl font-bold text-surface-900 dark:text-surface-50">{{ t('pages.title') }}</h1>
                     <p class="text-surface-600 dark:text-surface-400 mt-1">{{ t('pages.subtitle') }}</p>
                 </div>
                 <div>
@@ -204,7 +204,7 @@ const getPublicUrl = (slug: string) => {
             <!-- Statistics Cards -->
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                 <!-- Total Pages -->
-                <div class="bg-white dark:bg-surface-800 rounded-xl p-6 shadow-sm border border-surface-200 dark:border-surface-700">
+                <div class="bg-white dark:bg-surface-800 rounded-xl p-4 sm:p-6 shadow-sm border border-surface-200 dark:border-surface-700">
                     <div class="flex items-center justify-between mb-2">
                         <p class="text-sm font-medium text-surface-600 dark:text-surface-400">{{ t('pages.stats.totalPages') }}</p>
                         <div class="p-3 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
@@ -225,7 +225,7 @@ const getPublicUrl = (slug: string) => {
                 </div>
 
                 <!-- Published Pages -->
-                <div class="bg-white dark:bg-surface-800 rounded-xl p-6 shadow-sm border border-surface-200 dark:border-surface-700">
+                <div class="bg-white dark:bg-surface-800 rounded-xl p-4 sm:p-6 shadow-sm border border-surface-200 dark:border-surface-700">
                     <div class="flex items-center justify-between mb-2">
                         <p class="text-sm font-medium text-surface-600 dark:text-surface-400">{{ t('pages.stats.published') }}</p>
                         <div class="p-3 bg-green-100 dark:bg-green-900/30 rounded-lg">
@@ -236,7 +236,7 @@ const getPublicUrl = (slug: string) => {
                 </div>
 
                 <!-- Total Blocks -->
-                <div class="bg-white dark:bg-surface-800 rounded-xl p-6 shadow-sm border border-surface-200 dark:border-surface-700">
+                <div class="bg-white dark:bg-surface-800 rounded-xl p-4 sm:p-6 shadow-sm border border-surface-200 dark:border-surface-700">
                     <div class="flex items-center justify-between mb-2">
                         <p class="text-sm font-medium text-surface-600 dark:text-surface-400">{{ t('pages.stats.totalBlocks') }}</p>
                         <div class="p-3 bg-purple-100 dark:bg-purple-900/30 rounded-lg">
@@ -257,7 +257,7 @@ const getPublicUrl = (slug: string) => {
                 </div>
 
                 <!-- Average Blocks Per Page -->
-                <div class="bg-white dark:bg-surface-800 rounded-xl p-6 shadow-sm border border-surface-200 dark:border-surface-700">
+                <div class="bg-white dark:bg-surface-800 rounded-xl p-4 sm:p-6 shadow-sm border border-surface-200 dark:border-surface-700">
                     <div class="flex items-center justify-between mb-2">
                         <p class="text-sm font-medium text-surface-600 dark:text-surface-400">{{ t('pages.stats.avgBlocks') }}</p>
                         <div class="p-3 bg-orange-100 dark:bg-orange-900/30 rounded-lg">
@@ -320,7 +320,7 @@ const getPublicUrl = (slug: string) => {
                 <div
                     v-for="page in filteredPages"
                     :key="page.id"
-                    class="bg-white dark:bg-surface-800 rounded-xl p-6 shadow-sm border border-surface-200 dark:border-surface-700 hover:shadow-md transition-all hover:scale-[1.01]"
+                    class="bg-white dark:bg-surface-800 rounded-xl p-4 sm:p-6 shadow-sm border border-surface-200 dark:border-surface-700 hover:shadow-md transition-all hover:scale-[1.01]"
                 >
                     <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
                         <!-- Page Info -->

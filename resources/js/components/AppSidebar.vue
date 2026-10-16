@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { Link, usePage } from '@inertiajs/vue3';
-import { LayoutGrid, LayoutTemplate, Link as LinkIcon, QrCode, Settings, HelpCircle } from 'lucide-vue-next';
-import { computed, ref } from 'vue';
+import { LayoutGrid, LayoutTemplate, Link as LinkIcon, QrCode, Settings, HelpCircle, X } from 'lucide-vue-next';
+import { computed, ref, watch } from 'vue';
 import { useDark } from '@vueuse/core';
 import { useI18n } from 'vue-i18n';
 import { useRoute } from '@/composables/useRoute';
@@ -11,6 +11,10 @@ import PlanSelectionModal from './PlanSelectionModal.vue';
 import type { PageProps } from '@/types/inertia';
 
 const { t } = useI18n();
+
+// Drawer mobile: su schermi < md la sidebar è nascosta e si apre dal pulsante menu della top bar
+const props = withDefaults(defineProps<{ mobileOpen?: boolean }>(), { mobileOpen: false });
+const emit = defineEmits<{ (e: 'close'): void }>();
 
 // Stesse opzioni di AppTopBar, così il logo segue il toggle del tema
 const isDark = useDark({
@@ -68,18 +72,38 @@ const mainNavItems = computed(() => [
     },
 ]);
 
+// Chiude il drawer quando si naviga verso un'altra pagina
+watch(() => page.url, () => emit('close'));
+
 const isActive = (href: string) => {
     return route().current(href.split('.')[0] + '.*');
 };
 </script>
 
 <template>
-    <aside class="fixed inset-y-0 left-0 z-10 hidden w-64 flex-col bg-gradient-to-b from-surface-50 to-surface-100 dark:from-surface-900 dark:to-surface-950 md:flex shadow-lg">
+    <!-- Overlay mobile -->
+    <div
+        v-if="props.mobileOpen"
+        class="fixed inset-0 z-30 bg-black/40 backdrop-blur-sm md:hidden"
+        @click="emit('close')"
+    ></div>
+    <aside
+        class="fixed inset-y-0 left-0 z-40 flex w-64 flex-col bg-gradient-to-b from-surface-50 to-surface-100 dark:from-surface-900 dark:to-surface-950 shadow-lg transition-transform duration-200 md:z-10 md:translate-x-0"
+        :class="props.mobileOpen ? 'translate-x-0' : '-translate-x-full'"
+    >
         <!-- Header con Logo -->
-        <div class="flex h-16 items-center px-6">
+        <div class="flex h-16 items-center justify-between px-6">
             <Link :href="route('tenant.index')">
                 <ApplicationLogo class="h-12" :is-dark="isDark" />
             </Link>
+            <button
+                type="button"
+                class="md:hidden flex h-9 w-9 items-center justify-center rounded-lg text-surface-600 dark:text-surface-300 hover:bg-surface-200 dark:hover:bg-surface-800"
+                :aria-label="t('common.close')"
+                @click="emit('close')"
+            >
+                <X :size="20" />
+            </button>
         </div>
 
         <!-- Navigation Menu -->

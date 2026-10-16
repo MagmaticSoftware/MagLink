@@ -23,6 +23,11 @@ class AnalyticsController extends Controller
             'item' => $link,
             'stats' => $stats,
             'type' => 'link',
+            'canExportAnalytics' => request()->user()->canExportAnalytics(),
+            // Altri link selezionabili per il confronto nell'export
+            'compareLinks' => Link::where('id', '!=', $link->id)
+                ->orderBy('title')
+                ->get(['id', 'title', 'slug']),
         ]);
     }
 

@@ -20,6 +20,9 @@ withDefaults(defineProps<Props>(), {
 const { t } = useI18n();
 const page = usePage<PageProps>();
 
+// Drawer sidebar su mobile
+const mobileSidebarOpen = ref(false);
+
 // Gestione modal dei piani
 const showPlanModal = ref(false);
 
@@ -76,15 +79,15 @@ watchEffect(() => {
 <template>
     <div class="flex min-h-screen w-full bg-surface-50 dark:bg-surface-900">
         <!-- Sidebar -->
-        <AppSidebar />
+        <AppSidebar :mobile-open="mobileSidebarOpen" @close="mobileSidebarOpen = false" />
 
         <!-- Main Content Area -->
-        <div class="flex flex-1 flex-col ml-64">
+        <div class="flex min-w-0 flex-1 flex-col md:ml-64">
             <!-- Top Bar -->
-            <AppTopBar :breadcrumbs="breadcrumbs" />
+            <AppTopBar :breadcrumbs="breadcrumbs" @toggle-sidebar="mobileSidebarOpen = !mobileSidebarOpen" />
 
             <!-- Page Content -->
-            <main class="flex-1 p-6">
+            <main class="min-w-0 flex-1 p-3 sm:p-4 md:p-6">
                 <slot />
             </main>
 

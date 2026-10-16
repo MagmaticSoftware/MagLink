@@ -24,6 +24,8 @@ class Company extends Model
         'email',
         'website',
         'social_links',
+        'industry',
+        'size',
     ];
     
     public function billingProfile()

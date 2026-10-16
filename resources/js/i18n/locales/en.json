@@ -21,7 +21,8 @@
     "previous": "Previous",
     "loading": "Loading...",
     "saving": "Saving...",
-    "noResults": "No results found"
+    "noResults": "No results found",
+    "close": "Close"
   },
   "nav": {
     "dashboard": "Dashboard",
@@ -231,17 +232,20 @@
     "createFirst": "Create your first page to get started!",
     "search": "Search pages...",
     "sortBy": "Sort by",
-    "filterBy": "Filter by",    "placeholders": {
+    "filterBy": "Filter by",
+    "placeholders": {
+      "slug": "my-page-url",
       "title": "My Awesome Link",
       "description": "Add a description for this link...",
       "url": "https://example.com"
-    },    "stats": {
+    },
+    "stats": {
+      "totalBlocks": "Total Blocks",
+      "activeBlocks": "Active Blocks",
+      "views": "Page Views",
       "totalPages": "Total Pages",
       "published": "Published",
-      "totalBlocks": "Total Blocks",
-      "avgBlocks": "Avg. Blocks/Page",
-      "activeBlocks": "Active Blocks",
-      "views": "Page Views"
+      "avgBlocks": "Avg. Blocks/Page"
     },
     "sort": {
       "newest": "Newest first",
@@ -277,9 +281,6 @@
       "themeColor": "Theme Color",
       "slugHint": "Public URL"
     },
-    "placeholders": {
-      "slug": "my-page-url"
-    },
     "update": "Update Page",
     "addBlock": "Add Block",
     "blockEditor": "Block Editor",
@@ -289,12 +290,7 @@
     "preview": "Preview",
     "publicView": "Public view",
     "addBlocksToPage": "Add blocks to start building your page",
-    "editPage": "Edit Page",
-    "stats": {
-      "totalBlocks": "Total Blocks",
-      "activeBlocks": "Active Blocks",
-      "views": "Page Views"
-    }
+    "editPage": "Edit Page"
   },
   "footer": {
     "copyright": "All rights reserved.",
@@ -349,7 +345,8 @@
       "steps": {
         "account": "Account",
         "company": "Company",
-        "preferences": "Preferences"
+        "preferences": "Preferences",
+        "space": "Your space"
       },
       "accountInfo": "Account Information",
       "firstName": "First Name",
@@ -390,7 +387,91 @@
       "back": "Back",
       "createAccount": "Create Account",
       "alreadyHaveAccount": "Already have an account?",
-      "logIn": "Log in"
+      "logIn": "Log in",
+      "slugTooShort": "URL must be at least 3 characters long.",
+      "slugInvalid": "URL can only contain lowercase letters, numbers, and hyphens.",
+      "slugTaken": "This URL is already taken.",
+      "slugCheckError": "Error checking URL.",
+      "options": {
+        "other": "Other",
+        "industries": {
+          "technology": "Technology",
+          "marketing": "Marketing & Advertising",
+          "ecommerce": "E-commerce",
+          "education": "Education",
+          "healthcare": "Healthcare",
+          "finance": "Finance",
+          "real_estate": "Real Estate",
+          "food": "Food & Beverage",
+          "other": "Other"
+        },
+        "companySizes": {
+          "solo": "Just me",
+          "1-10": "1-10 employees",
+          "11-50": "11-50 employees",
+          "51-200": "51-200 employees",
+          "200+": "200+ employees"
+        },
+        "usageTypes": {
+          "personal": "Personal",
+          "company": "Company",
+          "agency": "Agency",
+          "other": "Other",
+          "freelancer": "Freelancer"
+        },
+        "referralSources": {
+          "google": "Google",
+          "social": "Social media",
+          "word_of_mouth": "Word of mouth",
+          "ad": "Advertising",
+          "blog": "Blog/Article",
+          "other": "Other"
+        },
+        "mainGoals": {
+          "monitorare_campagne": "Track campaigns",
+          "gestire_qr": "Manage QR codes",
+          "accorciare_link": "Shorten links",
+          "altro": "Other"
+        },
+        "estimatedUsages": {
+          "low": "Low",
+          "medium": "Medium",
+          "high": "High"
+        }
+      },
+      "profileQuestion": "How will you use MagLink?",
+      "profiles": {
+        "personal": {
+          "title": "Personal",
+          "description": "For personal use: links, QR codes and pages for yourself"
+        },
+        "business": {
+          "title": "Business or professional",
+          "description": "For a business, a practice or an agency"
+        }
+      },
+      "activityType": "Type of business",
+      "activities": {
+        "company": {
+          "title": "Company",
+          "description": "You use it for your company. You can give your team access to the links."
+        },
+        "freelancer": {
+          "title": "Freelancer",
+          "description": "You work on your own, as a freelancer."
+        },
+        "agency": {
+          "title": "Agency",
+          "description": "You create links and QR codes for your clients. You can give each client access to their links."
+        }
+      },
+      "spaceInfo": "Your MagLink space",
+      "publicUrlHint": "This will be the address of your public pages.",
+      "businessName": {
+        "freelancer": "Business or studio name",
+        "agency": "Agency name"
+      },
+      "consentsTitle": "Consents"
     },
     "forgotPassword": {
       "headTitle": "Forgot password",
@@ -646,6 +727,45 @@
       "marketing": {
         "title": "Marketing cookies",
         "description": "Used to show relevant ads and measure the effectiveness of advertising campaigns. No data is shared with third parties without your consent."
+      }
+    }
+  },
+  "analytics": {
+    "export": {
+      "button": "Export analytics",
+      "title": "Export report",
+      "premiumTitle": "Premium feature",
+      "premiumDescription": "PDF and CSV export, with link comparison and period filters, is included in the Professional and Enterprise plans.",
+      "upgrade": "View plans",
+      "format": "Format",
+      "pdf": "PDF report",
+      "pdfHint": "Charts, KPIs and comparison",
+      "csv": "CSV data",
+      "csvHint": "For Excel and analysis tools",
+      "datasetDaily": "Daily visits per link",
+      "datasetViews": "Individual visits",
+      "period": "Period",
+      "presets": {
+        "7d": "Last 7 days",
+        "30d": "Last 30 days",
+        "90d": "Last 90 days",
+        "thisMonth": "This month",
+        "lastMonth": "Last month",
+        "custom": "Custom"
+      },
+      "from": "From",
+      "to": "To",
+      "previousPeriodHint": "The report compares data with the previous period of the same length.",
+      "links": "Links to include",
+      "compareWith": "Compare with other links (optional)",
+      "searchLinks": "Search links...",
+      "comparisonHint": "With multiple links the PDF includes a comparison chart and table.",
+      "download": "Download",
+      "errors": {
+        "period": "Select a valid period.",
+        "order": "The start date must be before the end date.",
+        "tooLong": "The maximum period is 2 years.",
+        "noLinks": "Select at least one link."
       }
     }
   }

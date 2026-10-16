@@ -12,8 +12,14 @@ import {
     LucideTablet,
     LucideShield,
     LucideUsers,
+    LucideDownload,
+    LucideCrown,
 } from 'lucide-vue-next';
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
+import { usePage } from '@inertiajs/vue3';
+import AnalyticsExportDialog from '@/components/AnalyticsExportDialog.vue';
+import PlanSelectionModal from '@/components/PlanSelectionModal.vue';
+import type { PageProps } from '@/types/inertia';
 import { useRoute } from '@/composables/useRoute';
 import { Bar, Doughnut } from 'vue-chartjs';
 import {
@@ -85,7 +91,13 @@ const props = defineProps<{
         }>;
     };
     type: 'link' | 'qrcode';
+    canExportAnalytics?: boolean;
+    compareLinks?: Array<{ id: number; title: string | null; slug: string }>;
 }>();
+
+const page = usePage<PageProps>();
+const showExportDialog = ref(false);
+const showPlanModal = ref(false);
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -170,12 +182,14 @@ const countriesChartData = computed(() => ({
     }],
 }));
 
+const isSmallScreen = typeof window !== 'undefined' && window.matchMedia('(max-width: 640px)').matches;
+
 const pieChartOptions = {
     responsive: true,
     maintainAspectRatio: false,
     plugins: {
         legend: {
-            position: 'right' as const,
+            position: (isSmallScreen ? 'bottom' : 'right') as 'bottom' | 'right',
         },
     },
 };
@@ -265,46 +279,75 @@ const getDeviceIcon = (deviceType: string | null) => {
         <link rel="icon" href="/favicon.ico" />
     </Head>
 
+    <AnalyticsExportDialog
+        v-model:visible="showExportDialog"
+        :links="compareLinks || []"
+        :locked-link="{ id: item.id, title: item.title, slug: item.slug }"
+        :can-export="!!canExportAnalytics"
+        @show-plans="showPlanModal = true"
+    />
+
+    <PlanSelectionModal
+        v-model:visible="showPlanModal"
+        :plans="page.props.plans || {}"
+        :is-new-user="page.props.billing?.isNewUser || false"
+        :has-active-trial="page.props.billing?.hasActiveTrial || false"
+        :can-start-trial="page.props.billing?.canStartTrial || false"
+        :is-subscribed="page.props.billing?.isSubscribed || false"
+        :current-plan-key="page.props.billing?.currentPlanKey || null"
+        :on-free-plan="page.props.billing?.onFreePlan || false"
+    />
+
     <AppLayout :breadcrumbs="breadcrumbs">
-        <div class="flex h-full flex-1 flex-col gap-6 p-6">
+        <div class="flex h-full flex-1 flex-col gap-4 sm:gap-6 p-0 sm:p-2 lg:p-6">
             <!-- Header -->
-            <div class="flex items-center justify-between">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
-                    <h1 class="text-3xl font-bold text-surface-900 dark:text-surface-50">
+                    <h1 class="text-2xl sm:text-3xl font-bold text-surface-900 dark:text-surface-50">
                         Analytics: {{ item.title }}
                     </h1>
                     <p class="text-surface-600 dark:text-surface-400 mt-1">
                         Statistiche dettagliate e insights
                     </p>
                 </div>
-                <Button 
-                    variant="outline" 
-                    :href="route('links.index')"
-                    as="a"
-                >
-                    <LucideArrowLeft :size="16" class="mr-2" />
-                    Indietro
-                </Button>
+                <div class="flex flex-wrap items-center gap-2">
+                    <button
+                        type="button"
+                        class="button-primary inline-flex items-center gap-2"
+                        @click="showExportDialog = true"
+                    >
+                        <LucideDownload :size="16" /> Esporta report
+                        <LucideCrown v-if="!canExportAnalytics" :size="16" class="text-amber-200" />
+                    </button>
+                    <Button 
+                        variant="outline" 
+                        :href="route('links.index')"
+                        as="a"
+                    >
+                        <LucideArrowLeft :size="16" class="mr-2" />
+                        Indietro
+                    </Button>
+                </div>
             </div>
 
             <!-- Overview Cards -->
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                <div class="bg-white dark:bg-surface-800 rounded-xl p-6 shadow-sm border border-surface-200 dark:border-surface-700">
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+                <div class="bg-white dark:bg-surface-800 rounded-xl p-4 sm:p-6 shadow-sm border border-surface-200 dark:border-surface-700">
                     <div class="flex items-center justify-between mb-2">
                         <span class="text-sm font-medium text-surface-600 dark:text-surface-400">Views Totali</span>
                         <LucideEye :size="20" class="text-primary" />
                     </div>
-                    <div class="text-3xl font-bold text-surface-900 dark:text-surface-50">
+                    <div class="text-2xl sm:text-3xl font-bold text-surface-900 dark:text-surface-50">
                         {{ stats.overview.total }}
                     </div>
                 </div>
 
-                <div class="bg-white dark:bg-surface-800 rounded-xl p-6 shadow-sm border border-surface-200 dark:border-surface-700">
+                <div class="bg-white dark:bg-surface-800 rounded-xl p-4 sm:p-6 shadow-sm border border-surface-200 dark:border-surface-700">
                     <div class="flex items-center justify-between mb-2">
                         <span class="text-sm font-medium text-surface-600 dark:text-surface-400">Con Consenso</span>
                         <LucideShield :size="20" class="text-blue-600" />
                     </div>
-                    <div class="text-3xl font-bold text-blue-600">
+                    <div class="text-2xl sm:text-3xl font-bold text-blue-600">
                         {{ stats.overview.with_consent }}
                     </div>
                     <div class="text-xs text-surface-500 dark:text-surface-400 mt-1">
@@ -312,12 +355,12 @@ const getDeviceIcon = (deviceType: string | null) => {
                     </div>
                 </div>
 
-                <div class="bg-white dark:bg-surface-800 rounded-xl p-6 shadow-sm border border-surface-200 dark:border-surface-700">
+                <div class="bg-white dark:bg-surface-800 rounded-xl p-4 sm:p-6 shadow-sm border border-surface-200 dark:border-surface-700">
                     <div class="flex items-center justify-between mb-2">
                         <span class="text-sm font-medium text-surface-600 dark:text-surface-400">Anonimi</span>
                         <LucideUsers :size="20" class="text-gray-500" />
                     </div>
-                    <div class="text-3xl font-bold text-gray-500">
+                    <div class="text-2xl sm:text-3xl font-bold text-gray-500">
                         {{ stats.overview.anonymous }}
                     </div>
                     <div class="text-xs text-surface-500 dark:text-surface-400 mt-1">
@@ -325,12 +368,12 @@ const getDeviceIcon = (deviceType: string | null) => {
                     </div>
                 </div>
 
-                <div class="bg-white dark:bg-surface-800 rounded-xl p-6 shadow-sm border border-surface-200 dark:border-surface-700">
+                <div class="bg-white dark:bg-surface-800 rounded-xl p-4 sm:p-6 shadow-sm border border-surface-200 dark:border-surface-700">
                     <div class="flex items-center justify-between mb-2">
                         <span class="text-sm font-medium text-surface-600 dark:text-surface-400">Tasso Consenso</span>
                         <LucideTrendingUp :size="20" class="text-green-600" />
                     </div>
-                    <div class="text-3xl font-bold text-green-600">
+                    <div class="text-2xl sm:text-3xl font-bold text-green-600">
                         {{ stats.overview.consent_percentage }}%
                     </div>
                     <div class="text-xs text-surface-500 dark:text-surface-400 mt-1">
@@ -340,11 +383,11 @@ const getDeviceIcon = (deviceType: string | null) => {
             </div>
 
             <!-- Daily Views Chart -->
-            <div class="bg-white dark:bg-surface-800 rounded-xl p-6 shadow-sm border border-surface-200 dark:border-surface-700">
-                <h2 class="text-xl font-bold text-surface-900 dark:text-surface-50 mb-4">
+            <div class="bg-white dark:bg-surface-800 rounded-xl p-4 sm:p-6 shadow-sm border border-surface-200 dark:border-surface-700">
+                <h2 class="text-lg sm:text-xl font-bold text-surface-900 dark:text-surface-50 mb-4">
                     Views Giornaliere (Ultimi 30 giorni)
                 </h2>
-                <div style="height: 350px">
+                <div class="h-64 sm:h-[350px]">
                     <Bar :data="dailyViewsChartData" :options="dailyViewsChartOptions" />
                 </div>
             </div>
@@ -352,8 +395,8 @@ const getDeviceIcon = (deviceType: string | null) => {
             <!-- Detailed Stats Grid -->
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 <!-- Countries -->
-                <div class="bg-white dark:bg-surface-800 rounded-xl p-6 shadow-sm border border-surface-200 dark:border-surface-700">
-                    <h2 class="text-xl font-bold text-surface-900 dark:text-surface-50 mb-4 flex items-center gap-2">
+                <div class="bg-white dark:bg-surface-800 rounded-xl p-4 sm:p-6 shadow-sm border border-surface-200 dark:border-surface-700">
+                    <h2 class="text-lg sm:text-xl font-bold text-surface-900 dark:text-surface-50 mb-4 flex items-center gap-2">
                         <LucideGlobe :size="20" class="text-primary" />
                         Paesi (solo dati con consenso)
                     </h2>
@@ -366,8 +409,8 @@ const getDeviceIcon = (deviceType: string | null) => {
                 </div>
 
                 <!-- Devices -->
-                <div class="bg-white dark:bg-surface-800 rounded-xl p-6 shadow-sm border border-surface-200 dark:border-surface-700">
-                    <h2 class="text-xl font-bold text-surface-900 dark:text-surface-50 mb-4 flex items-center gap-2">
+                <div class="bg-white dark:bg-surface-800 rounded-xl p-4 sm:p-6 shadow-sm border border-surface-200 dark:border-surface-700">
+                    <h2 class="text-lg sm:text-xl font-bold text-surface-900 dark:text-surface-50 mb-4 flex items-center gap-2">
                         <LucideMonitor :size="20" class="text-primary" />
                         Dispositivi
                     </h2>
@@ -380,8 +423,8 @@ const getDeviceIcon = (deviceType: string | null) => {
                 </div>
 
                 <!-- Browsers -->
-                <div class="bg-white dark:bg-surface-800 rounded-xl p-6 shadow-sm border border-surface-200 dark:border-surface-700">
-                    <h2 class="text-xl font-bold text-surface-900 dark:text-surface-50 mb-4">
+                <div class="bg-white dark:bg-surface-800 rounded-xl p-4 sm:p-6 shadow-sm border border-surface-200 dark:border-surface-700">
+                    <h2 class="text-lg sm:text-xl font-bold text-surface-900 dark:text-surface-50 mb-4">
                         Browser
                     </h2>
                     <div v-if="stats.browsers.length > 0" style="height: 300px">
@@ -393,8 +436,8 @@ const getDeviceIcon = (deviceType: string | null) => {
                 </div>
 
                 <!-- Platforms -->
-                <div class="bg-white dark:bg-surface-800 rounded-xl p-6 shadow-sm border border-surface-200 dark:border-surface-700">
-                    <h2 class="text-xl font-bold text-surface-900 dark:text-surface-50 mb-4">
+                <div class="bg-white dark:bg-surface-800 rounded-xl p-4 sm:p-6 shadow-sm border border-surface-200 dark:border-surface-700">
+                    <h2 class="text-lg sm:text-xl font-bold text-surface-900 dark:text-surface-50 mb-4">
                         Sistemi Operativi
                     </h2>
                     <div v-if="stats.platforms.length > 0" style="height: 300px">
@@ -407,8 +450,8 @@ const getDeviceIcon = (deviceType: string | null) => {
             </div>
 
             <!-- Recent Views Table -->
-            <div class="bg-white dark:bg-surface-800 rounded-xl p-6 shadow-sm border border-surface-200 dark:border-surface-700">
-                <h2 class="text-xl font-bold text-surface-900 dark:text-surface-50 mb-4">
+            <div class="bg-white dark:bg-surface-800 rounded-xl p-4 sm:p-6 shadow-sm border border-surface-200 dark:border-surface-700">
+                <h2 class="text-lg sm:text-xl font-bold text-surface-900 dark:text-surface-50 mb-4">
                     Visualizzazioni Recenti (con consenso)
                 </h2>
                 <div v-if="stats.recent_views.length > 0" class="overflow-x-auto">

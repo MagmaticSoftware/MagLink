@@ -62,6 +62,11 @@ Route::domain(config('app.tenant_url'))->middleware([
         // Analytics routes
         Route::get('links/{link}/analytics', [App\Http\Controllers\AnalyticsController::class, 'link'])
             ->name('links.analytics');
+        // Export statistiche (PDF/CSV) - solo piani premium
+        Route::get('links/analytics/export', [App\Http\Controllers\AnalyticsExportController::class, 'links'])
+            ->name('links.export');
+        Route::get('links/{link}/analytics/export', [App\Http\Controllers\AnalyticsExportController::class, 'link'])
+            ->name('links.analytics.export');
         Route::get('qrcodes/{qrcode}/analytics', [App\Http\Controllers\AnalyticsController::class, 'qrcode'])
             ->name('qrcodes.analytics');
 

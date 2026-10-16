@@ -3,6 +3,7 @@
 import AppLayout from '@/layouts/AppLayout.vue';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link } from '@inertiajs/vue3';
+import { computed } from 'vue';
 import { Link2, QrCode, BarChart2, Zap, Gem, Plus, Box, TrendingUp, FileText } from 'lucide-vue-next';
 import PlanLimitsCard from '@/components/PlanLimitsCard.vue';
 import PerformanceChart from '@/components/PerformanceChart.vue';
@@ -63,6 +64,8 @@ interface Block {
 
 interface PerformanceData {
   date: string;
+  link_views: number;
+  qrcode_views: number;
   total_items: number;
 }
 
@@ -89,8 +92,7 @@ const formatNumber = (num: number) => {
   return new Intl.NumberFormat('it-IT').format(num);
 };
 
-// Debug: verifica dati grafico
-console.log('Performance data:', props.performance);
+const hasRecentActivity = computed(() => props.performance.some(d => d.total_items > 0));
 </script>
 
 
@@ -104,25 +106,25 @@ console.log('Performance data:', props.performance);
             class="flex h-full flex-1 flex-col gap-4 rounded-2xl p-0">
             
             <!-- Welcome Banner nella griglia -->
-            <div class="p-8 space-y-8">
+            <div class="p-0 sm:p-2 lg:p-8 space-y-4 sm:space-y-8">
                 <!-- Welcome + Stato piano + Notifiche -->
-                <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
                     <!-- Welcome Banner: span 2 colonne -->
                     <div
-                        class="lg:col-span-2 rounded-xl bg-primary-50 dark:bg-surface-800 shadow-sm p-7 flex flex-row items-center border border-primary-100 dark:border-surface-700 min-h-[170px]">
+                        class="md:col-span-2 rounded-xl bg-primary-50 dark:bg-surface-800 shadow-sm p-5 sm:p-7 flex flex-row items-center border border-primary-100 dark:border-surface-700 min-h-[170px]">
                         <div class="flex flex-col sm:flex-row items-center gap-6 w-full">
                             <div class="flex flex-col items-center justify-center mr-0 sm:mr-4">
                                 <span class="text-5xl">👋</span>
                             </div>
-                            <div class="flex-1 flex flex-col justify-center">
+                            <div class="flex-1 flex flex-col justify-center text-center sm:text-left">
                                 <h1
-                                    class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-1 tracking-tight">
+                                    class="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-1 tracking-tight">
                                     Benvenuto su <span
                                         class="text-primary-600 dark:text-primary-400">MagLink</span></h1>
                                 <p class="text-gray-500 dark:text-gray-300 text-base md:text-lg">Gestisci i tuoi link,
                                     QR Code e pagine in modo semplice e moderno.</p>
                             </div>
-                            <div class="flex flex-col gap-2 min-w-[180px]">
+                            <div class="flex flex-col gap-2 w-full sm:w-auto sm:min-w-[180px]">
                                 <Link :href="route('links.create')"
                                     class="rounded-full bg-primary text-primary-contrast dark:bg-primary-900 dark:text-primary-200 px-5 py-2 font-semibold hover:bg-primary-700 dark:hover:bg-primary-800 transition flex items-center justify-center gap-2">
                                 <Plus :size="16" /> Nuovo Link
@@ -138,7 +140,7 @@ console.log('Performance data:', props.performance);
                     <PlanLimitsCard :stats="stats" />
                     <!-- Riepilogo attività -->
                     <div
-                        class="rounded-xl bg-white dark:bg-surface-800 shadow-sm p-7 flex flex-col gap-4 border border-gray-200 dark:border-surface-700">
+                        class="rounded-xl bg-white dark:bg-surface-800 shadow-sm p-5 sm:p-7 flex flex-col gap-4 border border-gray-200 dark:border-surface-700">
                         <div class="flex items-center gap-2 font-semibold mb-3 text-lg text-surface-900 dark:text-white">
                             <TrendingUp class="w-5 h-5 text-indigo-500" /> Riepilogo attività
                         </div>
@@ -163,70 +165,70 @@ console.log('Performance data:', props.performance);
                     </div>
                 </div>
                 <!-- Statistiche principali -->
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mt-4">
-                  <div class="rounded-xl bg-white dark:bg-surface-800 shadow-sm p-7 flex flex-col items-center relative overflow-hidden group border border-gray-200 dark:border-surface-700 hover:shadow-md transition-shadow">
+                <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-6 mt-4">
+                  <div class="rounded-xl bg-white dark:bg-surface-800 shadow-sm p-4 pt-12 sm:p-7 flex flex-col items-center relative overflow-hidden group border border-gray-200 dark:border-surface-700 hover:shadow-md transition-shadow">
                     <div class="absolute right-4 top-4">
                       <span class="inline-flex items-center justify-center w-9 h-9 rounded-full bg-blue-100 dark:bg-blue-900">
                         <Link2 class="w-6 h-6 text-blue-600 dark:text-blue-300" />
                       </span>
                     </div>
-                    <div class="text-4xl font-extrabold text-blue-700 dark:text-blue-400 mb-1">{{ formatNumber(stats.links_count) }}</div>
-                    <div class="text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">Link creati</div>
+                    <div class="text-3xl sm:text-4xl font-extrabold text-blue-700 dark:text-blue-400 mb-1">{{ formatNumber(stats.links_count) }}</div>
+                    <div class="text-xs text-center font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">Link creati</div>
                   </div>
-                  <div class="rounded-xl bg-white dark:bg-surface-800 shadow-sm p-7 flex flex-col items-center relative overflow-hidden group border border-gray-200 dark:border-surface-700 hover:shadow-md transition-shadow">
+                  <div class="rounded-xl bg-white dark:bg-surface-800 shadow-sm p-4 pt-12 sm:p-7 flex flex-col items-center relative overflow-hidden group border border-gray-200 dark:border-surface-700 hover:shadow-md transition-shadow">
                     <div class="absolute right-4 top-4">
                       <span class="inline-flex items-center justify-center w-9 h-9 rounded-full bg-green-100 dark:bg-green-900">
                         <QrCode class="w-6 h-6 text-green-600 dark:text-green-300" />
                       </span>
                     </div>
-                    <div class="text-4xl font-extrabold text-green-700 dark:text-green-400 mb-1">{{ formatNumber(stats.qrcodes_count) }}</div>
-                    <div class="text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">QR Code generati</div>
+                    <div class="text-3xl sm:text-4xl font-extrabold text-green-700 dark:text-green-400 mb-1">{{ formatNumber(stats.qrcodes_count) }}</div>
+                    <div class="text-xs text-center font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">QR Code generati</div>
                   </div>
-                  <div class="rounded-xl bg-white dark:bg-surface-800 shadow-sm p-7 flex flex-col items-center relative overflow-hidden group border border-gray-200 dark:border-surface-700 hover:shadow-md transition-shadow">
+                  <div class="rounded-xl bg-white dark:bg-surface-800 shadow-sm p-4 pt-12 sm:p-7 flex flex-col items-center relative overflow-hidden group border border-gray-200 dark:border-surface-700 hover:shadow-md transition-shadow">
                     <div class="absolute right-4 top-4">
                       <span class="inline-flex items-center justify-center w-9 h-9 rounded-full bg-purple-100 dark:bg-purple-900">
                         <FileText class="w-6 h-6 text-purple-600 dark:text-purple-300" />
                       </span>
                     </div>
-                    <div class="text-4xl font-extrabold text-purple-700 dark:text-purple-400 mb-1">{{ formatNumber(stats.pages_count) }}</div>
-                    <div class="text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">Pagine create</div>
+                    <div class="text-3xl sm:text-4xl font-extrabold text-purple-700 dark:text-purple-400 mb-1">{{ formatNumber(stats.pages_count) }}</div>
+                    <div class="text-xs text-center font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">Pagine create</div>
                   </div>
-                  <div class="rounded-xl bg-white dark:bg-surface-800 shadow-sm p-7 flex flex-col items-center relative overflow-hidden group border border-gray-200 dark:border-surface-700 hover:shadow-md transition-shadow">
+                  <div class="rounded-xl bg-white dark:bg-surface-800 shadow-sm p-4 pt-12 sm:p-7 flex flex-col items-center relative overflow-hidden group border border-gray-200 dark:border-surface-700 hover:shadow-md transition-shadow">
                     <div class="absolute right-4 top-4">
                       <span class="inline-flex items-center justify-center w-9 h-9 rounded-full bg-orange-100 dark:bg-orange-900">
                         <Box class="w-6 h-6 text-orange-600 dark:text-orange-300" />
                       </span>
                     </div>
-                    <div class="text-4xl font-extrabold text-orange-700 dark:text-orange-400 mb-1">{{ formatNumber(stats.blocks_count) }}</div>
-                    <div class="text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">Blocchi totali</div>
+                    <div class="text-3xl sm:text-4xl font-extrabold text-orange-700 dark:text-orange-400 mb-1">{{ formatNumber(stats.blocks_count) }}</div>
+                    <div class="text-xs text-center font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">Blocchi totali</div>
                   </div>
-                  <div class="rounded-xl bg-white dark:bg-surface-800 shadow-sm p-7 flex flex-col items-center relative overflow-hidden group border border-gray-200 dark:border-surface-700 hover:shadow-md transition-shadow">
+                  <div class="col-span-2 md:col-span-1 rounded-xl bg-white dark:bg-surface-800 shadow-sm p-4 pt-12 sm:p-7 flex flex-col items-center relative overflow-hidden group border border-gray-200 dark:border-surface-700 hover:shadow-md transition-shadow">
                     <div class="absolute right-4 top-4">
                       <span class="inline-flex items-center justify-center w-9 h-9 rounded-full bg-indigo-100 dark:bg-indigo-900">
                         <TrendingUp class="w-6 h-6 text-indigo-600 dark:text-indigo-300" />
                       </span>
                     </div>
-                    <div class="text-4xl font-extrabold text-indigo-700 dark:text-indigo-400 mb-1">{{ formatNumber(stats.total_views) }}</div>
-                    <div class="text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">Visualizzazioni totali</div>
+                    <div class="text-3xl sm:text-4xl font-extrabold text-indigo-700 dark:text-indigo-400 mb-1">{{ formatNumber(stats.total_views) }}</div>
+                    <div class="text-xs text-center font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">Visualizzazioni totali</div>
                   </div>
                 </div>
                 <!-- Performance recenti -->
-                <div class="grid grid-cols-1 gap-6">
+                <div class="grid grid-cols-1 gap-4 sm:gap-6">
                     <div
-                        class="rounded-xl bg-white dark:bg-surface-800 shadow-sm p-7 flex flex-col border border-gray-200 dark:border-surface-700">
+                        class="rounded-xl bg-white dark:bg-surface-800 shadow-sm p-5 sm:p-7 flex flex-col border border-gray-200 dark:border-surface-700">
                         <div class="flex items-center gap-2 font-semibold mb-4 text-lg text-surface-900 dark:text-white">
-                            <BarChart2 class="w-5 h-5 text-blue-500" /> Attività ultimi 7 giorni (link creati)
+                            <BarChart2 class="w-5 h-5 text-blue-500" /> Attività ultimi 7 giorni (click e scansioni)
                         </div>
-                        <PerformanceChart v-if="performance.length > 0" :data="performance" />
+                        <PerformanceChart v-if="hasRecentActivity" :data="performance" />
                         <div v-else class="h-48 w-full flex items-center justify-center bg-gray-50 dark:bg-gray-800 rounded-2xl">
-                            <p class="text-gray-500 dark:text-gray-400">Nessun dato disponibile per questo periodo</p>
+                            <p class="text-gray-500 dark:text-gray-400 text-center px-4">Nessun click o scansione negli ultimi 7 giorni</p>
                         </div>
                     </div>
                 </div>
                 <!-- Ultimi contenuti -->
-                <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4 sm:gap-6">
                     <div
-                        class="rounded-xl bg-white dark:bg-surface-800 shadow-sm p-7 flex flex-col gap-3 border border-gray-200 dark:border-surface-700">
+                        class="rounded-xl bg-white dark:bg-surface-800 shadow-sm p-5 sm:p-7 flex flex-col gap-3 border border-gray-200 dark:border-surface-700">
                         <div class="flex items-center gap-2 font-semibold mb-3 text-lg text-surface-900 dark:text-white">
                             <Link2 class="w-5 h-5 text-blue-500" /> Ultimi link
                         </div>
@@ -242,7 +244,7 @@ console.log('Performance data:', props.performance);
                         <p v-else class="text-gray-500 dark:text-gray-400 text-sm">Nessun link creato</p>
                     </div>
                     <div
-                        class="rounded-xl bg-white dark:bg-surface-800 shadow-sm p-7 flex flex-col gap-3 border border-gray-200 dark:border-surface-700">
+                        class="rounded-xl bg-white dark:bg-surface-800 shadow-sm p-5 sm:p-7 flex flex-col gap-3 border border-gray-200 dark:border-surface-700">
                         <div class="flex items-center gap-2 font-semibold mb-3 text-lg text-surface-900 dark:text-white">
                             <QrCode class="w-5 h-5 text-green-500" /> Ultimi QR Code
                         </div>
@@ -258,7 +260,7 @@ console.log('Performance data:', props.performance);
                         <p v-else class="text-gray-500 dark:text-gray-400 text-sm">Nessun QR Code generato</p>
                     </div>
                     <div
-                        class="rounded-xl bg-white dark:bg-surface-800 shadow-sm p-7 flex flex-col gap-3 border border-gray-200 dark:border-surface-700">
+                        class="rounded-xl bg-white dark:bg-surface-800 shadow-sm p-5 sm:p-7 flex flex-col gap-3 border border-gray-200 dark:border-surface-700">
                         <div class="flex items-center gap-2 font-semibold mb-3 text-lg text-surface-900 dark:text-white">
                             <FileText class="w-5 h-5 text-purple-500" /> Ultime pagine
                         </div>
@@ -277,7 +279,7 @@ console.log('Performance data:', props.performance);
                         <p v-else class="text-gray-500 dark:text-gray-400 text-sm">Nessuna pagina creata</p>
                     </div>
                     <div
-                        class="rounded-xl bg-white dark:bg-surface-800 shadow-sm p-7 flex flex-col gap-3 border border-gray-200 dark:border-surface-700">
+                        class="rounded-xl bg-white dark:bg-surface-800 shadow-sm p-5 sm:p-7 flex flex-col gap-3 border border-gray-200 dark:border-surface-700">
                         <div class="flex items-center gap-2 font-semibold mb-3 text-lg text-surface-900 dark:text-white">
                             <Box class="w-5 h-5 text-orange-500" /> Ultimi blocchi
                         </div>

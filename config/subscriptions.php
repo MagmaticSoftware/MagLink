@@ -44,6 +44,9 @@ return [
                 'pages' => 1,
                 'blocks_per_page' => 6,
             ],
+            'features' => [
+                'analytics_export' => false, // export PDF/CSV delle statistiche
+            ],
             'qr_customization' => [
                 'colors' => true,
                 'logo' => false,
@@ -72,6 +75,9 @@ return [
                 'qrcodes' => 100,
                 'qrcodes_dynamic' => 30,
                 'pages' => 5,
+            ],
+            'features' => [
+                'analytics_export' => true, // export PDF/CSV delle statistiche
             ],
             'qr_customization' => [
                 'colors' => true,
@@ -105,6 +111,9 @@ return [
                 'qrcodes' => -1, // illimitato
                 'qrcodes_dynamic' => -1, // illimitato
                 'pages' => -1, // illimitato
+            ],
+            'features' => [
+                'analytics_export' => true, // export PDF/CSV delle statistiche
             ],
             'qr_customization' => [
                 'colors' => true,

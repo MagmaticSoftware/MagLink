@@ -170,7 +170,7 @@ const shareQrCode = async () => {
     <Head :title="qrcode.name || t('qrcodes.noName')" />
 
     <AppLayout :breadcrumbs="breadcrumbs">
-        <div class="flex h-full flex-1 flex-col gap-6 p-6">
+        <div class="flex h-full flex-1 flex-col gap-4 sm:gap-6 p-0 sm:p-2 lg:p-6">
             <!-- Header -->
             <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
                 <div class="flex items-start gap-4">
@@ -179,7 +179,7 @@ const shareQrCode = async () => {
                     </div>
                     <div>
                         <div class="flex items-center gap-3 mb-2">
-                            <h1 class="text-3xl font-bold text-surface-900 dark:text-surface-50">
+                            <h1 class="text-2xl sm:text-3xl font-bold text-surface-900 dark:text-surface-50">
                                 {{ qrcode.name || t('qrcodes.noName') }}
                             </h1>
                             <span
@@ -246,7 +246,7 @@ const shareQrCode = async () => {
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <!-- Left Column - QR Code Preview -->
                 <div class="lg:col-span-1">
-                    <div class="bg-white dark:bg-surface-800 rounded-xl p-6 shadow-sm border border-surface-200 dark:border-surface-700 sticky top-6">
+                    <div class="bg-white dark:bg-surface-800 rounded-xl p-4 sm:p-6 shadow-sm border border-surface-200 dark:border-surface-700 sticky top-6">
                         <h2 class="text-lg font-semibold text-surface-900 dark:text-surface-50 mb-4 flex items-center gap-2">
                             <LucideQrCode :size="20" />
                             {{ t('qrcodes.previewTitle') }}
@@ -333,7 +333,7 @@ const shareQrCode = async () => {
                 <div class="lg:col-span-2 space-y-6">
                     <!-- Statistics -->
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <div class="bg-white dark:bg-surface-800 rounded-xl p-6 shadow-sm border border-surface-200 dark:border-surface-700">
+                        <div class="bg-white dark:bg-surface-800 rounded-xl p-4 sm:p-6 shadow-sm border border-surface-200 dark:border-surface-700">
                             <div class="flex items-center justify-between">
                                 <div>
                                     <p class="text-sm font-medium text-surface-600 dark:text-surface-400">{{ t('qrcodes.totalScans') }}</p>
@@ -345,7 +345,7 @@ const shareQrCode = async () => {
                             </div>
                         </div>
 
-                        <div class="bg-white dark:bg-surface-800 rounded-xl p-6 shadow-sm border border-surface-200 dark:border-surface-700">
+                        <div class="bg-white dark:bg-surface-800 rounded-xl p-4 sm:p-6 shadow-sm border border-surface-200 dark:border-surface-700">
                             <div class="flex items-center justify-between">
                                 <div>
                                     <p class="text-sm font-medium text-surface-600 dark:text-surface-400">{{ t('qrcodes.typeStat') }}</p>
@@ -359,7 +359,7 @@ const shareQrCode = async () => {
                             </div>
                         </div>
 
-                        <div class="bg-white dark:bg-surface-800 rounded-xl p-6 shadow-sm border border-surface-200 dark:border-surface-700">
+                        <div class="bg-white dark:bg-surface-800 rounded-xl p-4 sm:p-6 shadow-sm border border-surface-200 dark:border-surface-700">
                             <div class="flex items-center justify-between">
                                 <div>
                                     <p class="text-sm font-medium text-surface-600 dark:text-surface-400">{{ t('qrcodes.lastScan') }}</p>
@@ -375,7 +375,7 @@ const shareQrCode = async () => {
                     </div>
 
                     <!-- Format & Payload -->
-                    <div class="bg-white dark:bg-surface-800 rounded-xl p-6 shadow-sm border border-surface-200 dark:border-surface-700">
+                    <div class="bg-white dark:bg-surface-800 rounded-xl p-4 sm:p-6 shadow-sm border border-surface-200 dark:border-surface-700">
                         <h2 class="text-lg font-semibold text-surface-900 dark:text-surface-50 mb-4 flex items-center gap-2">
                             <component :is="getFormatIcon(qrcode.format)" :size="20" />
                             Content Details
@@ -421,7 +421,7 @@ const shareQrCode = async () => {
                     </div>
 
                     <!-- Metadata -->
-                    <div class="bg-white dark:bg-surface-800 rounded-xl p-6 shadow-sm border border-surface-200 dark:border-surface-700">
+                    <div class="bg-white dark:bg-surface-800 rounded-xl p-4 sm:p-6 shadow-sm border border-surface-200 dark:border-surface-700">
                         <h2 class="text-lg font-semibold text-surface-900 dark:text-surface-50 mb-4 flex items-center gap-2">
                             <LucideClock :size="20" />
                             Metadata
@@ -473,7 +473,7 @@ const shareQrCode = async () => {
                     </div>
 
                     <!-- Activity Timeline (Placeholder for future enhancement) -->
-                    <div class="bg-white dark:bg-surface-800 rounded-xl p-6 shadow-sm border border-surface-200 dark:border-surface-700">
+                    <div class="bg-white dark:bg-surface-800 rounded-xl p-4 sm:p-6 shadow-sm border border-surface-200 dark:border-surface-700">
                         <h2 class="text-lg font-semibold text-surface-900 dark:text-surface-50 mb-4 flex items-center gap-2">
                             <LucideActivity :size="20" />
                             Recent Activity

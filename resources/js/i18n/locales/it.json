@@ -21,7 +21,8 @@
     "previous": "Precedente",
     "loading": "Caricamento...",
     "saving": "Salvataggio...",
-    "noResults": "Nessun risultato trovato"
+    "noResults": "Nessun risultato trovato",
+    "close": "Chiudi"
   },
   "nav": {
     "dashboard": "Dashboard",
@@ -272,9 +273,11 @@
       "inactiveHint": "La pagina è nascosta",
       "themeColor": "Colore Tema",
       "slugHint": "URL pubblico"
-    },    "placeholders": {
+    },
+    "placeholders": {
       "slug": "url-mia-pagina"
-    },    "update": "Aggiorna Pagina",
+    },
+    "update": "Aggiorna Pagina",
     "addBlock": "Aggiungi Blocco",
     "blockEditor": "Editor Blocchi",
     "dragAndDrop": "Trascina per riordinare",
@@ -338,7 +341,8 @@
       "steps": {
         "account": "Account",
         "company": "Azienda",
-        "preferences": "Preferenze"
+        "preferences": "Preferenze",
+        "space": "Il tuo spazio"
       },
       "accountInfo": "Informazioni account",
       "firstName": "Nome",
@@ -379,7 +383,91 @@
       "back": "Indietro",
       "createAccount": "Crea account",
       "alreadyHaveAccount": "Hai già un account?",
-      "logIn": "Accedi"
+      "logIn": "Accedi",
+      "slugTooShort": "L'URL deve contenere almeno 3 caratteri.",
+      "slugInvalid": "L'URL può contenere solo lettere minuscole, numeri e trattini.",
+      "slugTaken": "Questo URL è già in uso.",
+      "slugCheckError": "Errore durante la verifica dell'URL.",
+      "options": {
+        "other": "Altro",
+        "industries": {
+          "technology": "Tecnologia",
+          "marketing": "Marketing e pubblicità",
+          "ecommerce": "E-commerce",
+          "education": "Istruzione",
+          "healthcare": "Sanità",
+          "finance": "Finanza",
+          "real_estate": "Immobiliare",
+          "food": "Food & beverage",
+          "other": "Altro"
+        },
+        "companySizes": {
+          "solo": "Solo io",
+          "1-10": "1-10 dipendenti",
+          "11-50": "11-50 dipendenti",
+          "51-200": "51-200 dipendenti",
+          "200+": "Oltre 200 dipendenti"
+        },
+        "usageTypes": {
+          "personal": "Personale",
+          "company": "Azienda",
+          "agency": "Agenzia",
+          "other": "Altro",
+          "freelancer": "Professionista"
+        },
+        "referralSources": {
+          "google": "Google",
+          "social": "Social network",
+          "word_of_mouth": "Passaparola",
+          "ad": "Pubblicità",
+          "blog": "Blog/Articolo",
+          "other": "Altro"
+        },
+        "mainGoals": {
+          "monitorare_campagne": "Monitorare campagne",
+          "gestire_qr": "Gestire QR Code",
+          "accorciare_link": "Accorciare link",
+          "altro": "Altro"
+        },
+        "estimatedUsages": {
+          "low": "Basso",
+          "medium": "Medio",
+          "high": "Alto"
+        }
+      },
+      "profileQuestion": "Come userai MagLink?",
+      "profiles": {
+        "personal": {
+          "title": "Privato",
+          "description": "Per uso personale: link, QR Code e pagine per te"
+        },
+        "business": {
+          "title": "Azienda o professionista",
+          "description": "Per un'attività, uno studio o un'agenzia"
+        }
+      },
+      "activityType": "Tipo di attività",
+      "activities": {
+        "company": {
+          "title": "Azienda",
+          "description": "Lo usi per la tua azienda. Potrai dare accesso ai link al tuo team."
+        },
+        "freelancer": {
+          "title": "Professionista",
+          "description": "Lavori da solo, come libero professionista."
+        },
+        "agency": {
+          "title": "Agenzia",
+          "description": "Crei link e QR Code per i tuoi clienti. Potrai dare a ogni cliente accesso ai link assegnati."
+        }
+      },
+      "spaceInfo": "Il tuo spazio MagLink",
+      "publicUrlHint": "Sarà l'indirizzo delle tue pagine pubbliche.",
+      "businessName": {
+        "freelancer": "Nome attività o studio",
+        "agency": "Nome agenzia"
+      },
+      "consentsTitle": "Consensi"
     },
     "forgotPassword": {
       "headTitle": "Password dimenticata",
@@ -634,7 +722,46 @@
       },
       "marketing": {
         "title": "Cookie di marketing",
-        "description": "Utilizzati per mostrare annunci pertinenti e misurare l\u2019efficacia delle campagne pubblicitarie. Nessun dato viene condiviso con terze parti senza il tuo consenso."
+        "description": "Utilizzati per mostrare annunci pertinenti e misurare l’efficacia delle campagne pubblicitarie. Nessun dato viene condiviso con terze parti senza il tuo consenso."
+      }
+    }
+  },
+  "analytics": {
+    "export": {
+      "button": "Esporta statistiche",
+      "title": "Esporta report",
+      "premiumTitle": "Funzionalità Premium",
+      "premiumDescription": "L'export in PDF e CSV, con confronto tra link e filtri per periodo, è incluso nei piani Professional ed Enterprise.",
+      "upgrade": "Scopri i piani",
+      "format": "Formato",
+      "pdf": "Report PDF",
+      "pdfHint": "Grafici, KPI e confronto",
+      "csv": "Dati CSV",
+      "csvHint": "Per Excel e strumenti di analisi",
+      "datasetDaily": "Visite giornaliere per link",
+      "datasetViews": "Dettaglio singole visite",
+      "period": "Periodo",
+      "presets": {
+        "7d": "Ultimi 7 giorni",
+        "30d": "Ultimi 30 giorni",
+        "90d": "Ultimi 90 giorni",
+        "thisMonth": "Questo mese",
+        "lastMonth": "Mese scorso",
+        "custom": "Personalizzato"
+      },
+      "from": "Dal",
+      "to": "Al",
+      "previousPeriodHint": "Il report confronta i dati con il periodo precedente di pari durata.",
+      "links": "Link da includere",
+      "compareWith": "Confronta con altri link (opzionale)",
+      "searchLinks": "Cerca link...",
+      "comparisonHint": "Con più link il PDF include grafico e tabella di confronto.",
+      "download": "Scarica",
+      "errors": {
+        "period": "Seleziona un periodo valido.",
+        "order": "La data di inizio deve precedere quella di fine.",
+        "tooLong": "Il periodo massimo è di 2 anni.",
+        "noLinks": "Seleziona almeno un link."
       }
     }
   }

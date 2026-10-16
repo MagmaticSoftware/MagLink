@@ -261,15 +261,15 @@ const getDeviceIcon = (deviceType: string | null) => {
     </Head>
 
     <AppLayout :breadcrumbs="breadcrumbs">
-        <div class="flex h-full flex-1 flex-col gap-6 p-6">
+        <div class="flex h-full flex-1 flex-col gap-4 sm:gap-6 p-0 sm:p-2 lg:p-6">
             <!-- Header -->
-            <div class="flex items-center justify-between">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div class="flex items-center gap-4">
                     <div class="flex-shrink-0 w-16 h-16 bg-gradient-to-br from-purple-500/20 to-purple-500/5 rounded-xl flex items-center justify-center">
                         <LucideQrCode :size="32" class="text-purple-600" />
                     </div>
                     <div>
-                        <h1 class="text-3xl font-bold text-surface-900 dark:text-surface-50">
+                        <h1 class="text-2xl sm:text-3xl font-bold text-surface-900 dark:text-surface-50">
                             Analytics: {{ item.name }}
                         </h1>
                         <p class="text-surface-600 dark:text-surface-400 mt-1">
@@ -289,7 +289,7 @@ const getDeviceIcon = (deviceType: string | null) => {
 
             <!-- Overview Cards -->
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                <div class="bg-white dark:bg-surface-800 rounded-xl p-6 shadow-sm border border-surface-200 dark:border-surface-700">
+                <div class="bg-white dark:bg-surface-800 rounded-xl p-4 sm:p-6 shadow-sm border border-surface-200 dark:border-surface-700">
                     <div class="flex items-center justify-between mb-2">
                         <span class="text-sm font-medium text-surface-600 dark:text-surface-400">Scansioni Totali</span>
                         <LucideEye :size="20" class="text-primary" />
@@ -299,7 +299,7 @@ const getDeviceIcon = (deviceType: string | null) => {
                     </div>
                 </div>
 
-                <div class="bg-white dark:bg-surface-800 rounded-xl p-6 shadow-sm border border-surface-200 dark:border-surface-700">
+                <div class="bg-white dark:bg-surface-800 rounded-xl p-4 sm:p-6 shadow-sm border border-surface-200 dark:border-surface-700">
                     <div class="flex items-center justify-between mb-2">
                         <span class="text-sm font-medium text-surface-600 dark:text-surface-400">Con Consenso</span>
                         <LucideShield :size="20" class="text-blue-600" />
@@ -312,7 +312,7 @@ const getDeviceIcon = (deviceType: string | null) => {
                     </div>
                 </div>
 
-                <div class="bg-white dark:bg-surface-800 rounded-xl p-6 shadow-sm border border-surface-200 dark:border-surface-700">
+                <div class="bg-white dark:bg-surface-800 rounded-xl p-4 sm:p-6 shadow-sm border border-surface-200 dark:border-surface-700">
                     <div class="flex items-center justify-between mb-2">
                         <span class="text-sm font-medium text-surface-600 dark:text-surface-400">Anonimi</span>
                         <LucideUsers :size="20" class="text-gray-500" />
@@ -325,7 +325,7 @@ const getDeviceIcon = (deviceType: string | null) => {
                     </div>
                 </div>
 
-                <div class="bg-white dark:bg-surface-800 rounded-xl p-6 shadow-sm border border-surface-200 dark:border-surface-700">
+                <div class="bg-white dark:bg-surface-800 rounded-xl p-4 sm:p-6 shadow-sm border border-surface-200 dark:border-surface-700">
                     <div class="flex items-center justify-between mb-2">
                         <span class="text-sm font-medium text-surface-600 dark:text-surface-400">Tasso Consenso</span>
                         <LucideTrendingUp :size="20" class="text-green-600" />
@@ -340,7 +340,7 @@ const getDeviceIcon = (deviceType: string | null) => {
             </div>
 
             <!-- Daily Views Chart -->
-            <div class="bg-white dark:bg-surface-800 rounded-xl p-6 shadow-sm border border-surface-200 dark:border-surface-700">
+            <div class="bg-white dark:bg-surface-800 rounded-xl p-4 sm:p-6 shadow-sm border border-surface-200 dark:border-surface-700">
                 <h2 class="text-xl font-bold text-surface-900 dark:text-surface-50 mb-4">
                     Scansioni Giornaliere (Ultimi 30 giorni)
                 </h2>
@@ -352,7 +352,7 @@ const getDeviceIcon = (deviceType: string | null) => {
             <!-- Detailed Stats Grid -->
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 <!-- Countries -->
-                <div class="bg-white dark:bg-surface-800 rounded-xl p-6 shadow-sm border border-surface-200 dark:border-surface-700">
+                <div class="bg-white dark:bg-surface-800 rounded-xl p-4 sm:p-6 shadow-sm border border-surface-200 dark:border-surface-700">
                     <h2 class="text-xl font-bold text-surface-900 dark:text-surface-50 mb-4 flex items-center gap-2">
                         <LucideGlobe :size="20" class="text-primary" />
                         Paesi (solo dati con consenso)
@@ -366,7 +366,7 @@ const getDeviceIcon = (deviceType: string | null) => {
                 </div>
 
                 <!-- Devices -->
-                <div class="bg-white dark:bg-surface-800 rounded-xl p-6 shadow-sm border border-surface-200 dark:border-surface-700">
+                <div class="bg-white dark:bg-surface-800 rounded-xl p-4 sm:p-6 shadow-sm border border-surface-200 dark:border-surface-700">
                     <h2 class="text-xl font-bold text-surface-900 dark:text-surface-50 mb-4 flex items-center gap-2">
                         <LucideMonitor :size="20" class="text-primary" />
                         Dispositivi
@@ -380,7 +380,7 @@ const getDeviceIcon = (deviceType: string | null) => {
                 </div>
 
                 <!-- Browsers -->
-                <div class="bg-white dark:bg-surface-800 rounded-xl p-6 shadow-sm border border-surface-200 dark:border-surface-700">
+                <div class="bg-white dark:bg-surface-800 rounded-xl p-4 sm:p-6 shadow-sm border border-surface-200 dark:border-surface-700">
                     <h2 class="text-xl font-bold text-surface-900 dark:text-surface-50 mb-4">
                         Browser
                     </h2>
@@ -393,7 +393,7 @@ const getDeviceIcon = (deviceType: string | null) => {
                 </div>
 
                 <!-- Platforms -->
-                <div class="bg-white dark:bg-surface-800 rounded-xl p-6 shadow-sm border border-surface-200 dark:border-surface-700">
+                <div class="bg-white dark:bg-surface-800 rounded-xl p-4 sm:p-6 shadow-sm border border-surface-200 dark:border-surface-700">
                     <h2 class="text-xl font-bold text-surface-900 dark:text-surface-50 mb-4">
                         Sistemi Operativi
                     </h2>
@@ -407,7 +407,7 @@ const getDeviceIcon = (deviceType: string | null) => {
             </div>
 
             <!-- Recent Views Table -->
-            <div class="bg-white dark:bg-surface-800 rounded-xl p-6 shadow-sm border border-surface-200 dark:border-surface-700">
+            <div class="bg-white dark:bg-surface-800 rounded-xl p-4 sm:p-6 shadow-sm border border-surface-200 dark:border-surface-700">
                 <h2 class="text-xl font-bold text-surface-900 dark:text-surface-50 mb-4">
                     Scansioni Recenti (con consenso)
                 </h2>

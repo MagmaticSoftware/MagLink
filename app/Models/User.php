@@ -83,6 +83,14 @@ class User extends Authenticatable implements MustVerifyEmail
     }
 
     /**
+     * Preferenze e consensi raccolti in fase di registrazione.
+     */
+    public function preferences()
+    {
+        return $this->hasOne(UserPreferences::class);
+    }
+
+    /**
      * Override subscriptions relation to use custom model with custom table
      */
     public function subscriptions()
@@ -462,6 +470,24 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         $options = $this->getQrCustomizationOptions();
         return $options['max_size'] ?? 512;
+    }
+
+    /**
+     * Verifica se il piano corrente include una funzionalità (config subscriptions.plans.*.features)
+     */
+    public function hasPlanFeature(string $feature): bool
+    {
+        $planKey = $this->currentPlanKey() ?: 'free';
+
+        return (bool) config("subscriptions.plans.{$planKey}.features.{$feature}", false);
+    }
+
+    /**
+     * Export PDF/CSV delle statistiche: riservato ai piani premium
+     */
+    public function canExportAnalytics(): bool
+    {
+        return $this->hasPlanFeature('analytics_export');
     }
 
     /**
