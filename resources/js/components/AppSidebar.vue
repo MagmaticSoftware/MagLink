@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Link, usePage } from '@inertiajs/vue3';
-import { LayoutGrid, LayoutTemplate, Link as LinkIcon, QrCode, Settings, HelpCircle, X } from 'lucide-vue-next';
+import { LayoutGrid, LayoutTemplate, Link as LinkIcon, QrCode, Settings, HelpCircle, X, UtensilsCrossed } from 'lucide-vue-next';
 import { computed, ref, watch } from 'vue';
 import { useDark } from '@vueuse/core';
 import { useI18n } from 'vue-i18n';
@@ -9,6 +9,7 @@ import ApplicationLogo from './ApplicationLogo.vue';
 import SidebarTrialBanner from './SidebarTrialBanner.vue';
 import PlanSelectionModal from './PlanSelectionModal.vue';
 import type { PageProps } from '@/types/inertia';
+import sidebarMountains from '../../images/dashboard/sidebar-mountains.webp';
 
 const { t } = useI18n();
 
@@ -70,6 +71,12 @@ const mainNavItems = computed(() => [
         href: 'pages.index',
         icon: LayoutTemplate,
     },
+    {
+        label: t('nav.menu'),
+        href: 'menu.index',
+        icon: UtensilsCrossed,
+        badge: t('nav.comingSoon'),
+    },
 ]);
 
 // Chiude il drawer quando si naviga verso un'altra pagina
@@ -88,17 +95,23 @@ const isActive = (href: string) => {
         @click="emit('close')"
     ></div>
     <aside
-        class="fixed inset-y-0 left-0 z-40 flex w-64 flex-col bg-gradient-to-b from-surface-50 to-surface-100 dark:from-surface-900 dark:to-surface-950 shadow-lg transition-transform duration-200 md:z-10 md:translate-x-0"
+        class="fixed inset-y-0 left-0 z-40 flex w-64 flex-col overflow-hidden border-r border-surface-200/80 bg-white transition-transform duration-200 md:z-10 md:translate-x-0 dark:border-surface-800 dark:bg-surface-900"
         :class="props.mobileOpen ? 'translate-x-0' : '-translate-x-full'"
     >
+        <!-- Immagine decorativa in fondo alla sidebar, sfumata verso l'alto per non disturbare la lettura -->
+        <div aria-hidden="true" class="pointer-events-none absolute inset-x-0 bottom-0 h-80">
+            <img :src="sidebarMountains" alt="" class="h-full w-full object-cover object-[70%_center] dark:opacity-50" />
+            <div class="absolute inset-0 bg-gradient-to-b from-white from-5% via-white/45 via-45% to-white/0 dark:from-surface-900 dark:via-surface-900/60 dark:to-surface-900/10"></div>
+        </div>
+
         <!-- Header con Logo -->
-        <div class="flex h-16 items-center justify-between px-6">
+        <div class="relative flex h-16 items-center justify-between px-5">
             <Link :href="route('tenant.index')">
-                <ApplicationLogo class="h-12" :is-dark="isDark" />
+                <ApplicationLogo class="h-11" :is-dark="isDark" />
             </Link>
             <button
                 type="button"
-                class="md:hidden flex h-9 w-9 items-center justify-center rounded-lg text-surface-600 dark:text-surface-300 hover:bg-surface-200 dark:hover:bg-surface-800"
+                class="md:hidden flex h-9 w-9 items-center justify-center rounded-lg text-surface-600 dark:text-surface-300 hover:bg-surface-100 dark:hover:bg-surface-800"
                 :aria-label="t('common.close')"
                 @click="emit('close')"
             >
@@ -107,49 +120,66 @@ const isActive = (href: string) => {
         </div>
 
         <!-- Navigation Menu -->
-        <nav class="flex-1 overflow-y-auto px-3 py-6">
-            <ul class="space-y-1">
+        <nav class="relative flex-1 overflow-y-auto px-3 py-4">
+            <ul class="space-y-0.5">
                 <li v-for="item in mainNavItems" :key="item.href">
-                    <Link 
+                    <Link
                         :href="route().has(item.href) ? route(item.href) : item.href"
-                        class="flex items-center gap-3 rounded-xl px-4 py-3 text-surface-700 dark:text-surface-200 transition-all duration-200 hover:bg-primary-100 dark:hover:bg-primary-900"
-                        :class="{
-                            'bg-primary dark:bg-primary-800 dark:hover:bg-primary-600 text-white hover:bg-primary-600': isActive(item.href)
-                        }"
+                        class="relative flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors duration-150"
+                        :class="isActive(item.href)
+                            ? 'bg-surface-100 font-semibold text-surface-900 shadow-[inset_0_0_0_1px_rgb(0_0_0/0.03)] dark:bg-white/[0.07] dark:text-white'
+                            : 'font-medium text-surface-600 hover:bg-surface-50 hover:text-surface-900 dark:text-surface-300 dark:hover:bg-white/[0.04] dark:hover:text-white'"
                     >
-                        <component :is="item.icon" :size="20" :stroke-width="isActive(item.href) ? 2.5 : 2" />
-                        <span class="text-sm font-medium">{{ item.label }}</span>
+                        <!-- Indicatore della voce attiva -->
+                        <span
+                            v-if="isActive(item.href)"
+                            aria-hidden="true"
+                            class="absolute top-1/2 -left-3 h-5 w-[3px] -translate-y-1/2 rounded-r-full bg-primary-500"
+                        ></span>
+                        <component
+                            :is="item.icon"
+                            :size="18"
+                            :stroke-width="isActive(item.href) ? 2.25 : 1.75"
+                            :class="isActive(item.href) ? 'text-primary-500' : ''"
+                        />
+                        <span class="flex-1">{{ item.label }}</span>
+                        <span
+                            v-if="item.badge"
+                            class="rounded-md bg-gradient-to-r from-primary-500 to-rose-500 px-1.5 py-0.5 text-[9px] font-bold tracking-wide text-white uppercase"
+                        >
+                            {{ item.badge }}
+                        </span>
                     </Link>
                 </li>
             </ul>
         </nav>
 
-        <!-- Footer con Links Secondari -->
-        <div class="border-t border-surface-200/50 dark:border-surface-700/50 p-3">
-            <!-- Subscription/Trial Banner -->
-            <SidebarTrialBanner 
-                :trial="trial" 
-                :subscription="subscription"
-                :billing="billing"
-                @show-plan-modal="showPlanModal = true" 
-            />
-            
-            <div class="space-y-1">
-                <Link 
+        <!-- Footer con Links Secondari: rialzato per lasciare visibile lo sfondo (solo su schermi alti) -->
+        <div class="relative p-3 [@media(min-height:760px)]:pb-40">
+            <div class="mb-3 space-y-0.5">
+                <Link
                     :href="route('profile.edit')"
-                    class="flex items-center gap-3 rounded-lg px-4 py-2 text-sm text-surface-600 dark:text-surface-400 hover:bg-white/60 dark:hover:bg-surface-800/60 hover:text-surface-900 dark:hover:text-surface-100 transition-all"
+                    class="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-surface-600 transition-colors hover:bg-white/70 hover:text-surface-900 dark:text-surface-300 dark:hover:bg-surface-800/70 dark:hover:text-white"
                 >
-                    <Settings :size="18" />
+                    <Settings :size="18" :stroke-width="1.75" />
                     <span>{{ t('common.settings') }}</span>
                 </Link>
-                <Link 
-                    href="#"
-                    class="flex items-center gap-3 rounded-lg px-4 py-2 text-sm text-surface-600 dark:text-surface-400 hover:bg-white/60 dark:hover:bg-surface-800/60 hover:text-surface-900 dark:hover:text-surface-100 transition-all"
+                <Link
+                    :href="route('help.index')"
+                    class="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-surface-600 transition-colors hover:bg-white/70 hover:text-surface-900 dark:text-surface-300 dark:hover:bg-surface-800/70 dark:hover:text-white"
                 >
-                    <HelpCircle :size="18" />
+                    <HelpCircle :size="18" :stroke-width="1.75" />
                     <span>{{ t('common.help') }}</span>
                 </Link>
             </div>
+
+            <!-- Subscription/Trial Banner -->
+            <SidebarTrialBanner
+                :trial="trial"
+                :subscription="subscription"
+                :billing="billing"
+                @show-plan-modal="showPlanModal = true"
+            />
         </div>
 
         <!-- Plan Selection Modal -->

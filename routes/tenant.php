@@ -10,6 +10,7 @@ use App\Http\Controllers\PlanController;
 use App\Http\Controllers\QrCodeController;
 use App\Http\Controllers\QrLogoUploadController;
 use App\Http\Middleware\RedirectIfNotSubscribed;
+use App\Http\Middleware\EnsureUserBelongsToTenant;
 use App\Http\Middleware\SetDefaultTenantForUrls;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
@@ -36,6 +37,7 @@ Route::domain(config('app.tenant_url'))->middleware([
     'web',
     'auth',
     'verified',
+    EnsureUserBelongsToTenant::class,
     SetDefaultTenantForUrls::class
 ])->prefix('/{tenant}')->group(function () {
     
@@ -51,6 +53,9 @@ Route::domain(config('app.tenant_url'))->middleware([
     Route::get('/checkout/success', [CheckoutController::class, 'success'])->name('checkout.success');
     Route::get('/checkout/cancel', [CheckoutController::class, 'cancel'])->name('checkout.cancel');
     Route::get('/billing-portal', [CheckoutController::class, 'billingPortal'])->name('billing.portal');
+
+    // Guida all'uso (consultabile anche senza abbonamento attivo)
+    Route::get('/help', fn () => Inertia::render('tenant/help/Index'))->name('help.index');
     
     // ==========================================
     // Routes che richiedono abbonamento/trial attivo
@@ -58,6 +63,12 @@ Route::domain(config('app.tenant_url'))->middleware([
     Route::middleware([RedirectIfNotSubscribed::class])->group(function () {
         Route::get('/', [App\Http\Controllers\DashboardController::class, 'index'])
             ->name('tenant.index');
+
+        // Ristorazione / Menù digitale: per ora pagina di presentazione "coming soon"
+        Route::get('menu', fn () => Inertia::render('tenant/menu/ComingSoon'))->name('menu.index');
+
+        // Ricerca globale (topbar)
+        Route::get('search', App\Http\Controllers\SearchController::class)->name('search');
 
         // Analytics routes
         Route::get('links/{link}/analytics', [App\Http\Controllers\AnalyticsController::class, 'link'])

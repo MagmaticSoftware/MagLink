@@ -12,7 +12,8 @@ import {
     LucideShield,
     LucideCheck,
     LucideShare2,
-    LucideArrowUp
+    LucideArrowUp,
+    LucideStar
 } from 'lucide-vue-next';
 import LanguageSelector from '@/components/LanguageSelector.vue';
 import CookieBanner from '@/components/CookieBanner.vue';
@@ -434,7 +435,7 @@ setInterval(() => {
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
                     <div class="p-8 rounded-2xl bg-white/[0.04] backdrop-blur-sm border border-white/[0.09] hover:border-orange-500/30 hover:bg-white/[0.07] transition-all duration-300 flex flex-col">
-                        <div class="flex items-center gap-1 mb-6"><span v-for="i in 5" :key="i" class="text-orange-400 text-lg">★</span></div>
+                        <div class="flex items-center gap-1 mb-6"><LucideStar v-for="i in 5" :key="i" class="w-4 h-4 fill-orange-400 text-orange-400" /></div>
                         <p class="text-gray-300 leading-relaxed flex-1 mb-6 italic">"{{ t('welcome.testimonials.t1.quote') }}"</p>
                         <div class="flex items-center gap-3 pt-4 border-t border-white/[0.08]">
                             <div class="w-10 h-10 rounded-full bg-gradient-to-br from-orange-500 to-amber-400 flex items-center justify-center text-white font-bold text-sm flex-shrink-0">{{ t('welcome.testimonials.t1.initials') }}</div>
@@ -442,7 +443,7 @@ setInterval(() => {
                         </div>
                     </div>
                     <div class="p-8 rounded-2xl bg-white/[0.04] backdrop-blur-sm border border-white/[0.09] hover:border-orange-500/30 hover:bg-white/[0.07] transition-all duration-300 flex flex-col">
-                        <div class="flex items-center gap-1 mb-6"><span v-for="i in 5" :key="i" class="text-orange-400 text-lg">★</span></div>
+                        <div class="flex items-center gap-1 mb-6"><LucideStar v-for="i in 5" :key="i" class="w-4 h-4 fill-orange-400 text-orange-400" /></div>
                         <p class="text-gray-300 leading-relaxed flex-1 mb-6 italic">"{{ t('welcome.testimonials.t2.quote') }}"</p>
                         <div class="flex items-center gap-3 pt-4 border-t border-white/[0.08]">
                             <div class="w-10 h-10 rounded-full bg-gradient-to-br from-violet-500 to-purple-400 flex items-center justify-center text-white font-bold text-sm flex-shrink-0">{{ t('welcome.testimonials.t2.initials') }}</div>
@@ -450,7 +451,7 @@ setInterval(() => {
                         </div>
                     </div>
                     <div class="p-8 rounded-2xl bg-white/[0.04] backdrop-blur-sm border border-white/[0.09] hover:border-orange-500/30 hover:bg-white/[0.07] transition-all duration-300 flex flex-col">
-                        <div class="flex items-center gap-1 mb-6"><span v-for="i in 5" :key="i" class="text-orange-400 text-lg">★</span></div>
+                        <div class="flex items-center gap-1 mb-6"><LucideStar v-for="i in 5" :key="i" class="w-4 h-4 fill-orange-400 text-orange-400" /></div>
                         <p class="text-gray-300 leading-relaxed flex-1 mb-6 italic">"{{ t('welcome.testimonials.t3.quote') }}"</p>
                         <div class="flex items-center gap-3 pt-4 border-t border-white/[0.08]">
                             <div class="w-10 h-10 rounded-full bg-gradient-to-br from-emerald-500 to-teal-400 flex items-center justify-center text-white font-bold text-sm flex-shrink-0">{{ t('welcome.testimonials.t3.initials') }}</div>

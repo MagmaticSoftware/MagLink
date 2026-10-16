@@ -30,11 +30,10 @@ class PlanController extends Controller
             // Se ha una subscription Stripe attiva, prendi la data di scadenza
             if ($user->subscribed('default')) {
                 $subscription = $user->subscription('default');
-                // Usa il campo current_period_end dal database, con fallback all'API Stripe
-                $subscriptionEndsAt = $subscription->current_period_end ?? 
-                    $subscription->ends_at ?? 
-                    ($subscription->asStripeSubscription()->current_period_end ? 
-                        \Carbon\Carbon::createFromTimestamp($subscription->asStripeSubscription()->current_period_end) : null);
+                // Usa il campo current_period_end dal database, con fallback (protetto) all'API Stripe
+                $subscriptionEndsAt = $subscription->current_period_end ??
+                    $subscription->ends_at ??
+                    $subscription->periodEnd();
             }
             // Se è in trial, prendi la data di scadenza del trial
             elseif ($user->onTrial()) {

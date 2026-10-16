@@ -5,10 +5,8 @@ use App\Models\View;
 use App\Services\AnalyticsReportService;
 use App\Support\ReportCharts;
 use Barryvdh\DomPDF\Facade\Pdf;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
 
-uses(RefreshDatabase::class);
 
 beforeEach(function () {
     DB::table('users')->insert(['id' => 1, 'first_name' => 'Test', 'last_name' => 'User', 'email' => 't@example.com', 'password' => 'x']);

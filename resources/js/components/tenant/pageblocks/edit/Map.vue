@@ -2,7 +2,8 @@
 import { ref, watch, computed } from 'vue';
 import axios from 'axios';
 import { useConfirm } from 'primevue/useconfirm';
-import { LucideSave, LucideMapPin, LucideTrash2, LucideSearch } from 'lucide-vue-next';
+import BlockCardHeader from './BlockCardHeader.vue';
+import { LucideMapPin, LucideSearch } from 'lucide-vue-next';
 import InputText from '@/components/volt/InputText.vue';
 import Button from '@/components/volt/Button.vue';
 import MapCoordinatePicker from '@/components/MapCoordinatePicker.vue';
@@ -117,44 +118,26 @@ const deleteBlock = () => {
 </script>
 
 <template>
-  <div class="h-full w-full flex flex-col p-2">
-    <!-- Header with actions -->
-    <div class="flex items-center justify-between mb-3 pb-2 border-b border-surface-200 dark:border-surface-700">
-      <div class="flex items-center gap-2">
-        <div class="p-1.5 bg-cyan-100 dark:bg-cyan-900/30 rounded-lg">
-          <LucideMapPin :size="16" class="text-cyan-600 dark:text-cyan-400" />
-        </div>
-        <span class="text-xs font-medium text-surface-600 dark:text-surface-400">Mappa</span>
-      </div>
-      <div class="flex items-center gap-1">
-        <button
-          @click="saveBlock"
-          :disabled="isSaving"
-          class="p-1.5 rounded-lg transition-colors disabled:opacity-50"
-          :class="hasChanges ? 'bg-green-500 hover:bg-green-600 animate-pulse' : 'hover:bg-green-100 dark:hover:bg-green-900/30'"
-          :title="hasChanges ? 'Save pending changes' : 'No changes to save'"
-        >
-          <LucideSave :size="14" :class="hasChanges ? 'text-white' : 'text-green-600 dark:text-green-400'" />
-        </button>
-        <button
-          @click="deleteBlock"
-          class="p-1.5 rounded-lg hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors"
-          title="Delete block"
-        >
-          <LucideTrash2 :size="14" class="text-red-600 dark:text-red-400" />
-        </button>
-      </div>
-    </div>
+  <div class="flex h-full w-full flex-col">
+    <BlockCardHeader
+      label="Mappa"
+      :icon="LucideMapPin"
+      tone="cyan"
+      :has-changes="hasChanges"
+      :is-saving="isSaving"
+      @save="saveBlock"
+      @delete="deleteBlock"
+    />
 
     <!-- Content -->
-    <div class="flex-1 flex flex-col gap-3 overflow-y-auto">
+    <div class="flex-1 flex flex-col gap-3 overflow-y-auto p-3">
       <div>
         <label class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-1">
-          Nome della Posizione (opzionale)
+          Nome della posizione (opzionale)
         </label>
         <InputText
           v-model="localTitle"
-          placeholder="es. Berlin, Germany"
+          placeholder="es. Milano, Italia"
           class="w-full"
         />
       </div>
@@ -166,7 +149,7 @@ const deleteBlock = () => {
         <div class="flex gap-2">
           <InputText
             v-model="localContent"
-            placeholder="es. 52.5200, 13.4050"
+            placeholder="es. 45.4642, 9.1900"
             class="flex-1"
             readonly
           />

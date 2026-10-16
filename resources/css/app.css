@@ -202,3 +202,71 @@
         dark:p-text:border-transparent dark:enabled:hover:p-text:border-transparent dark:enabled:active:p-text:border-transparent
         dark:p-text:text-primary dark:enabled:hover:p-text:text-primary dark:enabled:active:p-text:text-primary;
 }
+
+/* Font dell'interfaccia (caricato in app.blade.php) */
+@theme {
+    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji';
+}
+
+/* Card della dashboard: bordo sottile e ombra leggera, niente effetto "gommoso" */
+@utility ml-card {
+    @apply rounded-xl border border-surface-200/80 bg-white shadow-[0_1px_2px_0_rgb(16_24_40/0.04)]
+        dark:border-surface-700/70 dark:bg-surface-800/60;
+}
+
+/* Breakpoint per schermi molto larghi (colonna laterale della dashboard) */
+@theme {
+    --breakpoint-3xl: 110rem;
+}
+
+/* Bottoni dell'interfaccia */
+@utility ml-btn-primary {
+    @apply inline-flex cursor-pointer items-center justify-center gap-2 rounded-lg border border-primary-500 bg-primary-500 px-3.5 py-2 text-sm font-semibold text-white shadow-sm shadow-primary-500/25 transition-colors
+        hover:border-primary-600 hover:bg-primary-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500
+        disabled:pointer-events-none disabled:opacity-60;
+}
+
+@utility ml-btn-secondary {
+    @apply inline-flex cursor-pointer items-center justify-center gap-2 rounded-lg border border-surface-200 bg-white px-3.5 py-2 text-sm font-semibold text-surface-700 shadow-sm transition-colors
+        hover:bg-surface-50 hover:text-surface-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500
+        disabled:pointer-events-none disabled:opacity-60
+        dark:border-surface-600 dark:bg-surface-800 dark:text-surface-100 dark:hover:bg-surface-700;
+}
+
+@utility ml-btn-ghost {
+    @apply inline-flex cursor-pointer items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-surface-600 transition-colors
+        hover:bg-surface-100 hover:text-surface-900 dark:text-surface-300 dark:hover:bg-surface-800 dark:hover:text-white;
+}
+
+@utility ml-btn-danger {
+    @apply inline-flex cursor-pointer items-center justify-center gap-2 rounded-lg border border-rose-200 bg-white px-3.5 py-2 text-sm font-semibold text-rose-600 shadow-sm transition-colors
+        hover:bg-rose-50 dark:border-rose-500/30 dark:bg-surface-800 dark:text-rose-400 dark:hover:bg-rose-500/10;
+}
+
+/* Bottone icona compatto (azioni nelle liste) */
+@utility ml-icon-btn {
+    @apply inline-flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg text-surface-500 transition-colors
+        hover:bg-surface-100 hover:text-surface-900 dark:text-surface-400 dark:hover:bg-surface-700/60 dark:hover:text-white;
+}
+
+/* Testi dei form e delle sezioni */
+@utility ml-label {
+    @apply mb-1.5 block text-[13px] font-medium text-surface-700 dark:text-surface-300;
+}
+
+@utility ml-hint {
+    @apply mt-1.5 text-xs text-surface-500 dark:text-surface-400;
+}
+
+@utility ml-error {
+    @apply mt-1.5 text-xs font-medium text-rose-600 dark:text-rose-400;
+}
+
+@utility ml-section-title {
+    @apply flex items-center gap-2 text-[15px] font-semibold text-surface-900 dark:text-surface-50;
+}
+
+/* Badge di stato */
+@utility ml-badge {
+    @apply inline-flex items-center gap-1 rounded-md px-1.5 py-0.5 text-[11px] font-semibold;
+}

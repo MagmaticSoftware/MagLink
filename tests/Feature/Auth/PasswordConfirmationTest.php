@@ -1,34 +1,28 @@
 <?php
 
-use App\Models\User;
-
-uses(\Illuminate\Foundation\Testing\RefreshDatabase::class);
-
 test('confirm password screen can be rendered', function () {
-    $user = User::factory()->create();
+    $user = $this->createTenantUser();
 
-    $response = $this->actingAs($user)->get('/confirm-password');
-
-    $response->assertStatus(200);
+    $this->actingAs($user)->get(route('password.confirm'))->assertOk();
 });
 
 test('password can be confirmed', function () {
-    $user = User::factory()->create();
+    $user = $this->createTenantUser();
 
-    $response = $this->actingAs($user)->post('/confirm-password', [
+    $response = $this->actingAs($user)->post(route('password.confirm'), [
         'password' => 'password',
     ]);
 
-    $response->assertRedirect();
-    $response->assertSessionHasNoErrors();
+    $response->assertSessionHasNoErrors()
+        ->assertRedirect(route('tenant.index', ['tenant' => $user->tenant_id]));
 });
 
 test('password is not confirmed with invalid password', function () {
-    $user = User::factory()->create();
+    $user = $this->createTenantUser();
 
-    $response = $this->actingAs($user)->post('/confirm-password', [
+    $response = $this->actingAs($user)->post(route('password.confirm'), [
         'password' => 'wrong-password',
     ]);
 
-    $response->assertSessionHasErrors();
+    $response->assertSessionHasErrors('password');
 });

@@ -18,21 +18,26 @@ import SocialBlock from '@/components/tenant/pageblocks/edit/Social.vue';
 import Dialog from '@/components/volt/Dialog.vue';
 import ConfirmDialog from '@/components/volt/ConfirmDialog.vue';
 import Button from '@/components/volt/Button.vue';
+import PageHeader from '@/components/PageHeader.vue';
 import CreateBlock from '../pageblocks/Create.vue';
 import InputText from '@/components/volt/InputText.vue';
 import Textarea from '@/components/volt/Textarea.vue';
-import ToggleSwitch from '@/components/volt/ToggleSwitch.vue';
+import ToggleSetting from '@/components/ToggleSetting.vue';
+import StatCard from '@/components/dashboard/StatCard.vue';
 import LimitReachedDialog from '@/components/LimitReachedDialog.vue';
 import PlanSelectionModal from '@/components/PlanSelectionModal.vue';
 import { usePage } from '@inertiajs/vue3';
 import { useConfirm } from 'primevue/useconfirm';
 import { 
-    LucideSave, 
+    LucideSave,
+    LucideFileText,
+    LucideSettings,
+    LucideUpload,
+    LucideMove,
     LucidePlus, 
     LucideLayout, 
     LucideEye, 
     LucideCalendar,
-    LucideToggleLeft,
     LucideToggleRight,
     LucideTrash2
 } from 'lucide-vue-next';
@@ -144,26 +149,6 @@ watch(() => form.is_active, (isActive, oldValue) => {
         form.published_at = '';
     }
 }, { immediate: true });
-
-const getColorClasses = (color: string) => {
-    const colorMap: Record<string, string> = {
-        blue: 'border-blue-400 dark:border-blue-500',
-        indigo: 'border-indigo-400 dark:border-indigo-500',
-        purple: 'border-purple-400 dark:border-purple-500',
-        pink: 'border-pink-400 dark:border-pink-500',
-        red: 'border-red-400 dark:border-red-500',
-        orange: 'border-orange-400 dark:border-orange-500',
-        amber: 'border-amber-400 dark:border-amber-500',
-        yellow: 'border-yellow-400 dark:border-yellow-500',
-        lime: 'border-lime-400 dark:border-lime-500',
-        green: 'border-green-400 dark:border-green-500',
-        emerald: 'border-emerald-400 dark:border-emerald-500',
-        teal: 'border-teal-400 dark:border-teal-500',
-        cyan: 'border-cyan-400 dark:border-cyan-500',
-        sky: 'border-sky-400 dark:border-sky-500',
-    };
-    return colorMap[color] || colorMap.blue;
-};
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -356,19 +341,6 @@ const blockLimit = computed(() => {
     return page.props.billing?.limits?.blocks_per_page || 0;
 });
 
-const getLimitStatus = (current: number, limit: number) => {
-    if (limit === 0) return 'normal';
-    if (current >= limit) return 'exceeded';
-    if (current >= limit - 1) return 'warning';
-    return 'normal';
-};
-
-const getLimitClasses = (status: string) => {
-    if (status === 'exceeded') return 'text-red-700 dark:text-red-400';
-    if (status === 'warning') return 'text-orange-600 dark:text-orange-400';
-    return 'text-surface-900 dark:text-surface-50';
-};
-
 const handleAddBlockClick = () => {
     const limits = page.props.billing?.limits;
     const currentBlockCount = layout.length;
@@ -476,128 +448,91 @@ function handleBlockDeleted(blockId: number) {
     <Head :title="t('pages.edit')" />
 
     <AppLayout :breadcrumbs="breadcrumbs">
-        <div class="flex h-full flex-1 flex-col gap-4 sm:gap-6 p-0 sm:p-2 lg:p-6">
-            <!-- Page Header -->
-            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                <div>
-                    <h1 class="text-2xl sm:text-3xl font-bold text-surface-900 dark:text-surface-50">{{ t('pages.edit') }}</h1>
-                    <p class="text-surface-600 dark:text-surface-400 mt-1">{{ props.page.title }}</p>
-                </div>
-                <div class="flex gap-2">
-                    <Button 
-                        type="button" 
-                        severity="secondary"
-                        @click="handleAddBlockClick"
-                        class="flex items-center gap-2"
-                    >
-                        <LucidePlus :size="16" />
-                        {{ t('pages.addBlock') }}
-                    </Button>
-                </div>
-            </div>
+        <div class="flex w-full flex-col gap-4 sm:gap-5 lg:p-2">
+            <PageHeader
+                :title="t('pages.edit')"
+                :subtitle="props.page.title"
+                :icon="LucideFileText"
+                icon-class="bg-violet-50 text-violet-600 dark:bg-violet-500/10 dark:text-violet-400"
+                :back-href="route('pages.index')"
+                :back-label="t('common.back')"
+            >
+                <template #actions>
+                    <button type="button" class="ml-btn-secondary" @click="handleAddBlockClick">
+                        <LucidePlus :size="16" /> {{ t('pages.addBlock') }}
+                    </button>
+                    <button type="submit" form="page-settings-form" class="ml-btn-primary" :disabled="form.processing">
+                        <LucideSave :size="16" /> {{ t('pages.update') }}
+                    </button>
+                </template>
+            </PageHeader>
 
-            <!-- Statistics Cards -->
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div class="bg-white dark:bg-surface-800 rounded-xl p-4 sm:p-6 shadow-sm border border-surface-200 dark:border-surface-700">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-sm font-medium text-surface-600 dark:text-surface-400">{{ t('pages.stats.totalBlocks') }}</p>
-                            <p 
-                                :class="[
-                                    'text-3xl font-bold mt-2',
-                                    blockLimit > 0 ? getLimitClasses(getLimitStatus(pageStats.totalBlocks, blockLimit)) : 'text-surface-900 dark:text-surface-50'
-                                ]"
-                            >
-                                {{ pageStats.totalBlocks }}<span v-if="blockLimit > 0" class="text-lg"> / {{ blockLimit }}</span>
-                            </p>
-                            <p 
-                                v-if="blockLimit > 0 && getLimitStatus(pageStats.totalBlocks, blockLimit) === 'exceeded'"
-                                class="text-xs text-red-700 dark:text-red-400 mt-1"
-                            >
-                                Limite raggiunto per il piano free
-                            </p>
-                        </div>
-                        <div class="p-3 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
-                            <LucideLayout :size="24" class="text-blue-600 dark:text-blue-400" />
-                        </div>
-                    </div>
-                </div>
-
-                <div class="bg-white dark:bg-surface-800 rounded-xl p-4 sm:p-6 shadow-sm border border-surface-200 dark:border-surface-700">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-sm font-medium text-surface-600 dark:text-surface-400">{{ t('pages.stats.activeBlocks') }}</p>
-                            <p class="text-3xl font-bold text-surface-900 dark:text-surface-50 mt-2">{{ pageStats.publishedBlocks }}</p>
-                        </div>
-                        <div class="p-3 bg-green-100 dark:bg-green-900/30 rounded-lg">
-                            <component :is="form.is_active ? LucideToggleRight : LucideToggleLeft" :size="24" class="text-green-600 dark:text-green-400" />
-                        </div>
-                    </div>
-                </div>
-
-                <div class="bg-white dark:bg-surface-800 rounded-xl p-4 sm:p-6 shadow-sm border border-surface-200 dark:border-surface-700">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-sm font-medium text-surface-600 dark:text-surface-400">{{ t('pages.stats.views') }}</p>
-                            <p class="text-3xl font-bold text-surface-900 dark:text-surface-50 mt-2">{{ pageStats.views }}</p>
-                        </div>
-                        <div class="p-3 bg-purple-100 dark:bg-purple-900/30 rounded-lg">
-                            <LucideEye :size="24" class="text-purple-600 dark:text-purple-400" />
-                        </div>
-                    </div>
-                </div>
+            <!-- Statistiche -->
+            <div class="grid grid-cols-1 gap-3 sm:grid-cols-3 sm:gap-5">
+                <StatCard
+                    :label="t('pages.stats.totalBlocks')"
+                    :value="blockLimit > 0 ? `${pageStats.totalBlocks} / ${blockLimit}` : String(pageStats.totalBlocks)"
+                    :value-class="blockLimit > 0 && pageStats.totalBlocks >= blockLimit ? 'text-rose-600 dark:text-rose-400' : undefined"
+                    :icon="LucideLayout"
+                    icon-class="bg-orange-50 text-orange-600 dark:bg-orange-500/10 dark:text-orange-400"
+                    color="#f97316"
+                />
+                <StatCard
+                    :label="t('pages.stats.activeBlocks')"
+                    :value="String(pageStats.publishedBlocks)"
+                    :icon="LucideToggleRight"
+                    icon-class="bg-emerald-50 text-emerald-600 dark:bg-emerald-500/10 dark:text-emerald-400"
+                    color="#10b981"
+                />
+                <StatCard
+                    :label="t('pages.stats.views')"
+                    :value="String(pageStats.views)"
+                    :icon="LucideEye"
+                    icon-class="bg-violet-50 text-violet-600 dark:bg-violet-500/10 dark:text-violet-400"
+                    color="#8b5cf6"
+                />
             </div>
 
             <!-- Main Content -->
-            <div class="grid grid-cols-1 lg:grid-cols-5 gap-6">
+            <div class="grid grid-cols-1 gap-5 lg:grid-cols-[18rem_minmax(0,1fr)] 2xl:grid-cols-[20rem_minmax(0,1fr)]">
                 <!-- Settings Sidebar -->
-                <div class="lg:col-span-1">
-                    <div class="bg-white dark:bg-surface-800 rounded-xl p-4 shadow-sm border border-surface-200 dark:border-surface-700 sticky top-6">
-                        <h3 class="text-lg font-semibold text-surface-900 dark:text-surface-50 mb-4">
-                            {{ t('pages.settings') }}
+                <div class="min-w-0">
+                    <div class="ml-card sticky top-20 p-5">
+                        <h3 class="ml-section-title mb-4">
+                            <LucideSettings :size="18" class="text-primary-500" /> {{ t('pages.settings') }}
                         </h3>
                         
-                        <form @submit.prevent="submitForm" class="space-y-4">
+                        <form id="page-settings-form" @submit.prevent="submitForm" class="space-y-4">
                             <div>
-                                <label class="text-sm font-medium text-surface-700 dark:text-surface-300 block mb-2">
+                                <label class="ml-label">
                                     {{ t('pages.form.title') }}
                                 </label>
                                 <InputText v-model="form.title" required class="w-full" />
                             </div>
 
                             <div>
-                                <label class="text-sm font-medium text-surface-700 dark:text-surface-300 block mb-2">
-                                    Slug (URL)
+                                <label class="ml-label">
+                                    {{ t('pages.form.slug') }}
                                 </label>
                                 <InputText v-model="form.slug" required class="w-full font-mono text-sm" />
                                 <p class="text-xs text-surface-500 dark:text-surface-400 mt-1">
-                                    Public URL: /{{ form.slug }}
+                                    {{ t('pages.form.publicUrl') }}: /{{ form.slug }}
                                 </p>
                             </div>
 
                             <div>
-                                <label class="text-sm font-medium text-surface-700 dark:text-surface-300 block mb-2">
+                                <label class="ml-label">
                                     {{ t('pages.form.description') }}
                                 </label>
                                 <Textarea v-model="form.description" rows="3" class="w-full" />
                             </div>
 
                             <div>
-                                <label class="text-sm font-medium text-surface-700 dark:text-surface-300 block mb-2">
-                                    Immagine Profilo (opzionale)
+                                <p class="ml-label">Immagine profilo (opzionale)</p>
+                                <label class="ml-btn-secondary w-full cursor-pointer">
+                                    <LucideUpload :size="15" /> {{ form.settings?.profile_image ? 'Cambia immagine' : 'Carica immagine' }}
+                                    <input type="file" accept="image/*" class="sr-only" @change="handleProfileImageUpload" />
                                 </label>
-                                <input 
-                                    type="file" 
-                                    accept="image/*"
-                                    @change="handleProfileImageUpload"
-                                    class="w-full text-sm text-surface-700 dark:text-surface-300
-                                        file:mr-4 file:py-2 file:px-4
-                                        file:rounded-lg file:border-0
-                                        file:text-sm file:font-semibold
-                                        file:bg-primary-50 file:text-primary-700
-                                        hover:file:bg-primary-100
-                                        dark:file:bg-primary-900/30 dark:file:text-primary-400"
-                                />
                                 <div v-if="form.settings?.profile_image" class="mt-3 relative inline-block">
                                     <img 
                                         :src="form.settings.profile_image"
@@ -616,81 +551,57 @@ function handleBlockDeleted(blockId: number) {
                             </div>
 
                             <div>
-                                <label class="text-sm font-medium text-surface-700 dark:text-surface-300 block mb-2">
+                                <label class="ml-label">
                                     {{ t('pages.form.published') }}
                                 </label>
-                                <input 
-                                    v-model="form.published_at" 
-                                    type="date" 
-                                    class="w-full rounded-md border border-surface-300 dark:border-surface-700 bg-surface-0 dark:bg-surface-950 text-surface-700 dark:text-surface-0 px-3 py-2 text-sm focus:border-primary focus:outline-none"
+                                <input
+                                    v-model="form.published_at"
+                                    type="date"
+                                    class="w-full rounded-lg border border-surface-200 bg-white px-3 py-2 text-sm text-surface-700 focus:border-primary-400 focus:ring-2 focus:ring-primary-500/20 focus:outline-none dark:border-surface-700 dark:bg-surface-900 dark:text-surface-100"
                                 />
                             </div>
 
-                            <div class="flex items-center justify-between p-3 bg-surface-50 dark:bg-surface-800 rounded-lg">
-                                <div class="flex items-center gap-2">
-                                    <component 
-                                        :is="form.is_active ? LucideToggleRight : LucideToggleLeft" 
-                                        :size="18" 
-                                        :class="form.is_active ? 'text-green-500' : 'text-surface-400'"
-                                    />
-                                    <div>
-                                        <p class="text-sm font-medium text-surface-700 dark:text-surface-300">
-                                            {{ t('pages.form.active') }}
-                                        </p>
-                                        <p class="text-xs text-surface-500 dark:text-surface-400">
-                                            {{ form.is_active ? t('pages.form.activeHint') : t('pages.form.inactiveHint') }}
-                                        </p>
-                                    </div>
-                                </div>
-                                <ToggleSwitch v-model="form.is_active" />
-                            </div>
+                            <ToggleSetting
+                                v-model="form.is_active"
+                                :icon="LucideToggleRight"
+                                :title="t('pages.form.active')"
+                                :description="form.is_active ? t('pages.form.activeHint') : t('pages.form.inactiveHint')"
+                            />
 
-                            <div class="pt-4 border-t border-surface-200 dark:border-surface-800">
-                                <label class="text-sm font-medium text-surface-700 dark:text-surface-300 block mb-3">
-                                    Colore Tema
-                                </label>
-                                <div class="grid grid-cols-7 gap-2">
+                            <div class="border-t border-surface-100 pt-4 dark:border-surface-700">
+                                <p class="ml-label">{{ t('pages.form.themeColor') }}</p>
+                                <div class="flex flex-wrap gap-2">
                                     <button
                                         v-for="color in themeColors"
                                         :key="color.value"
                                         type="button"
                                         @click="selectColor(color.value)"
                                         :title="color.name"
+                                        :aria-label="color.name"
                                         :class="[
-                                            'w-8 h-8 rounded-lg transition-all duration-200',
+                                            'h-7 w-7 rounded-lg border-2 transition-shadow',
                                             color.class,
-                                            'hover:scale-110 active:scale-95',
-                                            'border-2',
                                             selectedColor === color.value
-                                                ? 'border-surface-900 dark:border-surface-100 ring-2 ring-offset-2 ring-surface-400 dark:ring-surface-600 scale-110'
-                                                : 'border-transparent hover:border-surface-300 dark:hover:border-surface-600'
+                                                ? 'border-white ring-2 ring-surface-900 dark:border-surface-900 dark:ring-surface-100'
+                                                : 'border-transparent hover:ring-2 hover:ring-surface-300 dark:hover:ring-surface-600'
                                         ]"
                                     />
                                 </div>
                             </div>
 
-                            <div class="pt-4 border-t border-surface-200 dark:border-surface-800">
-                                <Button 
-                                    type="submit" 
-                                    class="w-full flex items-center justify-center gap-2"
-                                >
-                                    <LucideSave :size="16" />
-                                    {{ t('pages.update') }}
-                                </Button>
-                            </div>
                         </form>
                     </div>
                 </div>
 
                 <!-- Block Editor -->
-                <div class="lg:col-span-4">
-                    <div class="bg-white dark:bg-surface-800 rounded-xl p-4 sm:p-6 shadow-sm border border-surface-200 dark:border-surface-700">
-                        <div class="flex items-center justify-between mb-6">
-                            <h3 class="text-lg font-semibold text-surface-900 dark:text-surface-50">
-                                {{ t('pages.blockEditor') }}
+                <div class="min-w-0">
+                    <div class="ml-card p-5 sm:p-6">
+                        <div class="mb-4 flex items-center justify-between gap-3">
+                            <h3 class="ml-section-title">
+                                <LucideLayout :size="18" class="text-primary-500" /> {{ t('pages.blockEditor') }}
                             </h3>
-                            <span class="text-sm text-surface-500 dark:text-surface-400">
-                                {{ t('pages.dragAndDrop') }}
+                            <span class="inline-flex items-center gap-1.5 text-xs text-surface-500 dark:text-surface-400">
+                                <LucideMove :size="13" /> {{ t('pages.dragAndDrop') }}
                             </span>
                         </div>
 
@@ -717,10 +628,7 @@ function handleBlockDeleted(blockId: number) {
                                     :i="item.i" 
                                     @resized="updateSize(item)"  
                                     @moved="updateAllPositions"
-                                    :class="[
-                                        'bg-gradient-to-br from-surface-50 to-surface-100 dark:from-surface-800 dark:to-surface-900 p-0 overflow-auto shadow-md hover:shadow-lg rounded-xl border-2 border-surface-200 dark:border-surface-700 transition-all duration-200',
-                                        'hover:' + getColorClasses(selectedColor)
-                                    ]"
+                                    class="block-card overflow-hidden rounded-xl border border-surface-200 bg-white p-0 shadow-sm transition-shadow duration-200 hover:border-surface-300 hover:shadow-md dark:border-surface-700 dark:bg-surface-800 dark:hover:border-surface-600"
                                 >
                                     <component 
                                         :is="blockComponents[item.type] ?? DefaultBlock" 
@@ -807,24 +715,20 @@ function handleBlockDeleted(blockId: number) {
   min-height: 600px;
 }
 
-/* Grid background pattern */
+/* Sfondo a puntini dell'area di lavoro */
 .vgl-layout::before {
   position: absolute;
   inset: 0;
   content: '';
-  background-image: 
-    linear-gradient(to right, rgba(148, 163, 184, 0.1) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(148, 163, 184, 0.1) 1px, transparent 1px);
-  background-repeat: repeat;
-  background-size: calc(50% - 8px) 136px;
+  background-image: radial-gradient(rgba(148, 163, 184, 0.35) 1px, transparent 1px);
+  background-size: 20px 20px;
+  border-radius: 0.75rem;
   pointer-events: none;
   z-index: 0;
 }
 
 :root.dark .vgl-layout::before {
-  background-image: 
-    linear-gradient(to right, rgba(71, 85, 105, 0.2) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(71, 85, 105, 0.2) 1px, transparent 1px);
+  background-image: radial-gradient(rgba(113, 113, 122, 0.35) 1px, transparent 1px);
 }
 
 /* Resize handle styling */
@@ -837,10 +741,25 @@ function handleBlockDeleted(blockId: number) {
   background: transparent !important;
 }
 
-/* Dragging state */
+/* Angolo di ridimensionamento discreto al posto di quello nero di default */
+:deep(.vgl-item__resizer)::before {
+  content: '';
+  position: absolute;
+  right: 6px;
+  bottom: 6px;
+  width: 8px;
+  height: 8px;
+  border: 0;
+  border-right: 2px solid rgb(161 161 170 / 0.8);
+  border-bottom: 2px solid rgb(161 161 170 / 0.8);
+  border-bottom-right-radius: 2px;
+  inset: auto 6px 6px auto;
+}
+
+/* Durante il trascinamento: leggermente sollevata, niente rotazione */
 :deep(.vgl-item.dragging) {
-  opacity: 0.8;
-  transform: rotate(2deg);
+  opacity: 0.95;
+  box-shadow: 0 12px 32px -8px rgba(15, 23, 42, 0.25);
   z-index: 1000;
 }
 
@@ -849,11 +768,12 @@ function handleBlockDeleted(blockId: number) {
   z-index: 1000;
 }
 
-/* Placeholder styling */
+/* Segnaposto durante lo spostamento, nel colore del brand */
 :deep(.vgl-item.placeholder) {
-  background: rgb(59, 130, 246, 0.2) !important;
-  border: 2px dashed rgb(59, 130, 246) !important;
+  background: color-mix(in srgb, var(--p-primary-500) 10%, transparent) !important;
+  border: 2px dashed var(--p-primary-400) !important;
   border-radius: 0.75rem;
+  opacity: 1 !important;
 }
 
 /* Ensure items have proper z-index */

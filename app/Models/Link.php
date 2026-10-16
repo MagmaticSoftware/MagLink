@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\Concerns\SearchableInTenant;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Stancl\Tenancy\Database\Concerns\BelongsToTenant;
@@ -10,7 +11,7 @@ use Stancl\Tenancy\Database\Concerns\BelongsToTenant;
 class Link extends Model
 {
     /** @use HasFactory<\Database\Factories\LinkFactory> */
-    use HasFactory, SoftDeletes, BelongsToTenant;
+    use HasFactory, SoftDeletes, BelongsToTenant, SearchableInTenant;
 
     /**
      * The attributes that are mass assignable.
@@ -58,5 +59,10 @@ class Link extends Model
     public function views()
     {
         return $this->morphMany(View::class, 'viewable');
+    }
+
+    protected function searchableFields(): array
+    {
+        return ['title', 'slug', 'description', 'url'];
     }
 }

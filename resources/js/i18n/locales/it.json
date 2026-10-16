@@ -22,13 +22,16 @@
     "loading": "Caricamento...",
     "saving": "Salvataggio...",
     "noResults": "Nessun risultato trovato",
-    "close": "Chiudi"
+    "close": "Chiudi",
+    "noResultsHint": "Prova a modificare la ricerca o i filtri"
   },
   "nav": {
     "dashboard": "Dashboard",
     "links": "Links",
     "qrcodes": "QR Code",
-    "pages": "La Tua Pagina"
+    "pages": "Pagine",
+    "menu": "Menù",
+    "comingSoon": "Presto"
   },
   "dashboard": {
     "title": "Dashboard",
@@ -108,7 +111,11 @@
     "copyLink": "Copia link",
     "openLink": "Apri link",
     "createdAt": "Creato",
-    "clicks": "click"
+    "clicks": "click",
+    "confirmDelete": "Eliminare il link “{title}”? L’operazione non si può annullare.",
+    "consentViews": "{count} visite con consenso",
+    "anonymousViews": "{count} visite anonime",
+    "last7days": "Click negli ultimi 7 giorni"
   },
   "qrcodes": {
     "title": "QR Code",
@@ -149,7 +156,8 @@
       "totalQrCodes": "Totale QR Code",
       "activeQrCodes": "QR Code attivi",
       "totalScans": "Totale scansioni",
-      "avgScans": "Media scansioni"
+      "avgScans": "Media scansioni",
+      "dynamicQrCodes": "QR Code dinamici"
     },
     "sort": {
       "newest": "Più recenti",
@@ -218,7 +226,8 @@
       "exportQuality": "Qualità di esportazione:",
       "exportQualityInfo": "Il tuo piano consente esportazioni fino a {size}px",
       "uploadFailed": "Caricamento del logo non riuscito"
-    }
+    },
+    "confirmDelete": "Eliminare il QR Code “{name}”? L’operazione non si può annullare."
   },
   "pages": {
     "title": "Le tue pagine",
@@ -272,7 +281,10 @@
       "activeHint": "La pagina è visibile al pubblico",
       "inactiveHint": "La pagina è nascosta",
       "themeColor": "Colore Tema",
-      "slugHint": "URL pubblico"
+      "slugHint": "URL pubblico",
+      "slug": "Slug (URL)",
+      "slugExample": "la-tua-pagina",
+      "publicUrl": "URL pubblico"
     },
     "placeholders": {
       "slug": "url-mia-pagina"
@@ -286,7 +298,10 @@
     "preview": "Anteprima",
     "publicView": "Visualizzazione pubblica",
     "addBlocksToPage": "Aggiungi blocchi per iniziare a costruire la tua pagina",
-    "editPage": "Modifica Pagina"
+    "editPage": "Modifica Pagina",
+    "confirmDelete": "Eliminare la pagina “{title}”? L’operazione non si può annullare.",
+    "noDescription": "Nessuna descrizione",
+    "views": "visualizzazioni"
   },
   "footer": {
     "copyright": "Tutti i diritti riservati.",
@@ -762,6 +777,96 @@
         "order": "La data di inizio deve precedere quella di fine.",
         "tooLong": "Il periodo massimo è di 2 anni.",
         "noLinks": "Seleziona almeno un link."
+      }
+    }
+  },
+  "search": {
+    "placeholder": "Cerca link, QR code, pagine…",
+    "inputPlaceholder": "Cerca per titolo, descrizione o codice…",
+    "title": "Ricerca",
+    "groups": {
+      "links": "Link",
+      "qrcodes": "QR Code",
+      "pages": "Pagine"
+    },
+    "inactive": "Inattivo",
+    "noResults": "Nessun risultato per “{query}”",
+    "hint": "Digita almeno 2 caratteri per cercare tra link, QR code e pagine",
+    "keys": {
+      "navigate": "naviga",
+      "open": "apri",
+      "close": "chiudi"
+    }
+  },
+  "linkForm": {
+    "editTitle": "Modifica link",
+    "creating": "Creazione…",
+    "basicInfo": "Informazioni principali",
+    "title": "Titolo",
+    "description": "Descrizione",
+    "destination": "URL di destinazione",
+    "previewUrl": "Apri l’URL",
+    "shortLink": "Link breve",
+    "shortLinkHintCreate": "Questo sarà il tuo link abbreviato",
+    "shortLinkHint": "Il tuo link abbreviato",
+    "settings": "Impostazioni",
+    "slug": "Slug",
+    "slugHintAuto": "Identificativo univoco generato automaticamente",
+    "slugHint": "Identificativo univoco",
+    "active": "Attivo",
+    "inactive": "Disattivato",
+    "statusHint": "Stato del link",
+    "consentOn": "Pagina di consenso attiva",
+    "consentOff": "Pagina di consenso disattivata",
+    "consentHint": "Tracciamento conforme al GDPR",
+    "consentInfo": "Prima del reindirizzamento il visitatore vede una pagina di consenso. Se accetta vengono raccolte statistiche dettagliate (browser, dispositivo, paese…), se rifiuta viene salvato solo il conteggio della visita.",
+    "preview": "Anteprima",
+    "previewTitle": "Titolo del link",
+    "previewDescription": "La descrizione apparirà qui",
+    "previewHint": "Come apparirà il tuo link",
+    "destinationLabel": "Destinazione",
+    "totalClicks": "Click totali",
+    "created": "Creato il",
+    "noDescription": "Nessuna descrizione"
+  },
+  "qrForm": {
+    "editTitle": "Modifica QR Code",
+    "settings": "Impostazioni",
+    "type": "Tipo",
+    "typeCannotChange": "Il tipo non può essere modificato dopo la creazione",
+    "slug": "Slug",
+    "statusHint": "Stato del QR Code",
+    "basicInfo": "Informazioni principali",
+    "name": "Nome",
+    "description": "Descrizione",
+    "formatType": "Formato",
+    "content": "Contenuto",
+    "contentPlaceholder": "Inserisci il contenuto ({format})…",
+    "created": "Creato il",
+    "formats": {
+      "url": {
+        "label": "URL",
+        "description": "Collegamento a un sito web"
+      },
+      "text": {
+        "label": "Testo",
+        "description": "Testo semplice"
+      },
+      "email": {
+        "label": "Email",
+        "description": "Indirizzo email"
+      },
+      "phone": {
+        "label": "Telefono",
+        "description": "Numero di telefono"
+      },
+      "sms": {
+        "label": "SMS",
+        "description": "Messaggio SMS"
+      },
+      "vcard": {
+        "label": "vCard",
+        "description": "Biglietto da visita"
       }
     }
   }

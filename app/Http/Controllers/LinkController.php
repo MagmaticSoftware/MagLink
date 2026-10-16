@@ -6,6 +6,8 @@ use App\Http\Requests\StoreLinkRequest;
 use App\Http\Requests\UpdateLinkRequest;
 use App\Models\Link;
 use Illuminate\Support\Facades\Auth;
+use App\Models\View;
+use App\Support\Trend;
 use Inertia\Inertia;
 use Illuminate\Support\Str;
 
@@ -35,8 +37,18 @@ class LinkController extends Controller
             'avgClicksPerLink' => $links->count() > 0 ? round($totalViews / $links->count(), 1) : 0,
         ];
         
+        // Andamento ultimi 7 giorni: card in alto e sparkline di ogni riga
+        $ids = $links->pluck('id');
+        $trends = [
+            'created' => Trend::daily(fn () => Link::query(), 7),
+            'views' => Trend::daily(fn () => View::where('viewable_type', Link::class)->whereIn('viewable_id', $ids), 7),
+        ];
+        $sparklines = Trend::viewsPerItem(Link::class, $ids, 7);
+
         return Inertia::render('tenant/links/Index', [
             'links' => $links,
+            'trends' => $trends,
+            'sparklines' => $sparklines,
             'shortUrl' => config('app.short_url'),
             'stats' => $stats,
             'canExportAnalytics' => Auth::user()->canExportAnalytics(),
@@ -106,7 +118,7 @@ class LinkController extends Controller
     public function edit(Link $link)
     {
         return Inertia::render('tenant/links/Edit', [
-            'link' => $link,
+            'link' => $link->loadCount('views'),
             'shortUrl' => config('app.short_url'),
         ]);
     }

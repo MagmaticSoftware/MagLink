@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { usePage, Link, router } from '@inertiajs/vue3';
 import { computed, ref } from 'vue';
-import { LucideClock, LucideCrown, LucideSparkles, LucideX } from 'lucide-vue-next';
+import { LucideClock, LucideCrown, LucidePartyPopper, LucideSparkles, LucideX } from 'lucide-vue-next';
 import type { PageProps } from '@/types/inertia';
 
 const page = usePage<PageProps>();
@@ -73,8 +73,8 @@ const dismiss = () => {
             <div class="flex items-center gap-6">
                 <LucideCrown class="w-16 h-16 flex-shrink-0" />
                 <div class="flex-1">
-                    <h3 class="text-xl font-bold mb-1">
-                        Benvenuto su MagLink! 🎉
+                    <h3 class="text-xl font-bold mb-1 flex items-center gap-2">
+                        Benvenuto su MagLink! <LucidePartyPopper class="w-5 h-5" />
                     </h3>
                     <p class="text-blue-100 mb-4">
                         Inizia subito con 30 giorni di prova gratuita e accedi a tutte le funzionalità premium.

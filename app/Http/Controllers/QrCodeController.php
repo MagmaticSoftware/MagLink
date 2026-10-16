@@ -6,6 +6,8 @@ use App\Http\Requests\StoreQrCodeRequest;
 use App\Http\Requests\UpdateQrCodeRequest;
 use App\Models\QrCode;
 use Illuminate\Support\Facades\Auth;
+use App\Models\View;
+use App\Support\Trend;
 use Inertia\Inertia;
 use Illuminate\Support\Str;
 
@@ -35,8 +37,18 @@ class QrCodeController extends Controller
             'avgScansPerCode' => $qrcodes->count() > 0 ? round($totalViews / $qrcodes->count(), 1) : 0,
         ];
         
+        // Andamento ultimi 7 giorni: card in alto e sparkline di ogni riga
+        $ids = $qrcodes->pluck('id');
+        $trends = [
+            'created' => Trend::daily(fn () => QrCode::query(), 7),
+            'views' => Trend::daily(fn () => View::where('viewable_type', QrCode::class)->whereIn('viewable_id', $ids), 7),
+        ];
+        $sparklines = Trend::viewsPerItem(QrCode::class, $ids, 7);
+
         return Inertia::render('tenant/qrcodes/Index', [
             'qrcodes' => $qrcodes,
+            'trends' => $trends,
+            'sparklines' => $sparklines,
             'stats' => $stats,
             'shortUrl' => config('app.short_url'),
         ]);

@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Settings\PasswordController;
 use App\Http\Controllers\Settings\ProfileController;
+use App\Http\Middleware\EnsureUserBelongsToTenant;
 use App\Http\Middleware\SetDefaultTenantForUrls;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -14,6 +15,7 @@ Route::domain(config('app.tenant_url'))->middleware([
     'web',
     'auth',
     'verified',
+    EnsureUserBelongsToTenant::class,
     SetDefaultTenantForUrls::class,
 ])->prefix('/{tenant}')->group(function () {
     Route::get('settings', function () {

@@ -2,7 +2,8 @@
 import { ref, watch, computed } from 'vue';
 import axios from 'axios';
 import { useConfirm } from 'primevue/useconfirm';
-import { LucideSave, LucidePlay, LucideTrash2, LucideYoutube } from 'lucide-vue-next';
+import BlockCardHeader from './BlockCardHeader.vue';
+import { LucidePlay, LucideYoutube } from 'lucide-vue-next';
 import InputText from '@/components/volt/InputText.vue';
 
 const confirm = useConfirm();
@@ -25,10 +26,21 @@ const emit = defineEmits<{
 }>();
 
 const localTitle = ref(props.title || '');
-const localContent = ref(props.content || '');
+// Alcuni blocchi salvano il contenuto come JSON ({"url": ...}): nel campo mostriamo solo l'URL
+const extractUrl = (content?: string) => {
+  if (!content) return '';
+  try {
+    const parsed = JSON.parse(content);
+    return parsed?.url || parsed?.src || content;
+  } catch {
+    return content;
+  }
+};
+
+const localContent = ref(extractUrl(props.content));
 const isSaving = ref(false);
 const savedTitle = ref(props.title || '');
-const savedContent = ref(props.content || '');
+const savedContent = ref(extractUrl(props.content));
 
 const hasChanges = computed(() => {
   return localTitle.value !== savedTitle.value || localContent.value !== savedContent.value;
@@ -43,8 +55,8 @@ watch(() => props.title, (newVal) => {
   savedTitle.value = newVal || '';
 });
 watch(() => props.content, (newVal) => { 
-  localContent.value = newVal || ''; 
-  savedContent.value = newVal || '';
+  localContent.value = extractUrl(newVal); 
+  savedContent.value = extractUrl(newVal);
 });
 
 const videoUrl = computed(() => {
@@ -118,53 +130,34 @@ const deleteBlock = () => {
 </script>
 
 <template>
-  <div class="h-full w-full flex flex-col p-2">
-    <!-- Header with actions -->
-    <div class="flex items-center justify-between mb-3 pb-2 border-b border-surface-200 dark:border-surface-700">
-      <div class="flex items-center gap-2">
-        <div class="p-1.5 bg-red-100 dark:bg-red-900/30 rounded-lg">
-          <LucideYoutube v-if="isYouTube" :size="16" class="text-red-600 dark:text-red-400" />
-          <LucidePlay v-else :size="16" class="text-red-600 dark:text-red-400" />
-        </div>
-        <span class="text-xs font-medium text-surface-600 dark:text-surface-400">Video Block</span>
-      </div>
-      <div class="flex items-center gap-1">
-        <button
-          @click="saveBlock"
-          :disabled="isSaving"
-          class="p-1.5 rounded-lg transition-colors disabled:opacity-50"
-          :class="hasChanges ? 'bg-green-500 hover:bg-green-600 animate-pulse' : 'hover:bg-green-100 dark:hover:bg-green-900/30'"
-          :title="hasChanges ? 'Save pending changes' : 'No changes to save'"
-        >
-          <LucideSave :size="14" :class="hasChanges ? 'text-white' : 'text-green-600 dark:text-green-400'" />
-        </button>
-        <button
-          @click="deleteBlock"
-          class="p-1.5 rounded-lg hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors"
-          title="Delete block"
-        >
-          <LucideTrash2 :size="14" class="text-red-600 dark:text-red-400" />
-        </button>
-      </div>
-    </div>
+  <div class="flex h-full w-full flex-col">
+    <BlockCardHeader
+      label="Video"
+      :icon="isYouTube ? LucideYoutube : LucidePlay"
+      tone="red"
+      :has-changes="hasChanges"
+      :is-saving="isSaving"
+      @save="saveBlock"
+      @delete="deleteBlock"
+    />
 
     <!-- Editable content -->
-    <div class="flex-1 flex flex-col gap-3 overflow-y-auto">
+    <div class="flex-1 flex flex-col gap-3 overflow-y-auto p-3">
       <div>
-        <label class="text-xs font-medium text-surface-700 dark:text-surface-300 block mb-1">
-          Video Title (optional)
+        <label class="ml-label mb-1 text-xs">
+          Titolo video (opzionale)
         </label>
         <InputText 
           v-model="localTitle" 
-          placeholder="Video description..."
+          placeholder="Titolo del video..."
           @blur="saveBlock"
           class="w-full text-sm"
         />
       </div>
       
       <div>
-        <label class="text-xs font-medium text-surface-700 dark:text-surface-300 block mb-1">
-          Video URL
+        <label class="ml-label mb-1 text-xs">
+          URL del video
         </label>
         <InputText 
           v-model="localContent" 
@@ -174,7 +167,7 @@ const deleteBlock = () => {
           class="w-full text-sm font-mono"
         />
         <p class="text-xs text-surface-500 dark:text-surface-400 mt-1">
-          Supports YouTube and Vimeo URLs
+          Supporta link YouTube e Vimeo
         </p>
       </div>
 

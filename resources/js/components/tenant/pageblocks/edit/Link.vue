@@ -2,7 +2,8 @@
 import { ref, watch, computed } from 'vue';
 import axios from 'axios';
 import { useConfirm } from 'primevue/useconfirm';
-import { LucideSave, LucideLink2, LucideTrash2, LucideExternalLink, LucideLoader2 } from 'lucide-vue-next';
+import BlockCardHeader from './BlockCardHeader.vue';
+import { LucideLink2, LucideExternalLink, LucideLoader2 } from 'lucide-vue-next';
 import InputText from '@/components/volt/InputText.vue';
 import Button from '@/components/volt/Button.vue';
 
@@ -144,61 +145,46 @@ const deleteBlock = () => {
 </script>
 
 <template>
-  <div class="h-full w-full flex flex-col p-2">
-    <!-- Header with actions -->
-    <div class="flex items-center justify-between mb-3 pb-2 border-b border-surface-200 dark:border-surface-700">
-      <div class="flex items-center gap-2">
-        <div class="p-1.5 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
-          <LucideLink2 :size="16" class="text-blue-600 dark:text-blue-400" />
-        </div>
-        <span class="text-xs font-medium text-surface-600 dark:text-surface-400">Link Block</span>
-      </div>
-      <div class="flex items-center gap-1">
+  <div class="flex h-full w-full flex-col">
+    <BlockCardHeader
+      label="Link"
+      :icon="LucideLink2"
+      tone="blue"
+      :has-changes="hasChanges"
+      :is-saving="isSaving"
+      @save="saveBlock"
+      @delete="deleteBlock"
+    >
+      <template #actions>
         <a
-          v-if="isValidUrl"
-          :href="localContent"
-          target="_blank"
-          rel="noopener noreferrer"
-          class="p-1.5 rounded-lg hover:bg-blue-100 dark:hover:bg-blue-900/30 transition-colors"
-          title="Test link"
-        >
-          <LucideExternalLink :size="14" class="text-blue-600 dark:text-blue-400" />
-        </a>
-        <button
-          @click="saveBlock"
-          :disabled="isSaving"
-          class="p-1.5 rounded-lg transition-colors disabled:opacity-50"
-          :class="hasChanges ? 'bg-green-500 hover:bg-green-600 animate-pulse' : 'hover:bg-green-100 dark:hover:bg-green-900/30'"
-          :title="hasChanges ? 'Save pending changes' : 'No changes to save'"
-        >
-          <LucideSave :size="14" :class="hasChanges ? 'text-white' : 'text-green-600 dark:text-green-400'" />
-        </button>
-        <button
-          @click="deleteBlock"
-          class="p-1.5 rounded-lg hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors"
-          title="Delete block"
-        >
-          <LucideTrash2 :size="14" class="text-red-600 dark:text-red-400" />
-        </button>
-      </div>
-    </div>
+                  v-if="isValidUrl"
+                  :href="localContent"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="ml-icon-btn h-7 w-7"
+                  title="Apri il link"
+                >
+                  <LucideExternalLink :size="14" class="text-blue-600 dark:text-blue-400" />
+                </a>
+      </template>
+    </BlockCardHeader>
 
     <!-- Editable content -->
-    <div class="flex-1 flex flex-col gap-3 overflow-y-auto">
+    <div class="flex-1 flex flex-col gap-3 overflow-y-auto p-3">
       <div>
-        <label class="text-xs font-medium text-surface-700 dark:text-surface-300 block mb-1">
-          Link Title
+        <label class="ml-label mb-1 text-xs">
+          Titolo del link
         </label>
         <InputText 
           v-model="localTitle" 
-          placeholder="e.g., Visit my website"
+          placeholder="es. Visita il mio sito"
           @blur="saveBlock"
           class="w-full text-sm"
         />
       </div>
       
       <div>
-        <label class="text-xs font-medium text-surface-700 dark:text-surface-300 block mb-1">
+        <label class="ml-label mb-1 text-xs">
           URL
         </label>
         <div class="flex gap-2">
@@ -218,11 +204,11 @@ const deleteBlock = () => {
             size="small"
           >
             <LucideLoader2 v-if="isFetchingMetadata" :size="14" class="animate-spin" />
-            <template v-else>Carica Anteprima</template>
+            <template v-else>Carica anteprima</template>
           </Button>
         </div>
         <p v-if="localContent && !isValidUrl" class="text-xs text-red-600 dark:text-red-400 mt-1">
-          Invalid URL format
+          Formato URL non valido
         </p>
       </div>
       

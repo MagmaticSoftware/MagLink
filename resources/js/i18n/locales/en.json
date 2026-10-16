@@ -22,13 +22,16 @@
     "loading": "Loading...",
     "saving": "Saving...",
     "noResults": "No results found",
-    "close": "Close"
+    "close": "Close",
+    "noResultsHint": "Try adjusting your search or filters"
   },
   "nav": {
     "dashboard": "Dashboard",
     "links": "Links",
     "qrcodes": "QR Codes",
-    "pages": "Your Page"
+    "pages": "Pages",
+    "menu": "Menu",
+    "comingSoon": "Soon"
   },
   "dashboard": {
     "title": "Dashboard",
@@ -108,7 +111,11 @@
     "copyLink": "Copy link",
     "openLink": "Open link",
     "createdAt": "Created",
-    "clicks": "clicks"
+    "clicks": "clicks",
+    "confirmDelete": "Delete the link “{title}”? This cannot be undone.",
+    "consentViews": "{count} visits with consent",
+    "anonymousViews": "{count} anonymous visits",
+    "last7days": "Clicks in the last 7 days"
   },
   "qrcodes": {
     "title": "QR Codes",
@@ -153,7 +160,8 @@
       "totalQrCodes": "Total QR Codes",
       "activeQrCodes": "Active QR Codes",
       "totalScans": "Total Scans",
-      "avgScans": "Avg. Scans/Code"
+      "avgScans": "Avg. Scans/Code",
+      "dynamicQrCodes": "Dynamic QR codes"
     },
     "sort": {
       "newest": "Newest first",
@@ -222,7 +230,8 @@
       "exportQuality": "Export Quality:",
       "exportQualityInfo": "Your plan allows exports up to {size}px",
       "uploadFailed": "Failed to upload logo"
-    }
+    },
+    "confirmDelete": "Delete the QR code “{name}”? This cannot be undone."
   },
   "pages": {
     "title": "Your Pages",
@@ -279,7 +288,10 @@
       "activeHint": "The page is visible to the public",
       "inactiveHint": "The page is hidden",
       "themeColor": "Theme Color",
-      "slugHint": "Public URL"
+      "slugHint": "Public URL",
+      "slug": "Slug (URL)",
+      "slugExample": "your-page",
+      "publicUrl": "Public URL"
     },
     "update": "Update Page",
     "addBlock": "Add Block",
@@ -290,7 +302,10 @@
     "preview": "Preview",
     "publicView": "Public view",
     "addBlocksToPage": "Add blocks to start building your page",
-    "editPage": "Edit Page"
+    "editPage": "Edit Page",
+    "confirmDelete": "Delete the page “{title}”? This cannot be undone.",
+    "noDescription": "No description",
+    "views": "views"
   },
   "footer": {
     "copyright": "All rights reserved.",
@@ -766,6 +781,96 @@
         "order": "The start date must be before the end date.",
         "tooLong": "The maximum period is 2 years.",
         "noLinks": "Select at least one link."
+      }
+    }
+  },
+  "search": {
+    "placeholder": "Search links, QR codes, pages…",
+    "inputPlaceholder": "Search by title, description or code…",
+    "title": "Search",
+    "groups": {
+      "links": "Links",
+      "qrcodes": "QR Codes",
+      "pages": "Pages"
+    },
+    "inactive": "Inactive",
+    "noResults": "No results for “{query}”",
+    "hint": "Type at least 2 characters to search links, QR codes and pages",
+    "keys": {
+      "navigate": "navigate",
+      "open": "open",
+      "close": "close"
+    }
+  },
+  "linkForm": {
+    "editTitle": "Edit link",
+    "creating": "Creating…",
+    "basicInfo": "Basic information",
+    "title": "Title",
+    "description": "Description",
+    "destination": "Destination URL",
+    "previewUrl": "Open URL",
+    "shortLink": "Short link",
+    "shortLinkHintCreate": "This will be your shortened link",
+    "shortLinkHint": "Your shortened link",
+    "settings": "Settings",
+    "slug": "Slug",
+    "slugHintAuto": "Auto-generated unique identifier",
+    "slugHint": "Unique identifier",
+    "active": "Active",
+    "inactive": "Inactive",
+    "statusHint": "Link status",
+    "consentOn": "Consent page enabled",
+    "consentOff": "Consent page disabled",
+    "consentHint": "GDPR-compliant tracking",
+    "consentInfo": "Visitors see a consent page before the redirect. If they accept, detailed analytics are collected (browser, device, country…); if they decline, only the visit count is saved.",
+    "preview": "Preview",
+    "previewTitle": "Link title",
+    "previewDescription": "The description will appear here",
+    "previewHint": "How your link will appear",
+    "destinationLabel": "Destination",
+    "totalClicks": "Total clicks",
+    "created": "Created",
+    "noDescription": "No description"
+  },
+  "qrForm": {
+    "editTitle": "Edit QR code",
+    "settings": "Settings",
+    "type": "Type",
+    "typeCannotChange": "The type cannot be changed after creation",
+    "slug": "Slug",
+    "statusHint": "QR code status",
+    "basicInfo": "Basic information",
+    "name": "Name",
+    "description": "Description",
+    "formatType": "Format",
+    "content": "Content",
+    "contentPlaceholder": "Enter the {format} content…",
+    "created": "Created",
+    "formats": {
+      "url": {
+        "label": "URL",
+        "description": "Link to a website"
+      },
+      "text": {
+        "label": "Text",
+        "description": "Plain text"
+      },
+      "email": {
+        "label": "Email",
+        "description": "Email address"
+      },
+      "phone": {
+        "label": "Phone",
+        "description": "Phone number"
+      },
+      "sms": {
+        "label": "SMS",
+        "description": "SMS message"
+      },
+      "vcard": {
+        "label": "vCard",
+        "description": "Contact card"
       }
     }
   }

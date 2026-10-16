@@ -7,6 +7,7 @@ import { useI18n } from 'vue-i18n';
 import Breadcrumb from '@/components/volt/Breadcrumb.vue';
 import Menu from '@/components/volt/Menu.vue';
 import LanguageSelector from '@/components/LanguageSelector.vue';
+import GlobalSearch from '@/components/GlobalSearch.vue';
 import { useRoute } from '@/composables/useRoute';
 import type { BreadcrumbItemType } from '@/types';
 
@@ -97,7 +98,7 @@ const getUserInitials = () => {
 </script>
 
 <template>
-    <header class="sticky top-0 z-20 flex h-16 items-center justify-between gap-2 sm:gap-4 bg-white/80 dark:bg-surface-950/80 backdrop-blur-md shadow-sm px-3 sm:px-6">
+    <header class="sticky top-0 z-20 flex h-16 items-center justify-between gap-2 sm:gap-4 border-b border-surface-200/80 bg-white/80 dark:border-surface-800 dark:bg-surface-900/80 backdrop-blur-md px-3 sm:px-6">
         <!-- Mobile menu button -->
         <button
             type="button"
@@ -109,7 +110,7 @@ const getUserInitials = () => {
         </button>
 
         <!-- Breadcrumbs (nascosti su mobile, troppo stretti) -->
-        <div class="hidden sm:flex min-w-0 flex-1 flex-row justify-start items-center overflow-hidden">
+        <div class="hidden sm:flex min-w-0 flex-1 basis-0 flex-row justify-start items-center overflow-hidden">
             <Link :href="route('tenant.index', { tenant: page.props.auth.tenant })" class="inline-flex items-center mr-3">
                 <Home :size="18" class="text-surface-400 dark:text-surface-400 hover:text-primary dark:hover:text-primary transition-colors" />
             </Link>
@@ -117,7 +118,7 @@ const getUserInitials = () => {
             <Breadcrumb 
                 v-if="voltBreadcrumbs && voltBreadcrumbs.length > 0" 
                 :model="voltBreadcrumbs"
-                class="bg-transparent px-2"
+                class="min-w-0 truncate bg-transparent px-2 whitespace-nowrap [&_li]:whitespace-nowrap"
             >
                 <template #separator>
                     <ChevronRight :size="16" class="text-surface-400 dark:text-surface-500" />
@@ -127,8 +128,13 @@ const getUserInitials = () => {
 
         <div class="flex-1 sm:hidden"></div>
 
+        <!-- Ricerca globale: al centro, tra breadcrumb e azioni che hanno la stessa larghezza flessibile -->
+        <div class="flex shrink-0 justify-end sm:w-72 sm:justify-center lg:w-[26rem] xl:w-[32rem]">
+            <GlobalSearch />
+        </div>
+
         <!-- Right Side Actions -->
-        <div class="flex shrink-0 items-center gap-1 sm:gap-3">
+        <div class="flex shrink-0 items-center justify-end gap-1 sm:flex-1 sm:basis-0 sm:gap-3">
             <!-- Language Selector -->
             <LanguageSelector />
             
@@ -151,11 +157,11 @@ const getUserInitials = () => {
                     <div class="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-primary-contrast text-sm font-semibold">
                         {{ getUserInitials() }}
                     </div>
-                    <div class="hidden md:block text-left">
-                        <p class="text-sm font-medium text-surface-900 dark:text-surface-50">
+                    <div class="hidden max-w-[12rem] text-left md:block">
+                        <p class="truncate text-sm font-medium text-surface-900 dark:text-surface-50">
                             {{ user?.first_name }} {{ user?.last_name }}
                         </p>
-                        <p class="text-xs text-surface-500 dark:text-surface-400">
+                        <p class="truncate text-xs text-surface-500 dark:text-surface-400">
                             {{ user?.email }}
                         </p>
                     </div>

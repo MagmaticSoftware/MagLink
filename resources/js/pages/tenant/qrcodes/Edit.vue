@@ -1,35 +1,40 @@
 <script setup lang="ts">
 import AppLayout from '@/layouts/AppLayout.vue';
 import { type BreadcrumbItem } from '@/types';
-import { Head, useForm } from '@inertiajs/vue3';
-import { 
-    LucideSave, 
-    LucideQrCode,
-    LucideArrowLeft,
-    LucideSettings,
-    LucideInfo,
-    LucideLink2,
-    LucideFileText,
-    LucideMail,
-    LucidePhone,
-    LucideMessageSquare,
-    LucideUser,
-    LucideEye,
-    LucideEyeOff,
-    LucideClock,
-    LucideScan,
-    LucideDownload,
-    LucideShield
+import { Head, Link, useForm } from '@inertiajs/vue3';
+import {
+    AlertTriangle,
+    BarChart3,
+    Clock,
+    Contact,
+    Download,
+    Eye,
+    FileText,
+    Info,
+    Link2,
+    Lock,
+    Mail,
+    MapPin,
+    MessageSquare,
+    Phone,
+    QrCode,
+    Save,
+    ScanLine,
+    Settings,
+    Shield,
+    ShieldCheck,
 } from 'lucide-vue-next';
-import Button from '@/components/volt/Button.vue';
 import InputText from '@/components/volt/InputText.vue';
-import Select from '@/components/volt/Select.vue';
 import Textarea from '@/components/volt/Textarea.vue';
 import QrCustomization from '@/components/QrCustomization.vue';
+import PageHeader from '@/components/PageHeader.vue';
+import ToggleSetting from '@/components/ToggleSetting.vue';
 import { useI18n } from 'vue-i18n';
 import { ref, computed, watch } from 'vue';
+import { useRoute } from '@/composables/useRoute';
 
 const { t } = useI18n();
+const route = useRoute();
 
 const props = defineProps<{
     qrcode: {
@@ -69,53 +74,36 @@ const form = useForm({
     require_consent: props.qrcode.require_consent,
 });
 
+const isStatic = computed(() => props.qrcode.type === 'static');
+
 const breadcrumbs: BreadcrumbItem[] = [
-    {
-        title: t('qrcodes.title'),
-        href: route('qrcodes.index'),
-    },
-    {
-        title: props.qrcode.name || t('qrcodes.noName'),
-        href: route('qrcodes.show', props.qrcode.slug),
-    },
-    {
-        title: t('common.edit'),
-        href: route('qrcodes.edit', props.qrcode.slug),
-    },
+    { title: t('qrcodes.title'), href: route('qrcodes.index') },
+    { title: props.qrcode.name || t('qrcodes.noName'), href: route('qrcodes.show', props.qrcode.slug) },
+    { title: t('common.edit'), href: route('qrcodes.edit', props.qrcode.slug) },
 ];
 
-// Type options
-const typeOptions = [
-    { label: t('qrcodes.static'), value: 'static' },
-    { label: t('qrcodes.dynamic'), value: 'dynamic' }
-];
+// Formati disponibili
+const formatOptions = computed(() => [
+    { value: 'url', icon: Link2 },
+    { value: 'text', icon: FileText },
+    { value: 'email', icon: Mail },
+    { value: 'phone', icon: Phone },
+    { value: 'sms', icon: MessageSquare },
+    { value: 'vcard', icon: Contact },
+].map((format) => ({
+    ...format,
+    label: t(`qrForm.formats.${format.value}.label`),
+    description: t(`qrForm.formats.${format.value}.description`),
+})));
 
-// Format options with icons
-const formatOptions = [
-    { label: 'URL', value: 'url', icon: LucideLink2, description: 'Link to a website' },
-    { label: 'Text', value: 'text', icon: LucideFileText, description: 'Plain text content' },
-    { label: 'Email', value: 'email', icon: LucideMail, description: 'Email address' },
-    { label: 'Phone', value: 'phone', icon: LucidePhone, description: 'Phone number' },
-    { label: 'SMS', value: 'sms', icon: LucideMessageSquare, description: 'SMS message' },
-    { label: 'vCard', value: 'vcard', icon: LucideUser, description: 'Contact card' }
-];
+const currentFormat = computed(() => formatOptions.value.find((f) => f.value === form.format) || formatOptions.value[0]);
 
-// Current format details
-const currentFormat = computed(() => 
-    formatOptions.find(f => f.value === form.format) || formatOptions[0]
-);
-
-// Payload content helper - recupera da content, url, o altri campi
+// Contenuto del payload: recupera da content, url o altri campi
 const payloadContent = ref(
-    props.qrcode.payload?.content || 
-    props.qrcode.payload?.url || 
-    props.qrcode.payload?.email || 
-    props.qrcode.payload?.phone || 
-    props.qrcode.payload?.text || 
-    ''
+    props.qrcode.payload?.content || props.qrcode.payload?.url || props.qrcode.payload?.email || props.qrcode.payload?.phone || props.qrcode.payload?.text || '',
 );
 
-// QR Code image URL
+// Anteprima immagine del QR
 const qrPreviewUrl = ref('');
 
 const baseQrImageUrl = computed(() => {
@@ -123,45 +111,26 @@ const baseQrImageUrl = computed(() => {
         slug: props.qrcode.slug,
         format: props.qrcode.format,
         content: payloadContent.value || '',
-        type: props.qrcode.type // dynamic or static
+        type: props.qrcode.type,
     });
     return `/api/qrcode/preview?${params.toString()}`;
 });
 
-// Initialize preview URL
 qrPreviewUrl.value = baseQrImageUrl.value;
 
-// Watch for content changes to update preview
 watch([payloadContent, () => form.format], () => {
     qrPreviewUrl.value = baseQrImageUrl.value;
 });
 
-// Download QR Code
 const downloadQr = (format: 'png' | 'jpg' | 'svg') => {
     window.open(`/api/qrcode/${props.qrcode.slug}/download/${format}`, '_blank');
 };
 
-// Update payload when content changes
-const updatePayload = () => {
-    form.payload = { content: payloadContent.value };
-};
-
-// Format date
-const formatDate = (date: string) => {
-    return new Date(date).toLocaleDateString(undefined, { 
-        year: 'numeric', 
-        month: 'short', 
-        day: 'numeric' 
-    });
-};
+const formatDate = (date: string) => new Date(date).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
 
 const submitForm = () => {
-    updatePayload();
-    form.put(route('qrcodes.update', props.qrcode.slug), {
-        onError: (errors: Record<string, any>) => {
-            console.error('Form submission errors:', errors);
-        },
-    });
+    form.payload = { content: payloadContent.value };
+    form.put(route('qrcodes.update', props.qrcode.slug));
 };
 </script>
 
@@ -169,378 +138,202 @@ const submitForm = () => {
     <Head :title="`${t('common.edit')} - ${qrcode.name || t('qrcodes.noName')}`" />
 
     <AppLayout :breadcrumbs="breadcrumbs">
-        <div class="flex h-full flex-1 flex-col gap-4 sm:gap-6 p-0 sm:p-2 lg:p-6">
-            <!-- Header -->
-            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                <div class="flex items-center gap-4">
-                    <div class="flex-shrink-0 w-16 h-16 bg-gradient-to-br from-primary/20 to-primary/5 rounded-xl flex items-center justify-center">
-                        <LucideQrCode :size="32" class="text-primary" />
-                    </div>
-                    <div>
-                        <h1 class="text-2xl sm:text-3xl font-bold text-surface-900 dark:text-surface-50">{{ t('common.edit') }} QR Code</h1>
-                        <p class="text-surface-600 dark:text-surface-400 mt-1">{{ qrcode.name || t('qrcodes.noName') }}</p>
-                    </div>
-                </div>
-                <div class="flex items-center gap-2">
-                    <Button 
-                        variant="outline" 
-                        :href="route('qrcodes.show', qrcode.slug)"
-                        as="a"
-                    >
-                        <LucideArrowLeft :size="16" class="mr-2" />
-                        {{ t('common.back') }}
-                    </Button>
-                </div>
-            </div>
+        <div class="flex w-full flex-col gap-4 sm:gap-5 lg:p-2">
+            <PageHeader
+                :title="t('qrForm.editTitle')"
+                :subtitle="qrcode.name || t('qrcodes.noName')"
+                :icon="QrCode"
+                icon-class="bg-emerald-50 text-emerald-600 dark:bg-emerald-500/10 dark:text-emerald-400"
+                :back-href="route('qrcodes.index')"
+                :back-label="t('common.back')"
+            >
+                <template #actions>
+                    <Link :href="route('qrcodes.show', qrcode.slug)" class="ml-btn-secondary">{{ t('common.cancel') }}</Link>
+                    <button type="submit" form="qrcode-form" class="ml-btn-primary" :disabled="form.processing">
+                        <Save :size="16" />
+                        {{ form.processing ? t('common.saving') : t('common.save') }}
+                    </button>
+                </template>
+            </PageHeader>
 
-            <!-- Form -->
-            <form @submit.prevent="submitForm" class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-                <!-- Left Column - Settings & Customization -->
-                <div class="lg:col-span-4 space-y-6">
-                    <!-- Settings -->
-                    <div class="bg-white dark:bg-surface-800 rounded-xl p-4 sm:p-6 shadow-sm border border-surface-200 dark:border-surface-700">
-                        <h2 class="text-lg font-semibold text-surface-900 dark:text-surface-50 mb-4 flex items-center gap-2">
-                            <LucideSettings :size="20" />
-                            Settings
-                        </h2>
-                        
-                        <div class="space-y-4">
-                            <!-- Type (Read-only) -->
+            <form id="qrcode-form" class="grid grid-cols-1 gap-5 lg:grid-cols-12" @submit.prevent="submitForm">
+                <!-- Impostazioni e personalizzazione -->
+                <div class="space-y-5 lg:col-span-4">
+                    <section class="ml-card p-5 sm:p-6">
+                        <h2 class="ml-section-title mb-5"><Settings :size="18" class="text-primary-500" /> {{ t('qrForm.settings') }}</h2>
+
+                        <div class="space-y-3">
                             <div>
-                                <label class="text-sm font-medium text-surface-700 dark:text-surface-300 block mb-2">
-                                    Type
-                                </label>
-                                <div class="px-4 py-3 bg-surface-50 dark:bg-surface-800 rounded-lg text-surface-900 dark:text-surface-50 font-medium capitalize">
-                                    {{ qrcode.type }}
-                                </div>
-                                <p class="text-xs text-surface-500 dark:text-surface-400 mt-1">
-                                    Type cannot be changed after creation
+                                <p class="ml-label">{{ t('qrForm.type') }}</p>
+                                <p class="rounded-lg bg-surface-50 px-3 py-2.5 text-sm font-medium text-surface-900 dark:bg-surface-900/60 dark:text-surface-50">
+                                    {{ isStatic ? t('qrcodes.static') : t('qrcodes.dynamic') }}
                                 </p>
+                                <p class="ml-hint">{{ t('qrForm.typeCannotChange') }}</p>
                             </div>
 
-                            <!-- Slug (Read-only, only for dynamic) -->
-                            <div v-if="qrcode.type === 'dynamic'">
-                                <label class="text-sm font-medium text-surface-700 dark:text-surface-300 block mb-2">
-                                    Slug
-                                </label>
-                                <div class="px-4 py-3 bg-surface-50 dark:bg-surface-800 rounded-lg">
-                                    <code class="text-sm text-primary font-mono">{{ qrcode.slug }}</code>
-                                </div>
+                            <div v-if="!isStatic">
+                                <p class="ml-label">{{ t('qrForm.slug') }}</p>
+                                <code class="block rounded-lg bg-surface-50 px-3 py-2.5 font-mono text-sm text-primary-600 dark:bg-surface-900/60 dark:text-primary-400">{{ qrcode.slug }}</code>
                             </div>
 
-                            <!-- Active Status -->
-                            <div class="flex items-center justify-between p-4 bg-surface-50 dark:bg-surface-800 rounded-lg">
-                                <div class="flex items-center gap-3">
-                                    <div class="flex-shrink-0">
-                                        <LucideEye v-if="form.is_active" :size="20" class="text-green-600 dark:text-green-400" />
-                                        <LucideEyeOff v-else :size="20" class="text-surface-400" />
-                                    </div>
-                                    <div>
-                                        <div class="font-medium text-surface-900 dark:text-surface-50 text-sm">
-                                            {{ form.is_active ? t('qrcodes.active') : t('qrcodes.inactive') }}
-                                        </div>
-                                        <div class="text-xs text-surface-500 dark:text-surface-400">
-                                            QR Code status
-                                        </div>
-                                    </div>
-                                </div>
-                                <label class="relative inline-flex items-center cursor-pointer">
-                                    <input 
-                                        type="checkbox" 
-                                        v-model="form.is_active" 
-                                        class="sr-only peer"
-                                    />
-                                    <div class="w-11 h-6 bg-surface-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary/20 dark:peer-focus:ring-primary/40 rounded-full peer dark:bg-surface-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-surface-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-surface-600 peer-checked:bg-primary"></div>
-                                </label>
-                            </div>
+                            <ToggleSetting
+                                v-model="form.is_active"
+                                :icon="Eye"
+                                :title="form.is_active ? t('qrcodes.active') : t('qrcodes.inactive')"
+                                :description="t('qrForm.statusHint')"
+                            />
 
-                            <!-- Consent Page -->
-                            <div class="flex items-center justify-between p-4 bg-surface-50 dark:bg-surface-800 rounded-lg border-2 border-dashed" :class="form.require_consent ? 'border-blue-300 dark:border-blue-700' : 'border-surface-300 dark:border-surface-700'">
-                                <div class="flex items-center gap-3">
-                                    <div class="flex-shrink-0">
-                                        <LucideShield :size="20" :class="form.require_consent ? 'text-blue-600 dark:text-blue-400' : 'text-surface-400'" />
-                                    </div>
-                                    <div>
-                                        <div class="font-medium text-surface-900 dark:text-surface-50 text-sm">
-                                            {{ form.require_consent ? t('qrcodes.consent.enabled') : t('qrcodes.consent.disabled') }}
-                                        </div>
-                                        <div class="text-xs text-surface-500 dark:text-surface-400">
-                                            {{ t('qrcodes.consent.gdpr') }}
-                                        </div>
-                                    </div>
-                                </div>
-                                <label class="relative inline-flex items-center cursor-pointer">
-                                    <input 
-                                        type="checkbox" 
-                                        v-model="form.require_consent" 
-                                        class="sr-only peer"
-                                    />
-                                    <div class="w-11 h-6 bg-surface-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-200 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-surface-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-surface-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-surface-600 peer-checked:bg-blue-600"></div>
-                                </label>
-                            </div>
+                            <ToggleSetting
+                                v-model="form.require_consent"
+                                :icon="form.require_consent ? ShieldCheck : Shield"
+                                tone="blue"
+                                :title="form.require_consent ? t('qrcodes.consent.enabled') : t('qrcodes.consent.disabled')"
+                                :description="t('qrcodes.consent.gdpr')"
+                            />
 
-                            <div v-if="form.require_consent" class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
-                                <div class="flex gap-2">
-                                    <LucideShield :size="16" class="text-blue-600 dark:text-blue-400 flex-shrink-0 mt-0.5" />
-                                    <div class="text-xs text-blue-900 dark:text-blue-200">
-                                        <strong>{{ t('qrcodes.consent.infoTitle') }}</strong> {{ t('qrcodes.consent.infoBody') }}
-                                    </div>
-                                </div>
-                            </div>
+                            <p v-if="form.require_consent" class="flex gap-2 rounded-lg border border-blue-200 bg-blue-50 p-3 text-xs text-blue-900 dark:border-blue-500/25 dark:bg-blue-500/10 dark:text-blue-200">
+                                <ShieldCheck :size="15" class="mt-0.5 shrink-0" />
+                                <span><strong>{{ t('qrcodes.consent.infoTitle') }}</strong> {{ t('qrcodes.consent.infoBody') }}</span>
+                            </p>
                         </div>
-                    </div>
+                    </section>
 
-                    <!-- QR Customization -->
-                    <div class="bg-white dark:bg-surface-800 rounded-xl p-4 sm:p-6 shadow-sm border border-surface-200 dark:border-surface-700">
+                    <section class="ml-card p-5 sm:p-6">
                         <QrCustomization v-model="form.options" :previewUrl="baseQrImageUrl" @update:previewUrl="qrPreviewUrl = $event" />
-                    </div>
-
-                    <!-- Actions -->
-                    <div class="space-y-2">
-                        <Button 
-                            type="submit" 
-                            :disabled="form.processing"
-                            class="w-full justify-center"
-                        >
-                            <LucideSave :size="16" class="mr-2" />
-                            {{ form.processing ? 'Updating...' : t('common.save') }}
-                        </Button>
-                        <Button 
-                            variant="outline"
-                            type="button"
-                            :href="route('qrcodes.show', qrcode.slug)"
-                            as="a"
-                            class="w-full justify-center"
-                        >
-                            {{ t('common.cancel') }}
-                        </Button>
-                    </div>
+                    </section>
                 </div>
 
-                <!-- Center Column - Basic Information & Stats -->
-                <div class="lg:col-span-5 space-y-6">
-                    <!-- Basic Information -->
-                    <div class="bg-white dark:bg-surface-800 rounded-xl p-4 sm:p-6 shadow-sm border border-surface-200 dark:border-surface-700">
-                        <h2 class="text-lg font-semibold text-surface-900 dark:text-surface-50 mb-4 flex items-center gap-2">
-                            <LucideInfo :size="20" />
-                            Basic Information
-                        </h2>
-                        
-                        <div class="space-y-4">
-                            <!-- Name -->
+                <!-- Informazioni principali e statistiche -->
+                <div class="space-y-5 lg:col-span-5">
+                    <section class="ml-card p-5 sm:p-6">
+                        <h2 class="ml-section-title mb-5"><Info :size="18" class="text-primary-500" /> {{ t('qrForm.basicInfo') }}</h2>
+
+                        <div class="space-y-5">
                             <div>
-                                <label class="text-sm font-medium text-surface-700 dark:text-surface-300 block mb-2">
-                                    Name <span class="text-red-500">*</span>
-                                </label>
-                                <InputText
-                                    v-model="form.name"
-                                    :placeholder="t('qrcodes.placeholders.title')"
-                                    required
-                                    class="w-full"
-                                />
-                                <p v-if="form.errors.name" class="text-sm text-red-600 dark:text-red-400 mt-1">
-                                    {{ form.errors.name }}
-                                </p>
+                                <label for="qr-name" class="ml-label">{{ t('qrForm.name') }} <span class="text-rose-500">*</span></label>
+                                <InputText id="qr-name" v-model="form.name" :placeholder="t('qrcodes.placeholders.title')" required class="w-full" />
+                                <p v-if="form.errors.name" class="ml-error">{{ form.errors.name }}</p>
                             </div>
 
-                            <!-- Description -->
                             <div>
-                                <label class="text-sm font-medium text-surface-700 dark:text-surface-300 block mb-2">
-                                    Description
-                                </label>
-                                <Textarea
-                                    v-model="form.description"
-                                    :placeholder="t('qrcodes.placeholders.description')"
-                                    rows="3"
-                                    class="w-full"
-                                />
-                                <p v-if="form.errors.description" class="text-sm text-red-600 dark:text-red-400 mt-1">
-                                    {{ form.errors.description }}
-                                </p>
+                                <label for="qr-description" class="ml-label">{{ t('qrForm.description') }}</label>
+                                <Textarea id="qr-description" v-model="form.description" :placeholder="t('qrcodes.placeholders.description')" rows="3" class="w-full" />
+                                <p v-if="form.errors.description" class="ml-error">{{ form.errors.description }}</p>
                             </div>
 
-                            <!-- Format Selection (disabled for static) -->
                             <div>
-                                <label class="text-sm font-medium text-surface-700 dark:text-surface-300 block mb-3">
-                                    Format Type <span class="text-red-500">*</span>
-                                </label>
-                                <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
+                                <p class="ml-label">{{ t('qrForm.formatType') }} <span class="text-rose-500">*</span></p>
+                                <div class="grid grid-cols-2 gap-2.5 md:grid-cols-3">
                                     <button
                                         v-for="format in formatOptions"
                                         :key="format.value"
                                         type="button"
-                                        @click="qrcode.type === 'dynamic' ? form.format = format.value : null"
-                                        :disabled="qrcode.type === 'static'"
-                                        class="p-4 rounded-lg border-2 transition-all text-left"
+                                        :disabled="isStatic"
+                                        class="rounded-lg border p-3.5 text-left transition-colors"
                                         :class="[
                                             form.format === format.value
-                                                ? 'border-primary bg-primary/5 dark:bg-primary/10'
-                                                : 'border-surface-200 dark:border-surface-700 hover:border-surface-300 dark:hover:border-surface-600',
-                                            qrcode.type === 'static' ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'
+                                                ? 'border-primary-400 bg-primary-50/60 ring-1 ring-primary-400 dark:bg-primary-500/10'
+                                                : 'border-surface-200 hover:border-surface-300 hover:bg-surface-50 dark:border-surface-700 dark:hover:border-surface-600 dark:hover:bg-surface-800',
+                                            isStatic ? 'cursor-not-allowed opacity-50' : 'cursor-pointer',
                                         ]"
+                                        @click="!isStatic && (form.format = format.value)"
                                     >
-                                        <component :is="format.icon" :size="24" 
-                                            class="mb-2"
-                                            :class="form.format === format.value ? 'text-primary' : 'text-surface-500'" 
-                                        />
-                                        <div class="font-medium text-surface-900 dark:text-surface-50 text-sm">
-                                            {{ format.label }}
-                                        </div>
-                                        <div class="text-xs text-surface-500 dark:text-surface-400 mt-1">
-                                            {{ format.description }}
-                                        </div>
+                                        <component :is="format.icon" :size="20" class="mb-2" :class="form.format === format.value ? 'text-primary-600 dark:text-primary-400' : 'text-surface-500'" />
+                                        <span class="block text-sm font-medium text-surface-900 dark:text-surface-50">{{ format.label }}</span>
+                                        <span class="mt-0.5 block text-xs text-surface-500 dark:text-surface-400">{{ format.description }}</span>
                                     </button>
                                 </div>
-                                <p v-if="qrcode.type === 'static'" class="text-xs text-orange-600 dark:text-orange-400 mt-2">
-                                    ⚠️ {{ t('qrcodes.formatCannotChange') }}
+                                <p v-if="isStatic" class="mt-2 flex items-center gap-1.5 text-xs text-amber-700 dark:text-amber-400">
+                                    <AlertTriangle :size="13" class="shrink-0" /> {{ t('qrcodes.formatCannotChange') }}
                                 </p>
                             </div>
 
-                            <!-- Content Input -->
                             <div>
-                                <label class="text-sm font-medium text-surface-700 dark:text-surface-300 block mb-2">
-                                    Content <span class="text-red-500">*</span>
-                                </label>
+                                <label for="qr-content" class="ml-label">{{ t('qrForm.content') }} <span class="text-rose-500">*</span></label>
                                 <div class="relative">
-                                    <component :is="currentFormat.icon" 
-                                        :size="20" 
-                                        class="absolute left-3 top-3 text-surface-400" 
-                                    />
+                                    <component :is="currentFormat.icon" :size="17" class="pointer-events-none absolute top-3 left-3 text-surface-400" />
                                     <Textarea
+                                        id="qr-content"
                                         v-model="payloadContent"
-                                        :placeholder="`Enter ${currentFormat.label.toLowerCase()} content...`"
+                                        :placeholder="t('qrForm.contentPlaceholder', { format: currentFormat.label.toLowerCase() })"
                                         rows="4"
                                         class="w-full pl-10"
                                         required
-                                        :disabled="qrcode.type === 'static'"
+                                        :disabled="isStatic"
                                     />
                                 </div>
-                                <p class="text-xs text-surface-500 dark:text-surface-400 mt-1">
-                                    {{ currentFormat.description }}
-                                </p>
-                                <p v-if="qrcode.type === 'static'" class="text-xs text-orange-600 dark:text-orange-400 mt-1">
-                                    ⚠️ {{ t('qrcodes.contentCannotChange') }}
+                                <p class="ml-hint">{{ currentFormat.description }}</p>
+                                <p v-if="isStatic" class="mt-1.5 flex items-center gap-1.5 text-xs text-amber-700 dark:text-amber-400">
+                                    <AlertTriangle :size="13" class="shrink-0" /> {{ t('qrcodes.contentCannotChange') }}
                                 </p>
                             </div>
                         </div>
-                    </div>
+                    </section>
 
-                    <!-- Statistics -->
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div class="bg-white dark:bg-surface-800 rounded-xl p-4 sm:p-6 shadow-sm border border-surface-200 dark:border-surface-700">
-                            <div class="flex items-center justify-between">
-                                <div>
-                                    <p class="text-sm font-medium text-surface-600 dark:text-surface-400">Total Scans</p>
-                                    <p class="text-3xl font-bold text-surface-900 dark:text-surface-50 mt-2">{{ qrcode.scans }}</p>
-                                </div>
-                                <div class="p-3 bg-purple-100 dark:bg-purple-900/30 rounded-lg">
-                                    <LucideScan :size="24" class="text-purple-600 dark:text-purple-400" />
-                                </div>
+                    <div class="grid grid-cols-1 gap-5 md:grid-cols-2">
+                        <div class="ml-card flex items-center gap-4 p-5">
+                            <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-violet-50 text-violet-600 dark:bg-violet-500/10 dark:text-violet-400">
+                                <ScanLine :size="20" />
+                            </span>
+                            <div class="min-w-0 flex-1">
+                                <p class="text-2xl font-semibold text-surface-900 tabular-nums dark:text-white">{{ qrcode.scans }}</p>
+                                <p class="text-[13px] text-surface-500 dark:text-surface-400">{{ t('qrcodes.totalScans') }}</p>
                             </div>
+                            <Link :href="route('qrcodes.analytics', qrcode.slug)" class="ml-icon-btn" title="Analytics">
+                                <BarChart3 :size="17" class="text-violet-500" />
+                            </Link>
                         </div>
-
-                        <div class="bg-white dark:bg-surface-800 rounded-xl p-4 sm:p-6 shadow-sm border border-surface-200 dark:border-surface-700">
-                            <div class="flex items-center justify-between">
-                                <div>
-                                    <p class="text-sm font-medium text-surface-600 dark:text-surface-400">Created</p>
-                                    <p class="text-sm font-semibold text-surface-900 dark:text-surface-50 mt-2">
-                                        {{ formatDate(qrcode.created_at) }}
-                                    </p>
-                                </div>
-                                <div class="p-3 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
-                                    <LucideClock :size="24" class="text-blue-600 dark:text-blue-400" />
-                                </div>
+                        <div class="ml-card flex items-center gap-4 p-5">
+                            <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-blue-50 text-blue-600 dark:bg-blue-500/10 dark:text-blue-400">
+                                <Clock :size="20" />
+                            </span>
+                            <div>
+                                <p class="text-base font-semibold text-surface-900 dark:text-white">{{ formatDate(qrcode.created_at) }}</p>
+                                <p class="text-[13px] text-surface-500 dark:text-surface-400">{{ t('qrForm.created') }}</p>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Right Column - QR Preview & Download -->
-                <div class="lg:col-span-3 space-y-6">
-                    <!-- QR Code Preview & Download -->
-                    <div class="bg-white dark:bg-surface-800 rounded-xl p-4 sm:p-6 shadow-sm border border-surface-200 dark:border-surface-700 sticky top-6">
-                        <h2 class="text-lg font-semibold text-surface-900 dark:text-surface-50 mb-4">
-                            Current QR Code
-                        </h2>
-                        <div class="space-y-3">
-                            <div class="aspect-square max-w-[280px] mx-auto bg-surface-50 dark:bg-surface-800 rounded-lg border-2 border-surface-200 dark:border-surface-700 flex items-center justify-center">
-                                <img 
-                                    :src="qrPreviewUrl" 
-                                    alt="QR Code" 
-                                    class="w-full h-full object-contain p-3"
-                                />
-                            </div>
-                            
-                            <!-- Download Buttons -->
-                            <div>
-                                <p class="text-xs text-surface-600 dark:text-surface-400 mb-2">{{ t('qrcodes.downloadQr') }}</p>
-                                <div class="grid grid-cols-3 gap-2">
-                                    <Button 
-                                        variant="outline"
-                                        type="button"
-                                        @click="downloadQr('png')"
-                                        class="w-full justify-center text-sm"
-                                    >
-                                        <LucideDownload :size="14" class="mr-1" />
-                                        PNG
-                                    </Button>
-                                    <Button 
-                                        variant="outline"
-                                        type="button"
-                                        @click="downloadQr('jpg')"
-                                        class="w-full justify-center text-sm"
-                                    >
-                                        <LucideDownload :size="14" class="mr-1" />
-                                        JPG
-                                    </Button>
-                                    <Button 
-                                        variant="outline"
-                                        type="button"
-                                        @click="downloadQr('svg')"
-                                        class="w-full justify-center text-sm"
-                                    >
-                                        <LucideDownload :size="14" class="mr-1" />
-                                        SVG
-                                    </Button>
-                                </div>
-                            </div>
-                            
-                            <!-- QR URL Display (only for dynamic) -->
-                            <div v-if="qrcode.type === 'dynamic'" class="p-4 bg-surface-50 dark:bg-surface-800 rounded-lg border border-surface-200 dark:border-surface-700">
-                                <div class="flex items-start gap-3">
-                                    <div class="flex-shrink-0 w-10 h-10 bg-gradient-to-br from-primary/20 to-primary/5 rounded-lg flex items-center justify-center">
-                                        <LucideQrCode :size="20" class="text-primary" />
-                                    </div>
-                                    <div class="flex-1 min-w-0">
-                                        <div class="text-xs text-surface-500 dark:text-surface-400 mt-1 truncate">
-                                            {{ t('qrcodes.shortUrl') }}: <span class="text-primary font-mono">{{ shortUrl }}/q/{{ qrcode.slug }}</span>
-                                        </div>
-                                        <div class="text-xs text-primary mt-2 truncate">
-                                            {{ t('qrcodes.content') }}: {{ payloadContent || t('qrcodes.preview') }}
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <!-- Type Info -->
-                            <div v-if="qrcode.type === 'dynamic'" class="p-2 bg-blue-50 dark:bg-blue-900/20 rounded border border-blue-200 dark:border-blue-800">
-                                <p class="text-xs text-blue-700 dark:text-blue-400">
-                                    <span class="font-medium">📍 {{ t('qrcodes.dynamicQr') }}</span>
-                                </p>
-                                <p class="text-xs text-blue-600 dark:text-blue-500 mt-1">
-                                    {{ t('qrcodes.canBeUpdated') }}
-                                </p>
-                            </div>
-                            <div v-else class="p-2 bg-green-50 dark:bg-green-900/20 rounded border border-green-200 dark:border-green-800">
-                                <p class="text-xs text-green-700 dark:text-green-400">
-                                    <span class="font-medium">🔒 {{ t('qrcodes.staticQr') }}</span>
-                                </p>
-                                <p class="text-xs text-green-600 dark:text-green-500 mt-1">
-                                    {{ t('qrcodes.embeddedDirectly') }}. {{ t('qrcodes.cannotBeModified') }}.
-                                </p>
+                <!-- Anteprima e download -->
+                <div class="lg:col-span-3">
+                    <section class="ml-card sticky top-20 space-y-4 p-5 sm:p-6">
+                        <h2 class="ml-section-title"><QrCode :size="18" class="text-primary-500" /> {{ t('qrcodes.currentQrCode') }}</h2>
+                        <div class="mx-auto flex aspect-square max-w-[280px] items-center justify-center rounded-xl border border-surface-200 bg-white dark:border-surface-700">
+                            <img :src="qrPreviewUrl" alt="QR Code" class="h-full w-full object-contain p-3" />
+                        </div>
+
+                        <div>
+                            <p class="ml-label">{{ t('qrcodes.downloadQr') }}</p>
+                            <div class="grid grid-cols-3 gap-2">
+                                <button v-for="ext in (['png', 'jpg', 'svg'] as const)" :key="ext" type="button" class="ml-btn-secondary px-2 py-1.5 text-xs uppercase" @click="downloadQr(ext)">
+                                    <Download :size="13" /> {{ ext }}
+                                </button>
                             </div>
                         </div>
-                    </div>
+
+                        <div v-if="!isStatic" class="rounded-lg border border-surface-200 bg-surface-50/60 p-3 text-xs dark:border-surface-700 dark:bg-surface-900/40">
+                            <p class="truncate text-surface-500 dark:text-surface-400">
+                                {{ t('qrcodes.shortUrl') }}: <span class="font-mono text-primary-600 dark:text-primary-400">{{ shortUrl }}/q/{{ qrcode.slug }}</span>
+                            </p>
+                            <p class="mt-1 truncate text-surface-600 dark:text-surface-300">{{ t('qrcodes.content') }}: {{ payloadContent || t('qrcodes.preview') }}</p>
+                        </div>
+
+                        <div v-if="!isStatic" class="flex gap-2 rounded-lg border border-blue-200 bg-blue-50 p-3 text-xs text-blue-800 dark:border-blue-500/25 dark:bg-blue-500/10 dark:text-blue-200">
+                            <MapPin :size="15" class="mt-0.5 shrink-0" />
+                            <div>
+                                <p class="font-semibold">{{ t('qrcodes.dynamicQr') }}</p>
+                                <p class="mt-0.5 opacity-90">{{ t('qrcodes.canBeUpdated') }}</p>
+                            </div>
+                        </div>
+                        <div v-else class="flex gap-2 rounded-lg border border-emerald-200 bg-emerald-50 p-3 text-xs text-emerald-800 dark:border-emerald-500/25 dark:bg-emerald-500/10 dark:text-emerald-200">
+                            <Lock :size="15" class="mt-0.5 shrink-0" />
+                            <div>
+                                <p class="font-semibold">{{ t('qrcodes.staticQr') }}</p>
+                                <p class="mt-0.5 opacity-90">{{ t('qrcodes.embeddedDirectly') }}. {{ t('qrcodes.cannotBeModified') }}.</p>
+                            </div>
+                        </div>
+                    </section>
                 </div>
             </form>
         </div>

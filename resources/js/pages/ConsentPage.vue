@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Head } from '@inertiajs/vue3';
-import { ExternalLink, Shield } from 'lucide-vue-next';
+import { Check, ExternalLink, Shield } from 'lucide-vue-next';
 import { ref, onMounted, computed } from 'vue';
 
 interface Props {
@@ -113,7 +113,7 @@ const referrerDomain = computed(() => {
 
               <div class="space-y-2 text-sm">
                 <div class="flex items-start gap-2 text-gray-300">
-                  <span class="text-green-400 mt-0.5 flex-shrink-0">✓</span>
+                  <Check :size="15" class="text-green-400 mt-0.5 flex-shrink-0" />
                   <span><strong class="text-white">Accettare:</strong> verranno raccolti dati anonimi (browser, dispositivo, paese, lingua) per statistiche</span>
                 </div>
                 <div class="flex items-start gap-2 text-gray-300">

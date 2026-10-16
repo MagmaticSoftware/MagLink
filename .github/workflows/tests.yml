@@ -9,6 +9,8 @@ on:
     branches:
       - develop
       - main
+  # Permette a un workflow di deploy di usare questi test come gate (needs: tests)
+  workflow_call:
 
 jobs:
   ci:
@@ -23,7 +25,7 @@ jobs:
         with:
           php-version: 8.4
           tools: composer:v2
-          coverage: xdebug
+          coverage: none
 
       - name: Setup Node
         uses: actions/setup-node@v4

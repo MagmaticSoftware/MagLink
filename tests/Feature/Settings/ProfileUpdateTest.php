@@ -1,87 +1,71 @@
 <?php
 
-use App\Models\User;
-
-uses(\Illuminate\Foundation\Testing\RefreshDatabase::class);
-
 test('profile page is displayed', function () {
-    $user = User::factory()->create();
+    $user = $this->createTenantUser();
 
-    $response = $this
-        ->actingAs($user)
-        ->get('/settings/profile');
-
-    $response->assertOk();
+    $this->actingAs($user)
+        ->get(route('profile.edit', ['tenant' => $user->tenant_id]))
+        ->assertOk();
 });
 
 test('profile information can be updated', function () {
-    $user = User::factory()->create();
+    $user = $this->createTenantUser();
 
-    $response = $this
-        ->actingAs($user)
-        ->patch('/settings/profile', [
-            'name' => 'Test User',
+    $this->actingAs($user)
+        ->patch(route('profile.update', ['tenant' => $user->tenant_id]), [
+            'first_name' => 'Mario',
+            'last_name' => 'Rossi',
             'email' => 'test@example.com',
-        ]);
-
-    $response
+        ])
         ->assertSessionHasNoErrors()
-        ->assertRedirect('/settings/profile');
+        ->assertRedirect(route('profile.edit', ['tenant' => $user->tenant_id]));
 
     $user->refresh();
 
-    expect($user->name)->toBe('Test User');
-    expect($user->email)->toBe('test@example.com');
-    expect($user->email_verified_at)->toBeNull();
+    expect($user->first_name)->toBe('Mario')
+        ->and($user->last_name)->toBe('Rossi')
+        ->and($user->email)->toBe('test@example.com')
+        ->and($user->email_verified_at)->toBeNull();
 });
 
 test('email verification status is unchanged when the email address is unchanged', function () {
-    $user = User::factory()->create();
+    $user = $this->createTenantUser();
 
-    $response = $this
-        ->actingAs($user)
-        ->patch('/settings/profile', [
-            'name' => 'Test User',
+    $this->actingAs($user)
+        ->patch(route('profile.update', ['tenant' => $user->tenant_id]), [
+            'first_name' => 'Mario',
+            'last_name' => 'Rossi',
             'email' => $user->email,
-        ]);
-
-    $response
-        ->assertSessionHasNoErrors()
-        ->assertRedirect('/settings/profile');
+        ])
+        ->assertSessionHasNoErrors();
 
     expect($user->refresh()->email_verified_at)->not->toBeNull();
 });
 
 test('user can delete their account', function () {
-    $user = User::factory()->create();
+    $user = $this->createTenantUser();
 
-    $response = $this
-        ->actingAs($user)
-        ->delete('/settings/profile', [
+    $this->actingAs($user)
+        ->delete(route('profile.destroy', ['tenant' => $user->tenant_id]), [
             'password' => 'password',
-        ]);
-
-    $response
-        ->assertSessionHasNoErrors()
-        ->assertRedirect('/');
+        ])
+        ->assertSessionHasNoErrors();
 
     $this->assertGuest();
-    expect($user->fresh())->toBeNull();
+    expect($user->fresh()->trashed())->toBeTrue();
 });
 
 test('correct password must be provided to delete account', function () {
-    $user = User::factory()->create();
+    $user = $this->createTenantUser();
+    $url = route('profile.edit', ['tenant' => $user->tenant_id]);
 
-    $response = $this
-        ->actingAs($user)
-        ->from('/settings/profile')
-        ->delete('/settings/profile', [
+    $this->actingAs($user)
+        ->from($url)
+        ->delete(route('profile.destroy', ['tenant' => $user->tenant_id]), [
             'password' => 'wrong-password',
-        ]);
-
-    $response
+        ])
         ->assertSessionHasErrors('password')
-        ->assertRedirect('/settings/profile');
+        ->assertRedirect($url);
 
-    expect($user->fresh())->not->toBeNull();
+    expect($user->fresh()->trashed())->toBeFalse();
 });

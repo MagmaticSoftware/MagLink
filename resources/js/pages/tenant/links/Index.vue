@@ -1,31 +1,34 @@
 <script setup lang="ts">
 import AppLayout from '@/layouts/AppLayout.vue';
 import { type BreadcrumbItem } from '@/types';
-import { Head, Link } from '@inertiajs/vue3';
-import { 
-    LucideEdit, 
-    LucideTrash2, 
-    LucidePlus, 
-    LucideLink, 
-    LucideSearch,
-    LucideFilter,
-    LucideArrowUpDown,
-    LucideEye,
-    LucideMousePointerClick,
-    LucideTrendingUp,
-    LucideCopy,
-    LucideExternalLink,
-    LucideCalendar,
-    LucideBarChart3,
-    LucideDownload,
-    LucideCrown
+import { Head, Link, router, usePage } from '@inertiajs/vue3';
+import {
+    BarChart3,
+    Calendar,
+    Check,
+    Copy,
+    Crown,
+    Download,
+    ExternalLink,
+    EyeOff,
+    Link2,
+    MousePointerClick,
+    Pencil,
+    Plus,
+    SearchX,
+    ShieldCheck,
+    Trash2,
+    TrendingUp,
+    Eye,
 } from 'lucide-vue-next';
 import { useI18n } from 'vue-i18n';
 import { ref, computed } from 'vue';
-import { router, usePage } from '@inertiajs/vue3';
 import { useRoute } from '@/composables/useRoute';
-import InputText from '@/components/volt/InputText.vue';
-import Select from '@/components/volt/Select.vue';
+import PageHeader from '@/components/PageHeader.vue';
+import ListToolbar from '@/components/ListToolbar.vue';
+import StatCard, { type Trend } from '@/components/dashboard/StatCard.vue';
+import Sparkline from '@/components/dashboard/Sparkline.vue';
+import { METRIC_COLORS } from '@/components/dashboard/colors';
 import LimitReachedDialog from '@/components/LimitReachedDialog.vue';
 import PlanSelectionModal from '@/components/PlanSelectionModal.vue';
 import AnalyticsExportDialog from '@/components/AnalyticsExportDialog.vue';
@@ -52,6 +55,8 @@ const props = defineProps<{
         totalClicks: number;
         avgClicksPerLink: number;
     };
+    trends?: { created: Trend; views: Trend };
+    sparklines?: Record<number, number[]>;
     canExportAnalytics?: boolean;
 }>();
 
@@ -70,33 +75,56 @@ const filterStatus = ref('all');
 // Compute stats from links if not provided
 const computedStats = computed(() => {
     if (props.stats) return props.stats;
-    
+
     const totalClicks = props.links.reduce((sum, link) => sum + (link.views_count || 0), 0);
     return {
         total: props.links.length,
-        active: props.links.filter(l => l.is_active).length,
+        active: props.links.filter((l) => l.is_active).length,
         totalClicks,
-        avgClicksPerLink: props.links.length > 0 ? (totalClicks / props.links.length).toFixed(1) : '0.0'
+        avgClicksPerLink: props.links.length > 0 ? Number((totalClicks / props.links.length).toFixed(1)) : 0,
     };
 });
 
 // Get limits from billing
-const limits = computed(() => page.props.billing?.limits || {});
+const limits = computed(() => page.props.billing?.limits || ({} as Record<string, number>));
+const linkLimit = computed(() => limits.value.links ?? -1);
+const atLinkLimit = computed(() => linkLimit.value !== -1 && computedStats.value.total >= linkLimit.value);
 
-// Helper to get limit status (normal, warning, exceeded)
-const getLimitStatus = (current: number, limit: number) => {
-    if (limit === -1) return 'normal'; // unlimited
-    if (current >= limit) return 'exceeded';
-    if (current >= limit - 1) return 'warning';
-    return 'normal';
-};
+const formatNumber = (num: number) => new Intl.NumberFormat(undefined, { maximumFractionDigits: 1 }).format(num);
 
-// Helper to get limit classes
-const getLimitClasses = (status: string) => {
-    if (status === 'exceeded') return 'text-red-700 dark:text-red-400';
-    if (status === 'warning') return 'text-orange-600 dark:text-orange-400';
-    return 'text-surface-900 dark:text-surface-50';
-};
+const statCards = computed(() => [
+    {
+        label: t('links.stats.totalLinks'),
+        value: linkLimit.value > 0 ? `${computedStats.value.total} / ${linkLimit.value}` : formatNumber(computedStats.value.total),
+        valueClass: atLinkLimit.value ? 'text-rose-600 dark:text-rose-400' : undefined,
+        icon: Link2,
+        iconClass: 'bg-blue-50 text-blue-600 dark:bg-blue-500/10 dark:text-blue-400',
+        color: METRIC_COLORS.links,
+        trend: props.trends?.created,
+    },
+    {
+        label: t('links.stats.activeLinks'),
+        value: formatNumber(computedStats.value.active),
+        icon: TrendingUp,
+        iconClass: 'bg-emerald-50 text-emerald-600 dark:bg-emerald-500/10 dark:text-emerald-400',
+        color: METRIC_COLORS.qrcodes,
+    },
+    {
+        label: t('links.stats.totalClicks'),
+        value: formatNumber(computedStats.value.totalClicks),
+        icon: MousePointerClick,
+        iconClass: 'bg-violet-50 text-violet-600 dark:bg-violet-500/10 dark:text-violet-400',
+        color: METRIC_COLORS.pages,
+        trend: props.trends?.views,
+    },
+    {
+        label: t('links.stats.avgClicks'),
+        value: formatNumber(Number(computedStats.value.avgClicksPerLink)),
+        icon: Eye,
+        iconClass: 'bg-orange-50 text-orange-600 dark:bg-orange-500/10 dark:text-orange-400',
+        color: METRIC_COLORS.blocks,
+    },
+]);
 
 // Sort options
 const sortOptions = [
@@ -104,38 +132,35 @@ const sortOptions = [
     { label: t('links.sort.oldest'), value: 'created_asc' },
     { label: t('links.sort.mostClicks'), value: 'clicks_desc' },
     { label: t('links.sort.leastClicks'), value: 'clicks_asc' },
-    { label: t('links.sort.alphabetical'), value: 'title_asc' }
+    { label: t('links.sort.alphabetical'), value: 'title_asc' },
 ];
 
 // Filter options
 const filterOptions = [
     { label: t('links.filter.all'), value: 'all' },
     { label: t('links.filter.active'), value: 'active' },
-    { label: t('links.filter.inactive'), value: 'inactive' }
+    { label: t('links.filter.inactive'), value: 'inactive' },
 ];
 
 // Filtered and sorted links
 const filteredLinks = computed(() => {
     let result = [...props.links];
-    
-    // Apply search filter
+
     if (searchQuery.value) {
         const query = searchQuery.value.toLowerCase();
-        result = result.filter(link => 
-            link.title?.toLowerCase().includes(query) ||
-            link.description?.toLowerCase().includes(query) ||
-            link.slug?.toLowerCase().includes(query)
+        result = result.filter(
+            (link) =>
+                link.title?.toLowerCase().includes(query) ||
+                link.description?.toLowerCase().includes(query) ||
+                link.slug?.toLowerCase().includes(query) ||
+                link.url?.toLowerCase().includes(query),
         );
     }
-    
-    // Apply status filter
+
     if (filterStatus.value !== 'all') {
-        result = result.filter(link => 
-            filterStatus.value === 'active' ? link.is_active : !link.is_active
-        );
+        result = result.filter((link) => (filterStatus.value === 'active' ? link.is_active : !link.is_active));
     }
-    
-    // Apply sorting
+
     result.sort((a, b) => {
         switch (sortBy.value) {
             case 'created_desc':
@@ -152,7 +177,7 @@ const filteredLinks = computed(() => {
                 return 0;
         }
     });
-    
+
     return result;
 });
 
@@ -161,50 +186,44 @@ const exportPreselected = computed(() =>
     [...filteredLinks.value]
         .sort((a, b) => (b.views_count || 0) - (a.views_count || 0))
         .slice(0, 5)
-        .map((l) => l.id)
+        .map((l) => l.id),
 );
 
-// Copy link to clipboard
-const copyToClipboard = (slug: string) => {
-    const url = `${props.shortUrl}/${slug}`;
-    navigator.clipboard.writeText(url);
-    // TODO: Add toast notification
+// Copia del link breve, con conferma visiva sul pulsante
+const copiedId = ref<number | null>(null);
+const copyToClipboard = async (link: { id: number; slug: string }) => {
+    await navigator.clipboard.writeText(`${props.shortUrl}/${link.slug}`);
+    copiedId.value = link.id;
+    setTimeout(() => {
+        if (copiedId.value === link.id) copiedId.value = null;
+    }, 1500);
+};
+
+const destroy = (link: { id: number; title: string }) => {
+    if (!window.confirm(t('links.confirmDelete', { title: link.title }))) return;
+    router.delete(route('links.destroy', link.id), { preserveScroll: true });
 };
 
 // Handle create button click
 const handleCreateClick = () => {
-    const limits = page.props.billing?.limits;
-    const linkLimit = limits?.links || 0;
-    const currentCount = computedStats.value.total;
-    
-    // Se il limite è -1 (illimitato) o non raggiunto, naviga alla pagina di creazione
-    if (linkLimit === -1 || currentCount < linkLimit) {
-        router.visit(route('links.create'));
-    } else {
-        // Altrimenti mostra la dialog
+    if (atLinkLimit.value) {
         showLimitDialog.value = true;
+    } else {
+        router.visit(route('links.create'));
     }
 };
 
-// Format date
-const formatDate = (date: string) => {
-    return new Date(date).toLocaleDateString(undefined, { 
-        year: 'numeric', 
-        month: 'short', 
-        day: 'numeric' 
-    });
-};
+const formatDate = (date: string) =>
+    new Date(date).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+
+const displayUrl = (url: string) => url?.replace(/^https?:\/\//, '');
 </script>
 
 <template>
-    <Head title="Links" />
+    <Head :title="t('links.title')" />
 
     <!-- Limit Reached Dialog -->
-    <LimitReachedDialog
-        v-model:visible="showLimitDialog"
-        type="links"
-        @show-plans="handleShowPlans"
-    />
+    <LimitReachedDialog v-model:visible="showLimitDialog" type="links" @show-plans="handleShowPlans" />
 
     <AnalyticsExportDialog
         v-model:visible="showExportDialog"
@@ -226,273 +245,137 @@ const formatDate = (date: string) => {
     />
 
     <AppLayout :breadcrumbs="breadcrumbs">
-        <div class="flex h-full flex-1 flex-col gap-4 sm:gap-6 p-0 sm:p-2 lg:p-6">
-            <!-- Page Header -->
-            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                <div>
-                    <h1 class="text-2xl sm:text-3xl font-bold text-surface-900 dark:text-surface-50">{{ t('links.title') }}</h1>
-                    <p class="text-surface-600 dark:text-surface-400 mt-1">{{ t('links.subtitle') }}</p>
-                </div>
-                <div class="flex flex-wrap items-center gap-2">
-                    <button
-                        v-if="props.links.length > 0"
-                        @click="showExportDialog = true"
-                        class="px-4 py-2 rounded-lg border border-surface-300 dark:border-surface-600 bg-white dark:bg-surface-800 text-surface-700 dark:text-surface-200 hover:bg-surface-100 dark:hover:bg-surface-700 flex items-center gap-2 text-sm font-medium transition-colors"
-                    >
-                        <LucideDownload class="w-4 h-4" /> {{ t('analytics.export.button') }}
-                        <LucideCrown v-if="!props.canExportAnalytics" class="w-4 h-4 text-amber-500" />
+        <div class="flex w-full flex-col gap-4 sm:gap-5 lg:p-2">
+            <PageHeader :title="t('links.title')" :subtitle="t('links.subtitle')">
+                <template #actions>
+                    <button v-if="props.links.length > 0" type="button" class="ml-btn-secondary" @click="showExportDialog = true">
+                        <Download :size="16" /> {{ t('analytics.export.button') }}
+                        <Crown v-if="!props.canExportAnalytics" :size="15" class="text-amber-500" />
                     </button>
-                    <button
-                        @click="handleCreateClick"
-                        class="button-primary flex items-center gap-2"
-                    >
-                        <LucidePlus class="w-4 h-4" /> {{ t('links.addNew') }}
+                    <button type="button" class="ml-btn-primary" @click="handleCreateClick">
+                        <Plus :size="16" :stroke-width="2.5" /> {{ t('links.addNew') }}
                     </button>
-                </div>
+                </template>
+            </PageHeader>
+
+            <!-- Statistiche -->
+            <div class="grid grid-cols-2 gap-3 sm:gap-5 xl:grid-cols-4">
+                <StatCard v-for="card in statCards" :key="card.label" v-bind="card" />
             </div>
 
-            <!-- Statistics Cards -->
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                <!-- Total Links -->
-                <div class="bg-white dark:bg-surface-800 rounded-xl p-4 sm:p-6 shadow-sm border border-surface-200 dark:border-surface-700">
-                    <div class="flex items-center justify-between mb-2">
-                        <p class="text-sm font-medium text-surface-600 dark:text-surface-400">{{ t('links.stats.totalLinks') }}</p>
-                        <div class="p-3 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
-                            <LucideLink :size="24" class="text-blue-600 dark:text-blue-400" />
-                        </div>
-                    </div>
-                    <p 
-                        :class="['text-3xl font-bold mt-2', getLimitClasses(getLimitStatus(computedStats.total, limits.links || -1))]"
-                    >
-                        {{ computedStats.total }}{{ limits.links > 0 ? ` / ${limits.links}` : '' }}
-                    </p>
-                    <p 
-                        v-if="getLimitStatus(computedStats.total, limits.links || -1) === 'exceeded'"
-                        class="text-xs text-red-700 dark:text-red-400 mt-1"
-                    >
-                        Limite raggiunto per il piano free
-                    </p>
-                </div>
+            <ListToolbar
+                v-model:search="searchQuery"
+                v-model:sort="sortBy"
+                v-model:filter="filterStatus"
+                :search-placeholder="t('links.search')"
+                :sort-options="sortOptions"
+                :filter-options="filterOptions"
+                :sort-label="t('links.sortBy')"
+                :filter-label="t('links.filterBy')"
+            />
 
-                <!-- Active Links -->
-                <div class="bg-white dark:bg-surface-800 rounded-xl p-4 sm:p-6 shadow-sm border border-surface-200 dark:border-surface-700">
-                    <div class="flex items-center justify-between mb-2">
-                        <p class="text-sm font-medium text-surface-600 dark:text-surface-400">{{ t('links.stats.activeLinks') }}</p>
-                        <div class="p-3 bg-green-100 dark:bg-green-900/30 rounded-lg">
-                            <LucideTrendingUp :size="24" class="text-green-600 dark:text-green-400" />
-                        </div>
-                    </div>
-                    <p class="text-3xl font-bold text-surface-900 dark:text-surface-50 mt-2">{{ computedStats.active }}</p>
-                </div>
-
-                <!-- Total Clicks -->
-                <div class="bg-white dark:bg-surface-800 rounded-xl p-4 sm:p-6 shadow-sm border border-surface-200 dark:border-surface-700">
-                    <div class="flex items-center justify-between mb-2">
-                        <p class="text-sm font-medium text-surface-600 dark:text-surface-400">{{ t('links.stats.totalClicks') }}</p>
-                        <div class="p-3 bg-purple-100 dark:bg-purple-900/30 rounded-lg">
-                            <LucideMousePointerClick :size="24" class="text-purple-600 dark:text-purple-400" />
-                        </div>
-                    </div>
-                    <p class="text-3xl font-bold text-surface-900 dark:text-surface-50 mt-2">{{ computedStats.totalClicks }}</p>
-                </div>
-
-                <!-- Average Clicks -->
-                <div class="bg-white dark:bg-surface-800 rounded-xl p-4 sm:p-6 shadow-sm border border-surface-200 dark:border-surface-700">
-                    <div class="flex items-center justify-between mb-2">
-                        <p class="text-sm font-medium text-surface-600 dark:text-surface-400">{{ t('links.stats.avgClicks') }}</p>
-                        <div class="p-3 bg-orange-100 dark:bg-orange-900/30 rounded-lg">
-                            <LucideEye :size="24" class="text-orange-600 dark:text-orange-400" />
-                        </div>
-                    </div>
-                    <p class="text-3xl font-bold text-surface-900 dark:text-surface-50 mt-2">{{ computedStats.avgClicksPerLink }}</p>
-                </div>
-            </div>
-
-            <!-- Search and Filters -->
-            <div class="bg-white dark:bg-surface-800 rounded-xl p-4 shadow-sm border border-surface-200 dark:border-surface-700">
-                <div class="flex flex-col md:flex-row gap-4">
-                    <!-- Search -->
-                    <div class="flex-1">
-                        <div class="relative">
-                            <LucideSearch :size="20" class="absolute left-3 top-1/2 -translate-y-1/2 text-surface-400" />
-                            <InputText
-                                v-model="searchQuery"
-                                :placeholder="t('links.search')"
-                                class="pl-10 w-full"
-                            />
-                        </div>
-                    </div>
-
-                    <!-- Sort -->
-                    <div class="w-full md:w-48">
-                        <div class="flex items-center gap-2">
-                            <LucideArrowUpDown :size="20" class="text-surface-400" />
-                            <Select
-                                v-model="sortBy"
-                                :options="sortOptions"
-                                optionLabel="label"
-                                optionValue="value"
-                                :placeholder="t('links.sortBy')"
-                                class="w-full"
-                            />
-                        </div>
-                    </div>
-
-                    <!-- Filter -->
-                    <div class="w-full md:w-48">
-                        <div class="flex items-center gap-2">
-                            <LucideFilter :size="20" class="text-surface-400" />
-                            <Select
-                                v-model="filterStatus"
-                                :options="filterOptions"
-                                optionLabel="label"
-                                optionValue="value"
-                                :placeholder="t('links.filterBy')"
-                                class="w-full"
-                            />
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Links Grid -->
-            <div class="grid grid-cols-1 gap-4">
-                <div
+            <!-- Elenco link -->
+            <ul v-if="filteredLinks.length" class="flex flex-col gap-2.5">
+                <li
                     v-for="link in filteredLinks"
                     :key="link.id"
-                    class="bg-white dark:bg-surface-800 rounded-xl p-4 sm:p-6 shadow-sm border border-surface-200 dark:border-surface-700 hover:shadow-md transition-all md:hover:scale-[1.01]"
+                    class="ml-card grid gap-4 p-4 transition-colors hover:bg-surface-50/80 sm:px-5 lg:grid-cols-[minmax(0,1fr)_11rem_5.5rem_auto] xl:grid-cols-[minmax(0,1fr)_12rem_6.5rem_5.5rem_auto] lg:items-center dark:hover:bg-surface-800"
                 >
-                    <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-                        <!-- Link Info -->
-                        <div class="flex-1 min-w-0">
-                            <div class="flex items-start gap-3">
-                                <div class="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-primary/20 to-primary/5 rounded-lg flex items-center justify-center">
-                                    <LucideLink :size="24" class="text-primary" />
-                                </div>
-                                <div class="flex-1 min-w-0">
-                                    <h3 class="text-lg font-semibold text-surface-900 dark:text-surface-50 truncate">
-                                        {{ link.title }}
-                                    </h3>
-                                    <p class="text-sm text-surface-600 dark:text-surface-400 mt-1 line-clamp-2">
-                                        {{ link.description }}
-                                    </p>
-                                    
-                                    <!-- Link URL -->
-                                    <div class="flex flex-wrap items-center gap-2 mt-3 text-sm">
-                                        <span class="font-medium text-surface-700 dark:text-surface-300">{{ t('links.url') }}:</span>
-                                        <code class="px-2 py-1 bg-surface-100 dark:bg-surface-800 rounded text-primary font-mono text-xs break-all">
-                                            {{ shortUrl }}/{{ link.slug }}
-                                        </code>
-                                        <button
-                                            @click="copyToClipboard(link.slug)"
-                                            class="p-1 hover:bg-surface-100 dark:hover:bg-surface-800 rounded transition-colors"
-                                            :title="t('links.copyLink')"
-                                        >
-                                            <LucideCopy :size="14" class="text-surface-500" />
-                                        </button>
-                                        <a
-                                            :href="`${shortUrl}/${link.slug}`"
-                                            target="_blank"
-                                            class="p-1 hover:bg-surface-100 dark:hover:bg-surface-800 rounded transition-colors"
-                                            :title="t('links.openLink')"
-                                        >
-                                            <LucideExternalLink :size="14" class="text-surface-500" />
-                                        </a>
-                                    </div>
-
-                                    <!-- Meta Info -->
-                                    <div class="flex items-center flex-wrap gap-3 mt-3 text-xs text-surface-500 dark:text-surface-400">
-                                        <span class="flex items-center gap-1">
-                                            <LucideCalendar :size="14" />
-                                            {{ t('links.createdAt') }}: {{ formatDate(link.created_at) }}
-                                        </span>
-                                        
-                                        <!-- Views Statistics -->
-                                        <span class="flex items-center gap-1 font-medium text-primary">
-                                            <LucideEye :size="14" />
-                                            {{ link.views_count || 0 }} views
-                                        </span>
-                                        <span 
-                                            v-if="link.views_with_consent_count > 0"
-                                            class="px-2 py-0.5 rounded-full text-xs font-medium bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400"
-                                        >
-                                            🔒 {{ link.views_with_consent_count }} con consenso
-                                        </span>
-                                        <span 
-                                            v-if="link.views_anonymous_count > 0"
-                                            class="px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 dark:bg-gray-900/30 text-gray-700 dark:text-gray-400"
-                                        >
-                                            🕶️ {{ link.views_anonymous_count }} anonimi
-                                        </span>
-                                        
-                                        <span
-                                            class="px-2 py-1 rounded-full text-xs font-medium"
-                                            :class="link.is_active 
-                                                ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400' 
-                                                : 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400'"
-                                        >
-                                            {{ link.is_active ? t('qrcodes.active') : t('qrcodes.inactive') }}
-                                        </span>
-                                    </div>
-                                </div>
+                    <!-- Titolo, destinazione e link breve -->
+                    <div class="flex min-w-0 items-start gap-3.5">
+                        <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-blue-50 text-blue-600 dark:bg-blue-500/10 dark:text-blue-400">
+                            <Link2 :size="18" />
+                        </span>
+                        <div class="min-w-0 flex-1">
+                            <Link :href="route('links.edit', link.id)" class="block truncate font-semibold text-surface-900 hover:text-primary-600 dark:text-white dark:hover:text-primary-400">
+                                {{ link.title }}
+                            </Link>
+                            <a :href="link.url" target="_blank" rel="noopener" class="block truncate text-xs text-surface-500 hover:underline dark:text-surface-400">{{ displayUrl(link.url) }}</a>
+                            <div class="mt-2 inline-flex max-w-full items-center gap-0.5 rounded-md border border-surface-200 bg-surface-50 py-0.5 pr-0.5 pl-2 dark:border-surface-700 dark:bg-surface-900/60">
+                                <span class="truncate font-mono text-xs text-primary-600 dark:text-primary-400">{{ displayUrl(shortUrl) }}/{{ link.slug }}</span>
+                                <button type="button" class="ml-icon-btn h-6 w-6" :title="t('links.copyLink')" @click="copyToClipboard(link)">
+                                    <Check v-if="copiedId === link.id" :size="13" class="text-emerald-600" />
+                                    <Copy v-else :size="13" />
+                                </button>
+                                <a :href="`${shortUrl}/${link.slug}`" target="_blank" rel="noopener" class="ml-icon-btn h-6 w-6" :title="t('links.openLink')">
+                                    <ExternalLink :size="13" />
+                                </a>
                             </div>
                         </div>
+                    </div>
 
-                        <!-- Actions -->
-                        <div class="flex items-center gap-2 flex-shrink-0">
-                            <Link
-                                :href="route('links.analytics', link.id)"
-                                class="px-4 py-2 bg-purple-100 dark:bg-purple-900/30 hover:bg-purple-200 dark:hover:bg-purple-900/50 text-purple-700 dark:text-purple-400 rounded-lg flex items-center gap-2 transition-colors"
-                            >
-                                <LucideBarChart3 :size="16" />
-                                <span class="hidden sm:inline">Analytics</span>
-                            </Link>
-                            <Link
-                                :href="route('links.edit', link.id)"
-                                class="px-4 py-2 bg-surface-100 dark:bg-surface-800 hover:bg-surface-200 dark:hover:bg-surface-700 text-surface-700 dark:text-surface-300 rounded-lg flex items-center gap-2 transition-colors"
-                            >
-                                <LucideEdit :size="16" />
-                                <span class="hidden sm:inline">{{ t('common.edit') }}</span>
-                            </Link>
-                            <Link
-                                :href="route('links.destroy', link.id)"
-                                method="delete"
-                                as="button"
-                                class="px-4 py-2 bg-red-100 dark:bg-red-900/30 hover:bg-red-200 dark:hover:bg-red-900/50 text-red-700 dark:text-red-400 rounded-lg flex items-center gap-2 transition-colors"
-                            >
-                                <LucideTrash2 :size="16" />
-                                <span class="hidden sm:inline">{{ t('common.delete') }}</span>
-                            </Link>
+                    <!-- Dati -->
+                    <dl class="flex flex-wrap gap-x-4 gap-y-1 text-xs text-surface-500 lg:flex-col lg:border-l lg:border-surface-100 lg:pl-5 dark:text-surface-400 dark:lg:border-surface-700">
+                        <div class="flex items-center gap-1.5">
+                            <dt class="sr-only">{{ t('links.createdAt') }}</dt>
+                            <Calendar :size="13" class="shrink-0" />
+                            <dd>{{ formatDate(link.created_at) }}</dd>
                         </div>
-                    </div>
-                </div>
+                        <div class="flex items-center gap-1.5">
+                            <dt class="sr-only">{{ t('links.clicks') }}</dt>
+                            <MousePointerClick :size="13" class="shrink-0" />
+                            <dd><strong class="font-semibold text-surface-800 dark:text-surface-100">{{ link.views_count || 0 }}</strong> {{ t('links.clicks').toLowerCase() }}</dd>
+                        </div>
+                        <div v-if="link.views_with_consent_count > 0 || link.views_anonymous_count > 0" class="flex items-center gap-3">
+                            <span v-if="link.views_with_consent_count > 0" class="inline-flex items-center gap-1" :title="t('links.consentViews', { count: link.views_with_consent_count })">
+                                <ShieldCheck :size="13" class="text-blue-500" /> {{ link.views_with_consent_count }}
+                            </span>
+                            <span v-if="link.views_anonymous_count > 0" class="inline-flex items-center gap-1" :title="t('links.anonymousViews', { count: link.views_anonymous_count })">
+                                <EyeOff :size="13" /> {{ link.views_anonymous_count }}
+                            </span>
+                        </div>
+                    </dl>
 
-                <!-- Empty State -->
-                <div
-                    v-if="filteredLinks.length === 0 && props.links.length > 0"
-                    class="text-center py-12"
-                >
-                    <LucideSearch class="w-16 h-16 mx-auto mb-4 text-surface-300 dark:text-surface-700" />
-                    <p class="text-lg font-medium text-surface-700 dark:text-surface-300">{{ t('common.noResults') }}</p>
-                    <p class="text-sm text-surface-500 dark:text-surface-400 mt-1">Try adjusting your search or filters</p>
-                </div>
-
-                <div
-                    v-if="props.links.length === 0"
-                    class="text-center py-16"
-                >
-                    <div class="inline-flex p-4 bg-surface-100 dark:bg-surface-800 rounded-full mb-4">
-                        <LucideLink class="w-16 h-16 text-surface-400 dark:text-surface-600" />
+                    <!-- Andamento 7 giorni -->
+                    <div class="hidden xl:block" :title="t('links.last7days')">
+                        <Sparkline :values="sparklines?.[link.id] ?? []" :color="METRIC_COLORS.links" :width="96" :height="32" />
                     </div>
-                    <p class="text-lg font-medium text-surface-700 dark:text-surface-300">{{ t('links.noLinks') }}</p>
-                    <p class="text-sm text-surface-500 dark:text-surface-400 mt-1 mb-4">{{ t('links.createFirst') }}</p>
-                    <Link
-                        :href="route('links.create')"
-                        class="button-primary inline-flex items-center gap-2"
-                    >
-                        <LucidePlus class="w-4 h-4" /> {{ t('links.addNew') }}
-                    </Link>
-                </div>
+
+                    <!-- Stato -->
+                    <div class="flex lg:justify-center">
+                        <span
+                            class="ml-badge"
+                            :class="link.is_active
+                                ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-300'
+                                : 'bg-surface-100 text-surface-600 dark:bg-surface-700/60 dark:text-surface-300'"
+                        >
+                            <span class="h-1.5 w-1.5 rounded-full" :class="link.is_active ? 'bg-emerald-500' : 'bg-surface-400'"></span>
+                            {{ link.is_active ? t('qrcodes.active') : t('qrcodes.inactive') }}
+                        </span>
+                    </div>
+
+                    <!-- Azioni -->
+                    <div class="flex items-center gap-1.5 lg:justify-end">
+                        <Link :href="route('links.analytics', link.id)" class="ml-btn-secondary px-3 py-1.5 text-[13px]">
+                            <BarChart3 :size="15" class="text-violet-500" /> <span class="lg:hidden xl:inline">Analytics</span>
+                        </Link>
+                        <Link :href="route('links.edit', link.id)" class="ml-btn-secondary px-3 py-1.5 text-[13px]">
+                            <Pencil :size="14" /> <span class="lg:hidden xl:inline">{{ t('common.edit') }}</span>
+                        </Link>
+                        <button type="button" class="ml-icon-btn h-[34px] w-[34px] text-rose-500 hover:bg-rose-50 hover:text-rose-600 dark:hover:bg-rose-500/10" :title="t('common.delete')" @click="destroy(link)">
+                            <Trash2 :size="16" />
+                        </button>
+                    </div>
+                </li>
+            </ul>
+
+            <!-- Nessun risultato con i filtri attuali -->
+            <div v-else-if="props.links.length > 0" class="ml-card flex flex-col items-center gap-2 py-14 text-center">
+                <SearchX :size="28" class="text-surface-300 dark:text-surface-600" />
+                <p class="font-medium text-surface-700 dark:text-surface-200">{{ t('common.noResults') }}</p>
+                <p class="text-sm text-surface-500 dark:text-surface-400">{{ t('common.noResultsHint') }}</p>
+            </div>
+
+            <!-- Nessun link -->
+            <div v-else class="ml-card flex flex-col items-center gap-2 py-16 text-center">
+                <span class="mb-2 flex h-14 w-14 items-center justify-center rounded-full bg-blue-50 text-blue-600 dark:bg-blue-500/10 dark:text-blue-400">
+                    <Link2 :size="26" />
+                </span>
+                <p class="font-medium text-surface-800 dark:text-surface-100">{{ t('links.noLinks') }}</p>
+                <p class="mb-3 text-sm text-surface-500 dark:text-surface-400">{{ t('links.createFirst') }}</p>
+                <Link :href="route('links.create')" class="ml-btn-primary">
+                    <Plus :size="16" :stroke-width="2.5" /> {{ t('links.addNew') }}
+                </Link>
             </div>
         </div>
     </AppLayout>

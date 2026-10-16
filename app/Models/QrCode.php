@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\Concerns\SearchableInTenant;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
@@ -12,7 +13,7 @@ use Stancl\Tenancy\Database\Concerns\BelongsToTenant;
 class QrCode extends Model
 {
     /** @use HasFactory<\Database\Factories\QrCodeFactory> */
-    use HasFactory, SoftDeletes, BelongsToTenant;
+    use HasFactory, SoftDeletes, BelongsToTenant, SearchableInTenant;
 
     protected $fillable = [
         'user_id',
@@ -66,5 +67,10 @@ class QrCode extends Model
     public function views()
     {
         return $this->morphMany(View::class, 'viewable');
+    }
+
+    protected function searchableFields(): array
+    {
+        return ['name', 'slug', 'description'];
     }
 }

@@ -2,30 +2,20 @@
 import AppLayout from '@/layouts/AppLayout.vue';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link, router, usePage } from '@inertiajs/vue3';
-import { 
-    LucideEdit, 
-    LucideTrash2, 
-    LucidePlus, 
-    LucideFileText, 
-    LucideEye,
-    LucideSearch,
-    LucideFilter,
-    LucideArrowUpDown,
-    LucideLayout,
-    LucideTrendingUp,
-    LucideExternalLink,
-    LucideCalendar,
-    LucideCheckCircle
-} from 'lucide-vue-next';
+import { Calendar, CheckCircle2, Eye, ExternalLink, FileText, LayoutGrid, Pencil, Plus, SearchX, Trash2, TrendingUp } from 'lucide-vue-next';
 import { useI18n } from 'vue-i18n';
 import { ref, computed } from 'vue';
-import InputText from '@/components/volt/InputText.vue';
-import Select from '@/components/volt/Select.vue';
+import PageHeader from '@/components/PageHeader.vue';
+import ListToolbar from '@/components/ListToolbar.vue';
+import StatCard from '@/components/dashboard/StatCard.vue';
+import { METRIC_COLORS } from '@/components/dashboard/colors';
+import { useRoute } from '@/composables/useRoute';
 import LimitReachedDialog from '@/components/LimitReachedDialog.vue';
 import PlanSelectionModal from '@/components/PlanSelectionModal.vue';
 
 const { t } = useI18n();
-const page = usePage();
+const page = usePage<any>();
+const route = useRoute();
 
 const props = defineProps<{
     pages: any[];
@@ -54,12 +44,7 @@ const handleShowPlans = () => {
 
 // Handle create click - check limits
 const handleCreateClick = () => {
-    const limits = page.props.billing?.limits;
-    const pageLimit = limits?.pages || 0;
-    const currentCount = computedStats.value.total;
-    
-    // Se il limite è -1 (illimitato) o non raggiunto, naviga alla pagina di creazione
-    if (pageLimit === -1 || currentCount < pageLimit) {
+    if (!atPageLimit.value) {
         router.visit(route('pages.create'));
     } else {
         // Altrimenti mostra la dialog
@@ -85,22 +70,46 @@ const computedStats = computed(() => {
     };
 });
 
-// Get limits from billing
+// Limiti del piano
 const limits = computed(() => page.props.billing?.limits || {});
+const pageLimit = computed<number>(() => limits.value.pages ?? -1);
+const atPageLimit = computed(() => pageLimit.value !== -1 && computedStats.value.total >= pageLimit.value);
 
-// Helper to get limit status (normal, warning, exceeded)
-const getLimitStatus = (current: number, limit: number) => {
-    if (limit === -1) return 'normal'; // unlimited
-    if (current >= limit) return 'exceeded';
-    if (current >= limit - 1) return 'warning';
-    return 'normal';
-};
+const statCards = computed(() => [
+    {
+        label: t('pages.stats.totalPages'),
+        value: pageLimit.value > 0 ? `${computedStats.value.total} / ${pageLimit.value}` : String(computedStats.value.total),
+        valueClass: atPageLimit.value ? 'text-rose-600 dark:text-rose-400' : undefined,
+        icon: FileText,
+        iconClass: 'bg-violet-50 text-violet-600 dark:bg-violet-500/10 dark:text-violet-400',
+        color: METRIC_COLORS.pages,
+    },
+    {
+        label: t('pages.stats.published'),
+        value: String(computedStats.value.published),
+        icon: CheckCircle2,
+        iconClass: 'bg-emerald-50 text-emerald-600 dark:bg-emerald-500/10 dark:text-emerald-400',
+        color: METRIC_COLORS.qrcodes,
+    },
+    {
+        label: t('pages.stats.totalBlocks'),
+        value: String(computedStats.value.totalBlocks),
+        icon: LayoutGrid,
+        iconClass: 'bg-orange-50 text-orange-600 dark:bg-orange-500/10 dark:text-orange-400',
+        color: METRIC_COLORS.blocks,
+    },
+    {
+        label: t('pages.stats.avgBlocks'),
+        value: String(computedStats.value.avgBlocksPerPage),
+        icon: TrendingUp,
+        iconClass: 'bg-blue-50 text-blue-600 dark:bg-blue-500/10 dark:text-blue-400',
+        color: METRIC_COLORS.links,
+    },
+]);
 
-// Helper to get limit classes
-const getLimitClasses = (status: string) => {
-    if (status === 'exceeded') return 'text-red-700 dark:text-red-400';
-    if (status === 'warning') return 'text-orange-600 dark:text-orange-400';
-    return 'text-surface-900 dark:text-surface-50';
+const destroy = (item: { slug: string; title: string }) => {
+    if (!window.confirm(t('pages.confirmDelete', { title: item.title }))) return;
+    router.delete(route('pages.destroy', item.slug), { preserveScroll: true });
 };
 
 // Sort options
@@ -179,277 +188,115 @@ const getPublicUrl = (slug: string) => {
 </script>
 
 <template>
-    <Head title="Pages">
-        <link rel="icon" href="/favicon.ico" />
-    </Head>
+    <Head :title="t('pages.title')" />
 
     <AppLayout :breadcrumbs="breadcrumbs">
-        <div class="flex h-full flex-1 flex-col gap-4 sm:gap-6 p-0 sm:p-2 lg:p-6">
-            <!-- Page Header -->
-            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                <div>
-                    <h1 class="text-2xl sm:text-3xl font-bold text-surface-900 dark:text-surface-50">{{ t('pages.title') }}</h1>
-                    <p class="text-surface-600 dark:text-surface-400 mt-1">{{ t('pages.subtitle') }}</p>
-                </div>
-                <div>
-                    <button
-                        @click="handleCreateClick"
-                        class="button-primary flex items-center gap-2"
-                    >
-                        <LucidePlus class="w-4 h-4" /> {{ t('pages.addNew') }}
+        <div class="flex w-full flex-col gap-4 sm:gap-5 lg:p-2">
+            <PageHeader :title="t('pages.title')" :subtitle="t('pages.subtitle')">
+                <template #actions>
+                    <button type="button" class="ml-btn-primary" @click="handleCreateClick">
+                        <Plus :size="16" :stroke-width="2.5" /> {{ t('pages.addNew') }}
                     </button>
-                </div>
+                </template>
+            </PageHeader>
+
+            <div class="grid grid-cols-2 gap-3 sm:gap-5 xl:grid-cols-4">
+                <StatCard v-for="card in statCards" :key="card.label" v-bind="card" />
             </div>
 
-            <!-- Statistics Cards -->
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                <!-- Total Pages -->
-                <div class="bg-white dark:bg-surface-800 rounded-xl p-4 sm:p-6 shadow-sm border border-surface-200 dark:border-surface-700">
-                    <div class="flex items-center justify-between mb-2">
-                        <p class="text-sm font-medium text-surface-600 dark:text-surface-400">{{ t('pages.stats.totalPages') }}</p>
-                        <div class="p-3 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
-                            <LucideFileText :size="24" class="text-blue-600 dark:text-blue-400" />
-                        </div>
-                    </div>
-                    <p 
-                        :class="['text-3xl font-bold mt-2', getLimitClasses(getLimitStatus(computedStats.total, limits.pages || -1))]"
-                    >
-                        {{ computedStats.total }}{{ limits.pages > 0 ? ` / ${limits.pages}` : '' }}
-                    </p>
-                    <p 
-                        v-if="getLimitStatus(computedStats.total, limits.pages || -1) === 'exceeded'"
-                        class="text-xs text-red-700 dark:text-red-400 mt-1"
-                    >
-                        Limite raggiunto per il piano free
-                    </p>
-                </div>
+            <ListToolbar
+                v-model:search="searchQuery"
+                v-model:sort="sortBy"
+                v-model:filter="filterStatus"
+                :search-placeholder="t('pages.search')"
+                :sort-options="sortOptions"
+                :filter-options="filterOptions"
+                :sort-label="t('pages.sortBy')"
+                :filter-label="t('pages.filterBy')"
+            />
 
-                <!-- Published Pages -->
-                <div class="bg-white dark:bg-surface-800 rounded-xl p-4 sm:p-6 shadow-sm border border-surface-200 dark:border-surface-700">
-                    <div class="flex items-center justify-between mb-2">
-                        <p class="text-sm font-medium text-surface-600 dark:text-surface-400">{{ t('pages.stats.published') }}</p>
-                        <div class="p-3 bg-green-100 dark:bg-green-900/30 rounded-lg">
-                            <LucideCheckCircle :size="24" class="text-green-600 dark:text-green-400" />
-                        </div>
-                    </div>
-                    <p class="text-3xl font-bold text-surface-900 dark:text-surface-50 mt-2">{{ computedStats.published }}</p>
-                </div>
-
-                <!-- Total Blocks -->
-                <div class="bg-white dark:bg-surface-800 rounded-xl p-4 sm:p-6 shadow-sm border border-surface-200 dark:border-surface-700">
-                    <div class="flex items-center justify-between mb-2">
-                        <p class="text-sm font-medium text-surface-600 dark:text-surface-400">{{ t('pages.stats.totalBlocks') }}</p>
-                        <div class="p-3 bg-purple-100 dark:bg-purple-900/30 rounded-lg">
-                            <LucideLayout :size="24" class="text-purple-600 dark:text-purple-400" />
-                        </div>
-                    </div>
-                    <p 
-                        :class="['text-3xl font-bold mt-2', getLimitClasses(getLimitStatus(computedStats.totalBlocks, limits.blocks_per_page || -1))]"
-                    >
-                        {{ computedStats.totalBlocks }}{{ limits.blocks_per_page > 0 ? ` / ${limits.blocks_per_page * computedStats.total}` : '' }}
-                    </p>
-                    <p 
-                        v-if="getLimitStatus(computedStats.totalBlocks, limits.blocks_per_page * computedStats.total || -1) === 'exceeded'"
-                        class="text-xs text-red-700 dark:text-red-400 mt-1"
-                    >
-                        Limite raggiunto per il piano free
-                    </p>
-                </div>
-
-                <!-- Average Blocks Per Page -->
-                <div class="bg-white dark:bg-surface-800 rounded-xl p-4 sm:p-6 shadow-sm border border-surface-200 dark:border-surface-700">
-                    <div class="flex items-center justify-between mb-2">
-                        <p class="text-sm font-medium text-surface-600 dark:text-surface-400">{{ t('pages.stats.avgBlocks') }}</p>
-                        <div class="p-3 bg-orange-100 dark:bg-orange-900/30 rounded-lg">
-                            <LucideTrendingUp :size="24" class="text-orange-600 dark:text-orange-400" />
-                        </div>
-                    </div>
-                    <p class="text-3xl font-bold text-surface-900 dark:text-surface-50 mt-2">{{ computedStats.avgBlocksPerPage }}</p>
-                </div>
-            </div>
-
-            <!-- Search and Filters -->
-            <div class="bg-white dark:bg-surface-800 rounded-xl p-4 shadow-sm border border-surface-200 dark:border-surface-700">
-                <div class="flex flex-col md:flex-row gap-4">
-                    <!-- Search -->
-                    <div class="flex-1">
-                        <div class="relative">
-                            <LucideSearch :size="20" class="absolute left-3 top-1/2 -translate-y-1/2 text-surface-400" />
-                            <InputText
-                                v-model="searchQuery"
-                                :placeholder="t('pages.search')"
-                                class="pl-10 w-full"
-                            />
-                        </div>
-                    </div>
-
-                    <!-- Sort -->
-                    <div class="w-full md:w-48">
-                        <div class="flex items-center gap-2">
-                            <LucideArrowUpDown :size="20" class="text-surface-400" />
-                            <Select
-                                v-model="sortBy"
-                                :options="sortOptions"
-                                optionLabel="label"
-                                optionValue="value"
-                                :placeholder="t('pages.sortBy')"
-                                class="w-full"
-                            />
-                        </div>
-                    </div>
-
-                    <!-- Filter -->
-                    <div class="w-full md:w-48">
-                        <div class="flex items-center gap-2">
-                            <LucideFilter :size="20" class="text-surface-400" />
-                            <Select
-                                v-model="filterStatus"
-                                :options="filterOptions"
-                                optionLabel="label"
-                                optionValue="value"
-                                :placeholder="t('pages.filterBy')"
-                                class="w-full"
-                            />
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Pages Grid -->
-            <div class="grid grid-cols-1 gap-4">
-                <div
-                    v-for="page in filteredPages"
-                    :key="page.id"
-                    class="bg-white dark:bg-surface-800 rounded-xl p-4 sm:p-6 shadow-sm border border-surface-200 dark:border-surface-700 hover:shadow-md transition-all hover:scale-[1.01]"
+            <ul v-if="filteredPages.length" class="flex flex-col gap-2.5">
+                <li
+                    v-for="item in filteredPages"
+                    :key="item.id"
+                    class="ml-card grid gap-4 p-4 transition-colors hover:bg-surface-50/80 sm:px-5 lg:grid-cols-[minmax(0,1fr)_12rem_5.5rem_auto] lg:items-center dark:hover:bg-surface-800"
                 >
-                    <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-                        <!-- Page Info -->
-                        <div class="flex-1 min-w-0">
-                            <div class="flex items-start gap-3">
-                                <div class="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-primary/20 to-primary/5 rounded-lg flex items-center justify-center">
-                                    <LucideFileText :size="24" class="text-primary" />
-                                </div>
-                                <div class="flex-1 min-w-0">
-                                    <div class="flex items-center gap-2 mb-2">
-                                        <h3 class="text-lg font-semibold text-surface-900 dark:text-surface-50">
-                                            {{ page.title }}
-                                        </h3>
-                                        <span
-                                            class="px-2 py-1 rounded-full text-xs font-medium"
-                                            :class="page.is_published 
-                                                ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400' 
-                                                : 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400'"
-                                        >
-                                            {{ page.is_published ? t('pages.published') : t('pages.draft') }}
-                                        </span>
-                                    </div>
-                                    <p class="text-sm text-surface-600 dark:text-surface-400 mb-3">
-                                        {{ page.description || 'No description' }}
-                                    </p>
-                                    
-                                    <!-- Page URL -->
-                                    <div class="flex items-center gap-2 mb-3 text-sm">
-                                        <span class="font-medium text-surface-700 dark:text-surface-300">{{ t('pages.url') }}:</span>
-                                        <code class="px-2 py-1 bg-surface-100 dark:bg-surface-800 rounded text-primary font-mono text-xs">
-                                            /{{ page.slug }}
-                                        </code>
-                                        <a
-                                            :href="`/pages/${page.slug}`"
-                                            target="_blank"
-                                            class="p-1 hover:bg-surface-100 dark:hover:bg-surface-800 rounded transition-colors"
-                                            :title="t('pages.viewPage')"
-                                        >
-                                            <LucideExternalLink :size="14" class="text-surface-500" />
-                                        </a>
-                                    </div>
-
-                                    <!-- Meta Info -->
-                                    <div class="flex items-center gap-4 text-xs text-surface-500 dark:text-surface-400">
-                                        <span class="flex items-center gap-1">
-                                            <LucideCalendar :size="14" />
-                                            {{ t('pages.createdAt') }}: {{ formatDate(page.created_at) }}
-                                        </span>
-                                        <span class="flex items-center gap-1">
-                                            <LucideLayout :size="14" />
-                                            {{ page.blocks_count || 0 }} {{ t('pages.blocks') }}
-                                        </span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Actions -->
-                        <div class="flex items-center gap-2 flex-shrink-0">
-                            <Link
-                                :href="route('pages.show', page.slug)"
-                                class="px-4 py-2 bg-purple-100 dark:bg-purple-900/30 hover:bg-purple-200 dark:hover:bg-purple-900/50 text-purple-700 dark:text-purple-400 rounded-lg flex items-center gap-2 transition-colors"
-                            >
-                                <LucideEye :size="16" />
-                                <span class="hidden sm:inline">Anteprima</span>
+                    <div class="flex min-w-0 items-start gap-3.5">
+                        <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-violet-50 text-violet-600 dark:bg-violet-500/10 dark:text-violet-400">
+                            <FileText :size="18" />
+                        </span>
+                        <div class="min-w-0 flex-1">
+                            <Link :href="route('pages.edit', item.slug)" class="block truncate font-semibold text-surface-900 hover:text-primary-600 dark:text-white dark:hover:text-primary-400">
+                                {{ item.title }}
                             </Link>
-                            <a
-                                :href="getPublicUrl(page.slug)"
-                                target="_blank"
-                                class="px-4 py-2 bg-blue-100 dark:bg-blue-900/30 hover:bg-blue-200 dark:hover:bg-blue-900/50 text-blue-700 dark:text-blue-400 rounded-lg flex items-center gap-2 transition-colors"
-                            >
-                                <LucideExternalLink :size="16" />
-                                <span class="hidden sm:inline">Visualizza</span>
+                            <p class="truncate text-xs text-surface-500 dark:text-surface-400">{{ item.description || t('pages.noDescription') }}</p>
+                            <a :href="getPublicUrl(item.slug)" target="_blank" rel="noopener" class="mt-2 inline-flex max-w-full items-center gap-1.5 rounded-md border border-surface-200 bg-surface-50 px-2 py-0.5 font-mono text-xs text-primary-600 hover:underline dark:border-surface-700 dark:bg-surface-900/60 dark:text-primary-400">
+                                <span class="truncate">/{{ item.slug }}</span> <ExternalLink :size="12" class="shrink-0" />
                             </a>
-                            <Link
-                                :href="route('pages.edit', page.slug)"
-                                class="px-4 py-2 bg-surface-100 dark:bg-surface-800 hover:bg-surface-200 dark:hover:bg-surface-700 text-surface-700 dark:text-surface-300 rounded-lg flex items-center gap-2 transition-colors"
-                            >
-                                <LucideEdit :size="16" />
-                                <span class="hidden sm:inline">{{ t('common.edit') }}</span>
-                            </Link>
-                            <Link
-                                :href="route('pages.destroy', page.slug)"
-                                method="delete"
-                                as="button"
-                                class="px-4 py-2 bg-red-100 dark:bg-red-900/30 hover:bg-red-200 dark:hover:bg-red-900/50 text-red-700 dark:text-red-400 rounded-lg flex items-center gap-2 transition-colors"
-                            >
-                                <LucideTrash2 :size="16" />
-                                <span class="hidden sm:inline">{{ t('common.delete') }}</span>
-                            </Link>
                         </div>
                     </div>
-                </div>
 
-                <!-- Empty States -->
-                <div
-                    v-if="filteredPages.length === 0 && props.pages.length > 0"
-                    class="text-center py-12"
-                >
-                    <LucideSearch class="w-16 h-16 mx-auto mb-4 text-surface-300 dark:text-surface-700" />
-                    <p class="text-lg font-medium text-surface-700 dark:text-surface-300">{{ t('common.noResults') }}</p>
-                    <p class="text-sm text-surface-500 dark:text-surface-400 mt-1">Try adjusting your search or filters</p>
-                </div>
+                    <dl class="flex flex-wrap gap-x-4 gap-y-1 text-xs text-surface-500 lg:flex-col lg:border-l lg:border-surface-100 lg:pl-5 dark:text-surface-400 dark:lg:border-surface-700">
+                        <div class="flex items-center gap-1.5">
+                            <dt class="sr-only">{{ t('pages.createdAt') }}</dt>
+                            <Calendar :size="13" class="shrink-0" />
+                            <dd>{{ formatDate(item.created_at) }}</dd>
+                        </div>
+                        <div class="flex items-center gap-1.5">
+                            <LayoutGrid :size="13" class="shrink-0" />
+                            <dd><strong class="font-semibold text-surface-800 dark:text-surface-100">{{ item.blocks_count || 0 }}</strong> {{ t('pages.blocks') }}</dd>
+                        </div>
+                        <div class="flex items-center gap-1.5">
+                            <Eye :size="13" class="shrink-0" />
+                            <dd><strong class="font-semibold text-surface-800 dark:text-surface-100">{{ item.views || 0 }}</strong> {{ t('pages.views') }}</dd>
+                        </div>
+                    </dl>
 
-                <div
-                    v-if="props.pages.length === 0"
-                    class="text-center py-16"
-                >
-                    <div class="inline-flex p-4 bg-surface-100 dark:bg-surface-800 rounded-full mb-4">
-                        <LucideFileText class="w-16 h-16 text-surface-400 dark:text-surface-600" />
+                    <div class="flex lg:justify-center">
+                        <span
+                            class="ml-badge"
+                            :class="item.is_published
+                                ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-300'
+                                : 'bg-amber-50 text-amber-700 dark:bg-amber-500/10 dark:text-amber-300'"
+                        >
+                            <span class="h-1.5 w-1.5 rounded-full" :class="item.is_published ? 'bg-emerald-500' : 'bg-amber-500'"></span>
+                            {{ item.is_published ? t('pages.published') : t('pages.draft') }}
+                        </span>
                     </div>
-                    <p class="text-lg font-medium text-surface-700 dark:text-surface-300">{{ t('pages.noPages') }}</p>
-                    <p class="text-sm text-surface-500 dark:text-surface-400 mt-1 mb-4">{{ t('pages.createFirst') }}</p>
-                    <Link
-                        :href="route('pages.create')"
-                        class="button-primary inline-flex items-center gap-2"
-                    >
-                        <LucidePlus class="w-4 h-4" /> {{ t('pages.addNew') }}
-                    </Link>
-                </div>
+
+                    <div class="flex items-center gap-1.5 lg:justify-end">
+                        <Link :href="route('pages.show', item.slug)" class="ml-btn-secondary px-3 py-1.5 text-[13px]">
+                            <Eye :size="15" class="text-violet-500" /> <span>{{ t('pages.preview') }}</span>
+                        </Link>
+                        <Link :href="route('pages.edit', item.slug)" class="ml-btn-secondary px-3 py-1.5 text-[13px]">
+                            <Pencil :size="14" /> <span>{{ t('common.edit') }}</span>
+                        </Link>
+                        <button type="button" class="ml-icon-btn h-[34px] w-[34px] text-rose-500 hover:bg-rose-50 hover:text-rose-600 dark:hover:bg-rose-500/10" :title="t('common.delete')" @click="destroy(item)">
+                            <Trash2 :size="16" />
+                        </button>
+                    </div>
+                </li>
+            </ul>
+
+            <div v-else-if="props.pages.length > 0" class="ml-card flex flex-col items-center gap-2 py-14 text-center">
+                <SearchX :size="28" class="text-surface-300 dark:text-surface-600" />
+                <p class="font-medium text-surface-700 dark:text-surface-200">{{ t('common.noResults') }}</p>
+                <p class="text-sm text-surface-500 dark:text-surface-400">{{ t('common.noResultsHint') }}</p>
+            </div>
+
+            <div v-else class="ml-card flex flex-col items-center gap-2 py-16 text-center">
+                <span class="mb-2 flex h-14 w-14 items-center justify-center rounded-full bg-violet-50 text-violet-600 dark:bg-violet-500/10 dark:text-violet-400">
+                    <FileText :size="26" />
+                </span>
+                <p class="font-medium text-surface-800 dark:text-surface-100">{{ t('pages.noPages') }}</p>
+                <p class="mb-3 text-sm text-surface-500 dark:text-surface-400">{{ t('pages.createFirst') }}</p>
+                <Link :href="route('pages.create')" class="ml-btn-primary">
+                    <Plus :size="16" :stroke-width="2.5" /> {{ t('pages.addNew') }}
+                </Link>
             </div>
         </div>
 
-        <!-- Limit Reached Dialog -->
-        <LimitReachedDialog
-            v-model:visible="showLimitDialog"
-            type="pages"
-            @show-plans="handleShowPlans"
-        />
+        <LimitReachedDialog v-model:visible="showLimitDialog" type="pages" @show-plans="handleShowPlans" />
 
         <PlanSelectionModal
             v-model:visible="showPlanModal"

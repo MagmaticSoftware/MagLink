@@ -22,7 +22,9 @@ import {
     LucideMail,
     LucidePhone,
     LucideMessageSquare,
-    LucideUser
+    LucideUser,
+    LucideMapPin,
+    LucideLock
 } from 'lucide-vue-next';
 import { useI18n } from 'vue-i18n';
 import { computed } from 'vue';
@@ -246,7 +248,7 @@ const shareQrCode = async () => {
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <!-- Left Column - QR Code Preview -->
                 <div class="lg:col-span-1">
-                    <div class="bg-white dark:bg-surface-800 rounded-xl p-4 sm:p-6 shadow-sm border border-surface-200 dark:border-surface-700 sticky top-6">
+                    <div class="ml-card p-5 sm:p-6 sticky top-6">
                         <h2 class="text-lg font-semibold text-surface-900 dark:text-surface-50 mb-4 flex items-center gap-2">
                             <LucideQrCode :size="20" />
                             {{ t('qrcodes.previewTitle') }}
@@ -308,16 +310,16 @@ const shareQrCode = async () => {
 
                         <!-- QR Type Info -->
                         <div v-if="qrcode.type === 'dynamic'" class="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
-                            <p class="text-sm font-medium text-blue-700 dark:text-blue-400 mb-1">
-                                📍 {{ t('qrcodes.dynamicQr') }}
+                            <p class="text-sm font-medium text-blue-700 dark:text-blue-400 mb-1 flex items-center gap-1.5">
+                                <LucideMapPin :size="15" /> {{ t('qrcodes.dynamicQr') }}
                             </p>
                             <p class="text-xs text-blue-600 dark:text-blue-500">
                                 {{ t('qrcodes.canBeUpdated') }}
                             </p>
                         </div>
                         <div v-else class="p-3 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-800">
-                            <p class="text-sm font-medium text-green-700 dark:text-green-400 mb-1">
-                                🔒 {{ t('qrcodes.staticQr') }}
+                            <p class="text-sm font-medium text-green-700 dark:text-green-400 mb-1 flex items-center gap-1.5">
+                                <LucideLock :size="15" /> {{ t('qrcodes.staticQr') }}
                             </p>
                             <p class="text-xs text-green-600 dark:text-green-500">
                                 {{ t('qrcodes.embeddedDirectly') }}. {{ t('qrcodes.worksOffline') }}.
@@ -333,7 +335,7 @@ const shareQrCode = async () => {
                 <div class="lg:col-span-2 space-y-6">
                     <!-- Statistics -->
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <div class="bg-white dark:bg-surface-800 rounded-xl p-4 sm:p-6 shadow-sm border border-surface-200 dark:border-surface-700">
+                        <div class="ml-card p-5 sm:p-6">
                             <div class="flex items-center justify-between">
                                 <div>
                                     <p class="text-sm font-medium text-surface-600 dark:text-surface-400">{{ t('qrcodes.totalScans') }}</p>
@@ -345,7 +347,7 @@ const shareQrCode = async () => {
                             </div>
                         </div>
 
-                        <div class="bg-white dark:bg-surface-800 rounded-xl p-4 sm:p-6 shadow-sm border border-surface-200 dark:border-surface-700">
+                        <div class="ml-card p-5 sm:p-6">
                             <div class="flex items-center justify-between">
                                 <div>
                                     <p class="text-sm font-medium text-surface-600 dark:text-surface-400">{{ t('qrcodes.typeStat') }}</p>
@@ -359,7 +361,7 @@ const shareQrCode = async () => {
                             </div>
                         </div>
 
-                        <div class="bg-white dark:bg-surface-800 rounded-xl p-4 sm:p-6 shadow-sm border border-surface-200 dark:border-surface-700">
+                        <div class="ml-card p-5 sm:p-6">
                             <div class="flex items-center justify-between">
                                 <div>
                                     <p class="text-sm font-medium text-surface-600 dark:text-surface-400">{{ t('qrcodes.lastScan') }}</p>
@@ -375,7 +377,7 @@ const shareQrCode = async () => {
                     </div>
 
                     <!-- Format & Payload -->
-                    <div class="bg-white dark:bg-surface-800 rounded-xl p-4 sm:p-6 shadow-sm border border-surface-200 dark:border-surface-700">
+                    <div class="ml-card p-5 sm:p-6">
                         <h2 class="text-lg font-semibold text-surface-900 dark:text-surface-50 mb-4 flex items-center gap-2">
                             <component :is="getFormatIcon(qrcode.format)" :size="20" />
                             Content Details
@@ -384,7 +386,7 @@ const shareQrCode = async () => {
                         <div class="space-y-4">
                             <!-- Format -->
                             <div>
-                                <label class="text-sm font-medium text-surface-700 dark:text-surface-300 block mb-2">
+                                <label class="ml-label">
                                     Format Type
                                 </label>
                                 <div class="flex items-center gap-2">
@@ -400,7 +402,7 @@ const shareQrCode = async () => {
 
                             <!-- Payload -->
                             <div>
-                                <label class="text-sm font-medium text-surface-700 dark:text-surface-300 block mb-2">
+                                <label class="ml-label">
                                     Payload Content
                                 </label>
                                 <div class="bg-surface-50 dark:bg-surface-800 rounded-lg p-4 border border-surface-200 dark:border-surface-700">
@@ -410,7 +412,7 @@ const shareQrCode = async () => {
 
                             <!-- Options (if any) -->
                             <div v-if="qrcode.options && Object.keys(qrcode.options).length > 0">
-                                <label class="text-sm font-medium text-surface-700 dark:text-surface-300 block mb-2">
+                                <label class="ml-label">
                                     Configuration Options
                                 </label>
                                 <div class="bg-surface-50 dark:bg-surface-800 rounded-lg p-4 border border-surface-200 dark:border-surface-700">
@@ -421,7 +423,7 @@ const shareQrCode = async () => {
                     </div>
 
                     <!-- Metadata -->
-                    <div class="bg-white dark:bg-surface-800 rounded-xl p-4 sm:p-6 shadow-sm border border-surface-200 dark:border-surface-700">
+                    <div class="ml-card p-5 sm:p-6">
                         <h2 class="text-lg font-semibold text-surface-900 dark:text-surface-50 mb-4 flex items-center gap-2">
                             <LucideClock :size="20" />
                             Metadata
@@ -473,7 +475,7 @@ const shareQrCode = async () => {
                     </div>
 
                     <!-- Activity Timeline (Placeholder for future enhancement) -->
-                    <div class="bg-white dark:bg-surface-800 rounded-xl p-4 sm:p-6 shadow-sm border border-surface-200 dark:border-surface-700">
+                    <div class="ml-card p-5 sm:p-6">
                         <h2 class="text-lg font-semibold text-surface-900 dark:text-surface-50 mb-4 flex items-center gap-2">
                             <LucideActivity :size="20" />
                             Recent Activity

@@ -2,7 +2,7 @@
 import { router, usePage, Link } from '@inertiajs/vue3';
 import { ref, computed } from 'vue';
 import Dialog from '@/components/volt/Dialog.vue';
-import { LucideCheck, LucideX, LucideSparkles, LucideRocket, LucideBuilding, LucideBan, LucideFlag, LucidePiggyBank, LucideArrowUpCircle, LucideLoader2 } from 'lucide-vue-next';
+import { LucideCheck, LucideX, LucideSparkles, LucideRocket, LucideBuilding, LucideBan, LucideFlag, LucidePiggyBank, LucideArrowUpCircle, LucideLoader2, LucideTicket } from 'lucide-vue-next';
 import type { PageProps } from '@/types/inertia';
 
 interface PlanData {
@@ -401,8 +401,8 @@ const selectPlan = (planKey: string) => {
                 <!-- Sezione informazioni aggiuntive -->
                 <div class="mt-6 text-center">
                     <div class="bg-gray-50 dark:bg-gray-800/50 rounded-lg p-3">
-                        <p class="text-blue-600 dark:text-blue-400 font-medium text-sm">
-                            💰 Hai un coupon? Usalo al checkout per ottenere uno sconto extra!
+                        <p class="text-blue-600 dark:text-blue-400 font-medium text-sm inline-flex items-center gap-1.5">
+                            <LucideTicket class="w-4 h-4 shrink-0" /> Hai un coupon? Usalo al checkout per ottenere uno sconto extra!
                         </p>
                     </div>
                 </div>

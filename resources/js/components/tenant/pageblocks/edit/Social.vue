@@ -2,7 +2,8 @@
 import { ref, watch, computed } from 'vue';
 import axios from 'axios';
 import { useConfirm } from 'primevue/useconfirm';
-import { LucideSave, LucideTrash2, LucideShare2 } from 'lucide-vue-next';
+import BlockCardHeader from './BlockCardHeader.vue';
+import { LucideShare2 } from 'lucide-vue-next';
 import InputText from '@/components/volt/InputText.vue';
 import Select from '@/components/volt/Select.vue';
 
@@ -221,39 +222,21 @@ const deleteBlock = () => {
 </script>
 
 <template>
-  <div class="h-full w-full flex flex-col p-2">
-    <!-- Header with actions -->
-    <div class="flex items-center justify-between mb-3 pb-2 border-b border-surface-200 dark:border-surface-700">
-      <div class="flex items-center gap-2">
-        <div class="p-1.5 bg-purple-100 dark:bg-purple-900/30 rounded-lg">
-          <LucideShare2 :size="16" class="text-purple-600 dark:text-purple-400" />
-        </div>
-        <span class="text-xs font-medium text-surface-600 dark:text-surface-400">Social Block</span>
-      </div>
-      <div class="flex items-center gap-1">
-        <button
-          @click="saveBlock"
-          :disabled="isSaving"
-          class="p-1.5 rounded-lg transition-colors disabled:opacity-50"
-          :class="hasChanges ? 'bg-green-500 hover:bg-green-600 animate-pulse' : 'hover:bg-green-100 dark:hover:bg-green-900/30'"
-          :title="hasChanges ? 'Save pending changes' : 'No changes to save'"
-        >
-          <LucideSave :size="14" :class="hasChanges ? 'text-white' : 'text-green-600 dark:text-green-400'" />
-        </button>
-        <button
-          @click="deleteBlock"
-          class="p-1.5 rounded-lg hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors"
-          title="Delete block"
-        >
-          <LucideTrash2 :size="14" class="text-red-600 dark:text-red-400" />
-        </button>
-      </div>
-    </div>
+  <div class="flex h-full w-full flex-col">
+    <BlockCardHeader
+      label="Social"
+      :icon="LucideShare2"
+      tone="violet"
+      :has-changes="hasChanges"
+      :is-saving="isSaving"
+      @save="saveBlock"
+      @delete="deleteBlock"
+    />
 
     <!-- Editable content -->
-    <div class="flex-1 flex flex-col gap-3 overflow-y-auto">
+    <div class="flex-1 flex flex-col gap-3 overflow-y-auto p-3">
       <div>
-        <label class="text-xs font-medium text-surface-700 dark:text-surface-300 block mb-1">
+        <label class="ml-label mb-1 text-xs">
           Social Network
         </label>
         <Select 
@@ -267,8 +250,8 @@ const deleteBlock = () => {
       </div>
 
       <div>
-        <label class="text-xs font-medium text-surface-700 dark:text-surface-300 block mb-1">
-          Button Text (opzionale)
+        <label class="ml-label mb-1 text-xs">
+          Testo del pulsante (opzionale)
         </label>
         <InputText 
           v-model="localTitle" 
@@ -282,12 +265,12 @@ const deleteBlock = () => {
       </div>
       
       <div>
-        <label class="text-xs font-medium text-surface-700 dark:text-surface-300 block mb-1">
-          Profile URL
+        <label class="ml-label mb-1 text-xs">
+          URL del profilo
         </label>
         <InputText 
           v-model="localContent" 
-          placeholder="https://facebook.com/yourprofile"
+          placeholder="https://facebook.com/tuoprofilo"
           @blur="saveBlock"
           type="url"
           class="w-full text-sm font-mono"
@@ -297,8 +280,8 @@ const deleteBlock = () => {
 
       <!-- Preview -->
       <div class="mt-2">
-        <label class="text-xs font-medium text-surface-700 dark:text-surface-300 block mb-2">
-          Preview
+        <label class="ml-label mb-1 text-xs">
+          Anteprima
         </label>
         <div 
           class="w-full px-6 py-3 rounded-lg flex items-center justify-center gap-3 cursor-default transition-all"

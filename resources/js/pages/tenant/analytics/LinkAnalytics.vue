@@ -332,7 +332,7 @@ const getDeviceIcon = (deviceType: string | null) => {
 
             <!-- Overview Cards -->
             <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-                <div class="bg-white dark:bg-surface-800 rounded-xl p-4 sm:p-6 shadow-sm border border-surface-200 dark:border-surface-700">
+                <div class="ml-card p-5 sm:p-6">
                     <div class="flex items-center justify-between mb-2">
                         <span class="text-sm font-medium text-surface-600 dark:text-surface-400">Views Totali</span>
                         <LucideEye :size="20" class="text-primary" />
@@ -342,7 +342,7 @@ const getDeviceIcon = (deviceType: string | null) => {
                     </div>
                 </div>
 
-                <div class="bg-white dark:bg-surface-800 rounded-xl p-4 sm:p-6 shadow-sm border border-surface-200 dark:border-surface-700">
+                <div class="ml-card p-5 sm:p-6">
                     <div class="flex items-center justify-between mb-2">
                         <span class="text-sm font-medium text-surface-600 dark:text-surface-400">Con Consenso</span>
                         <LucideShield :size="20" class="text-blue-600" />
@@ -355,7 +355,7 @@ const getDeviceIcon = (deviceType: string | null) => {
                     </div>
                 </div>
 
-                <div class="bg-white dark:bg-surface-800 rounded-xl p-4 sm:p-6 shadow-sm border border-surface-200 dark:border-surface-700">
+                <div class="ml-card p-5 sm:p-6">
                     <div class="flex items-center justify-between mb-2">
                         <span class="text-sm font-medium text-surface-600 dark:text-surface-400">Anonimi</span>
                         <LucideUsers :size="20" class="text-gray-500" />
@@ -368,7 +368,7 @@ const getDeviceIcon = (deviceType: string | null) => {
                     </div>
                 </div>
 
-                <div class="bg-white dark:bg-surface-800 rounded-xl p-4 sm:p-6 shadow-sm border border-surface-200 dark:border-surface-700">
+                <div class="ml-card p-5 sm:p-6">
                     <div class="flex items-center justify-between mb-2">
                         <span class="text-sm font-medium text-surface-600 dark:text-surface-400">Tasso Consenso</span>
                         <LucideTrendingUp :size="20" class="text-green-600" />
@@ -383,7 +383,7 @@ const getDeviceIcon = (deviceType: string | null) => {
             </div>
 
             <!-- Daily Views Chart -->
-            <div class="bg-white dark:bg-surface-800 rounded-xl p-4 sm:p-6 shadow-sm border border-surface-200 dark:border-surface-700">
+            <div class="ml-card p-5 sm:p-6">
                 <h2 class="text-lg sm:text-xl font-bold text-surface-900 dark:text-surface-50 mb-4">
                     Views Giornaliere (Ultimi 30 giorni)
                 </h2>
@@ -395,7 +395,7 @@ const getDeviceIcon = (deviceType: string | null) => {
             <!-- Detailed Stats Grid -->
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 <!-- Countries -->
-                <div class="bg-white dark:bg-surface-800 rounded-xl p-4 sm:p-6 shadow-sm border border-surface-200 dark:border-surface-700">
+                <div class="ml-card p-5 sm:p-6">
                     <h2 class="text-lg sm:text-xl font-bold text-surface-900 dark:text-surface-50 mb-4 flex items-center gap-2">
                         <LucideGlobe :size="20" class="text-primary" />
                         Paesi (solo dati con consenso)
@@ -409,7 +409,7 @@ const getDeviceIcon = (deviceType: string | null) => {
                 </div>
 
                 <!-- Devices -->
-                <div class="bg-white dark:bg-surface-800 rounded-xl p-4 sm:p-6 shadow-sm border border-surface-200 dark:border-surface-700">
+                <div class="ml-card p-5 sm:p-6">
                     <h2 class="text-lg sm:text-xl font-bold text-surface-900 dark:text-surface-50 mb-4 flex items-center gap-2">
                         <LucideMonitor :size="20" class="text-primary" />
                         Dispositivi
@@ -423,7 +423,7 @@ const getDeviceIcon = (deviceType: string | null) => {
                 </div>
 
                 <!-- Browsers -->
-                <div class="bg-white dark:bg-surface-800 rounded-xl p-4 sm:p-6 shadow-sm border border-surface-200 dark:border-surface-700">
+                <div class="ml-card p-5 sm:p-6">
                     <h2 class="text-lg sm:text-xl font-bold text-surface-900 dark:text-surface-50 mb-4">
                         Browser
                     </h2>
@@ -436,7 +436,7 @@ const getDeviceIcon = (deviceType: string | null) => {
                 </div>
 
                 <!-- Platforms -->
-                <div class="bg-white dark:bg-surface-800 rounded-xl p-4 sm:p-6 shadow-sm border border-surface-200 dark:border-surface-700">
+                <div class="ml-card p-5 sm:p-6">
                     <h2 class="text-lg sm:text-xl font-bold text-surface-900 dark:text-surface-50 mb-4">
                         Sistemi Operativi
                     </h2>
@@ -450,7 +450,7 @@ const getDeviceIcon = (deviceType: string | null) => {
             </div>
 
             <!-- Recent Views Table -->
-            <div class="bg-white dark:bg-surface-800 rounded-xl p-4 sm:p-6 shadow-sm border border-surface-200 dark:border-surface-700">
+            <div class="ml-card p-5 sm:p-6">
                 <h2 class="text-lg sm:text-xl font-bold text-surface-900 dark:text-surface-50 mb-4">
                     Visualizzazioni Recenti (con consenso)
                 </h2>

@@ -219,6 +219,11 @@ class User extends Authenticatable implements MustVerifyEmail
      */
     public function onFreePlan(): bool
     {
+        // Il piano Pro Lifetime ha la precedenza su un eventuale piano free precedente
+        if ($this->onProLifetime()) {
+            return false;
+        }
+
         // Controlla se l'utente ha scelto esplicitamente il piano free (gestito internamente)
         if ($this->free_plan_started_at !== null) {
             return true;

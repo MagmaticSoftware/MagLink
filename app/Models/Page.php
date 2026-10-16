@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\Concerns\SearchableInTenant;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\Sluggable\HasSlug;
@@ -12,7 +13,7 @@ use Stancl\Tenancy\Database\Concerns\BelongsToTenant;
 class Page extends Model
 {
     /** @use HasFactory<\Database\Factories\PageFactory> */
-    use HasFactory, SoftDeletes, BelongsToTenant, HasSlug;
+    use HasFactory, SoftDeletes, BelongsToTenant, SearchableInTenant, HasSlug;
 
     /**
      * The attributes that are mass assignable.
@@ -113,5 +114,10 @@ class Page extends Model
             ->generateSlugsFrom('title')
             ->saveSlugsTo('slug')
             ->doNotGenerateSlugsOnUpdate();
+    }
+
+    protected function searchableFields(): array
+    {
+        return ['title', 'slug', 'description'];
     }
 }

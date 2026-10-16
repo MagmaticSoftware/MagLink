@@ -28,6 +28,11 @@ interface BillingData {
     isSubscribed: boolean;
     onFreePlan: boolean;
     onProLifetime?: boolean;
+    limits?: {
+        links: number;
+        qrcodes: number;
+        pages: number;
+    };
 }
 
 const props = defineProps<{
@@ -91,38 +96,6 @@ const formattedEndDate = computed(() => {
     }).format(date);
 });
 
-const getBannerClass = () => {
-    if (bannerType.value === 'trial') {
-        if (props.trial.days_left > 7) {
-            return 'from-blue-500/10 to-blue-600/10 border-blue-500/20';
-        } else if (props.trial.days_left > 3) {
-            return 'from-yellow-500/10 to-yellow-600/10 border-yellow-500/20';
-        } else {
-            return 'from-red-500/10 to-red-600/10 border-red-500/20';
-        }
-    } else if (bannerType.value === 'free') {
-        return 'from-gray-500/10 to-gray-600/10 border-gray-500/20';
-    } else {
-        return 'from-green-500/10 to-green-600/10 border-green-500/20';
-    }
-};
-
-const getTextClass = () => {
-    if (bannerType.value === 'trial') {
-        if (props.trial.days_left > 7) {
-            return 'text-blue-700 dark:text-blue-300';
-        } else if (props.trial.days_left > 3) {
-            return 'text-yellow-700 dark:text-yellow-300';
-        } else {
-            return 'text-red-700 dark:text-red-300';
-        }
-    } else if (bannerType.value === 'free') {
-        return 'text-gray-700 dark:text-gray-300';
-    } else {
-        return 'text-green-700 dark:text-green-300';
-    }
-};
-
 const getIconClass = () => {
     if (bannerType.value === 'trial') {
         if (props.trial.days_left > 7) {
@@ -147,75 +120,74 @@ const planName = computed(() => {
 });
 
 const billingTypeLabel = computed(() => {
-    if (!props.subscription?.billing_type) return '';
-    return props.subscription.billing_type === 'yearly' ? ' (Annuale)' : ' (Mensile)';
+    if (bannerType.value === 'lifetime' || !props.subscription?.billing_type) return '';
+    return props.subscription.billing_type === 'yearly' ? 'Annuale' : 'Mensile';
 });
+
+const formatLimit = (limit: number | undefined, unlimited: string) => {
+    if (limit === -1) return unlimited;
+    return limit ?? 0;
+};
 </script>
 
 <template>
-    <div v-if="shouldShow" 
-        :class="getBannerClass()" 
-        class="bg-gradient-to-br border rounded-lg p-3 mx-2 mb-4 relative overflow-hidden">
-        
-        <!-- Background pattern -->
-        <div class="absolute inset-0 opacity-5">
-            <div class="absolute inset-0" style="background-image: radial-gradient(circle at 1px 1px, currentColor 1px, transparent 0); background-size: 12px 12px;"></div>
+    <div
+        v-if="shouldShow"
+        class="rounded-xl border border-white/70 bg-white/85 p-3 shadow-sm shadow-surface-900/5 backdrop-blur-md dark:border-surface-700/70 dark:bg-surface-900/80"
+    >
+        <!-- Header -->
+        <div class="mb-2.5 flex items-center justify-between gap-2">
+            <div class="flex min-w-0 items-center gap-2">
+                <Zap v-if="bannerType === 'trial'" :class="getIconClass()" class="h-4 w-4 shrink-0" />
+                <Crown v-else :class="getIconClass()" class="h-4 w-4 shrink-0" />
+                <span class="truncate text-[13px] font-semibold text-surface-900 dark:text-white">{{ planName }}</span>
+            </div>
+            <span
+                v-if="billingTypeLabel"
+                class="shrink-0 rounded-md bg-surface-100 px-1.5 py-0.5 text-[10px] font-semibold text-surface-600 dark:bg-surface-800 dark:text-surface-300"
+            >
+                {{ billingTypeLabel }}
+            </span>
+            <span
+                v-else-if="bannerType === 'trial'"
+                class="shrink-0 rounded-md bg-surface-100 px-1.5 py-0.5 text-[10px] font-semibold text-surface-600 tabular-nums dark:bg-surface-800 dark:text-surface-300"
+            >
+                {{ trial.days_left }} gg
+            </span>
         </div>
-        
-        <div class="relative">
-            <!-- Header -->
-            <div class="flex items-center mb-3">
-                <div class="flex items-center">
-                    <Zap v-if="bannerType === 'trial'" :class="getIconClass()" class="w-4 h-4 mr-2" />
-                    <Crown v-else :class="getIconClass()" class="w-4 h-4 mr-2" />
-                    <span :class="getTextClass()" class="text-xs font-bold uppercase tracking-wide">{{ planName }}{{ billingTypeLabel }}</span>
-                </div>
+
+        <!-- Plan limits -->
+        <dl class="space-y-1 text-xs">
+            <div class="flex items-center justify-between">
+                <dt class="text-surface-500 dark:text-surface-400">Link</dt>
+                <dd class="font-medium text-surface-800 dark:text-surface-100">{{ formatLimit(billing?.limits?.links, 'Illimitati') }}</dd>
             </div>
-            
-            <!-- Plan limits -->
-            <div class="mb-3 space-y-1.5">
-                <div class="flex items-center justify-between text-xs">
-                    <span :class="getTextClass()" class="opacity-75">Link</span>
-                    <span :class="getTextClass()" class="font-semibold">
-                        {{ billing?.limits?.links === -1 ? 'Illimitati' : billing?.limits?.links || 0 }}
-                    </span>
-                </div>
-                <div class="flex items-center justify-between text-xs">
-                    <span :class="getTextClass()" class="opacity-75">QR Code</span>
-                    <span :class="getTextClass()" class="font-semibold">
-                        {{ billing?.limits?.qrcodes === -1 ? 'Illimitati' : billing?.limits?.qrcodes || 0 }}
-                    </span>
-                </div>
-                <div class="flex items-center justify-between text-xs">
-                    <span :class="getTextClass()" class="opacity-75">Pagine</span>
-                    <span :class="getTextClass()" class="font-semibold">
-                        {{ billing?.limits?.pages === -1 ? 'Illimitate' : billing?.limits?.pages || 0 }}
-                    </span>
-                </div>
+            <div class="flex items-center justify-between">
+                <dt class="text-surface-500 dark:text-surface-400">QR Code</dt>
+                <dd class="font-medium text-surface-800 dark:text-surface-100">{{ formatLimit(billing?.limits?.qrcodes, 'Illimitati') }}</dd>
             </div>
-            
-            <!-- Renewal date (only for active subscriptions) -->
-            <div v-if="bannerType === 'subscription' && formattedEndDate" class="mb-3 text-center">
-                <p :class="getTextClass()" class="text-xs opacity-75">
-                    Rinnovo il {{ formattedEndDate }}
-                </p>
-                <p :class="getTextClass()" class="text-xs font-semibold mt-0.5">
-                    {{ daysRemaining }} {{ daysRemaining === 1 ? 'giorno' : 'giorni' }} rimanenti
-                </p>
+            <div class="flex items-center justify-between">
+                <dt class="text-surface-500 dark:text-surface-400">Pagine</dt>
+                <dd class="font-medium text-surface-800 dark:text-surface-100">{{ formatLimit(billing?.limits?.pages, 'Illimitate') }}</dd>
             </div>
-            
-            <!-- CTA Button -->
-            <button 
-                v-if="bannerType !== 'lifetime'"
-                @click="emit('show-plan-modal')"
-                :class="bannerType === 'trial' || bannerType === 'free' 
-                    ? 'from-green-500 to-green-600 hover:from-green-600 hover:to-green-700' 
-                    : 'from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700'"
-                class="w-full inline-flex items-center justify-center px-3 py-1.5 bg-gradient-to-r text-white text-xs font-semibold rounded-md transition-all duration-200 shadow-sm hover:shadow-md cursor-pointer">
-                <CreditCard class="w-3 h-3 mr-1.5" />
-                {{ bannerType === 'trial' || bannerType === 'free' ? 'Scegli Piano' : 'Gestisci Piano' }}
-            </button>
-        </div>
+        </dl>
+
+        <!-- Renewal date (only for active subscriptions) -->
+        <p v-if="bannerType === 'subscription' && formattedEndDate" class="mt-2.5 text-[11px] text-surface-500 dark:text-surface-400">
+            Rinnovo il {{ formattedEndDate }} · {{ daysRemaining }} {{ daysRemaining === 1 ? 'giorno' : 'giorni' }}
+        </p>
+
+        <!-- CTA Button -->
+        <button
+            v-if="bannerType !== 'lifetime'"
+            @click="emit('show-plan-modal')"
+            :class="bannerType === 'trial' || bannerType === 'free'
+                ? 'bg-primary-500 text-white shadow-sm shadow-primary-500/30 hover:bg-primary-600'
+                : 'border border-surface-200 bg-white text-surface-700 hover:bg-surface-50 dark:border-surface-600 dark:bg-surface-800 dark:text-surface-100 dark:hover:bg-surface-700'"
+            class="mt-3 inline-flex w-full cursor-pointer items-center justify-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold transition-colors"
+        >
+            <CreditCard class="h-3.5 w-3.5" />
+            {{ bannerType === 'trial' || bannerType === 'free' ? 'Scegli piano' : 'Gestisci piano' }}
+        </button>
     </div>
 </template>
-

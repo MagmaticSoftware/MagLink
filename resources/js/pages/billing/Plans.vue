@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { Head, router, usePage } from '@inertiajs/vue3';
 import { computed, ref } from 'vue';
-import { LucideCheck, LucideCrown, LucideRocket, LucideBuilding, LucideSparkles } from 'lucide-vue-next';
+import { LucideAlarmClock, LucideCalendar, LucideCheck, LucideCrown, LucideInfinity, LucideRocket, LucideBuilding, LucideSparkles } from 'lucide-vue-next';
 import AppLayout from '@/layouts/AppLayout.vue';
 import type { BreadcrumbItem } from '@/types';
 import type { PageProps } from '@/types/inertia';
@@ -187,17 +187,17 @@ const formatDate = (date: string | null) => {
                             Piano Attivo: {{ onProLifetime ? 'Pro Lifetime' : currentPlan }}
                         </h3>
                         <div class="space-y-1 text-sm text-gray-600 dark:text-gray-300">
-                            <p v-if="hasActiveTrial && trialEndsAt">
-                                ⏰ Il tuo periodo di prova termina il <strong>{{ formatDate(trialEndsAt) }}</strong>
+                            <p v-if="hasActiveTrial && trialEndsAt" class="flex items-center gap-1.5">
+                                <LucideAlarmClock class="w-4 h-4 shrink-0" /> Il tuo periodo di prova termina il <strong>{{ formatDate(trialEndsAt) }}</strong>
                             </p>
-                            <p v-else-if="isSubscribed && subscriptionEndsAt">
-                                📅 Prossimo rinnovo: <strong>{{ formatDate(subscriptionEndsAt) }}</strong>
+                            <p v-else-if="isSubscribed && subscriptionEndsAt" class="flex items-center gap-1.5">
+                                <LucideCalendar class="w-4 h-4 shrink-0" /> Prossimo rinnovo: <strong>{{ formatDate(subscriptionEndsAt) }}</strong>
                             </p>
-                            <p v-else-if="onProLifetime">
-                                ♾️ Piano concesso a vita: non serve alcun abbonamento e non ha scadenza
+                            <p v-else-if="onProLifetime" class="flex items-center gap-1.5">
+                                <LucideInfinity class="w-4 h-4 shrink-0" /> Piano concesso a vita: non serve alcun abbonamento e non ha scadenza
                             </p>
-                            <p v-else-if="onFreePlan">
-                                ✨ Stai usando il piano gratuito
+                            <p v-else-if="onFreePlan" class="flex items-center gap-1.5">
+                                <LucideSparkles class="w-4 h-4 shrink-0" /> Stai usando il piano gratuito
                             </p>
                         </div>
                     </div>

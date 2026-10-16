@@ -7,6 +7,7 @@ use App\Models\QrCode;
 use App\Models\Page;
 use App\Models\PageBlock;
 use App\Models\View;
+use App\Support\Trend;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
 use Illuminate\Http\Request;
@@ -16,9 +17,15 @@ use Illuminate\Support\Facades\DB;
 
 class DashboardController extends Controller
 {
-    public function index()
+    /**
+     * Periodi selezionabili per grafico e trend (in giorni).
+     */
+    private const PERIODS = [7, 30];
+
+    public function index(Request $request)
     {
         $user = Auth::user();
+        $days = in_array((int) $request->query('days'), self::PERIODS, true) ? (int) $request->query('days') : 7;
         
         $linkIds = Link::where('user_id', $user->id)->pluck('id');
         $qrcodeIds = QrCode::where('user_id', $user->id)->pluck('id');
@@ -37,6 +44,7 @@ class DashboardController extends Controller
 
         // Ultimi link creati
         $latest_links = Link::where('user_id', $user->id)
+            ->withCount('views')
             ->orderBy('created_at', 'desc')
             ->take(5)
             ->get(['id', 'title', 'url', 'created_at']);
@@ -45,7 +53,7 @@ class DashboardController extends Controller
         $latest_qrcodes = QrCode::where('user_id', $user->id)
             ->orderBy('created_at', 'desc')
             ->take(5)
-            ->get(['id', 'name', 'scans', 'created_at']);
+            ->get(['id', 'name', 'slug', 'scans', 'created_at']);
         
         // Ultime pagine
         $latest_pages = Page::where('user_id', $user->id)
@@ -57,14 +65,15 @@ class DashboardController extends Controller
         $latest_blocks = PageBlock::whereHas('page', function ($query) use ($user) {
                 $query->where('user_id', $user->id);
             })
-            ->with('page:id,title')
+            ->with('page:id,title,slug')
             ->orderBy('created_at', 'desc')
             ->take(5)
             ->get(['id', 'page_id', 'type', 'title', 'position', 'created_at']);
         
-        // Attività ultimi 7 giorni: click sui link e scansioni QR registrati nella tabella views
+        // Attività del periodo: click sui link e scansioni QR registrati nella tabella views
+        $from = now()->subDays($days - 1)->startOfDay();
         $performanceData = $this->viewsQuery($linkIds, $qrcodeIds)
-            ->where('created_at', '>=', now()->subDays(6)->startOfDay())
+            ->where('created_at', '>=', $from)
             ->selectRaw('DATE(created_at) as date')
             ->selectRaw('SUM(CASE WHEN viewable_type = ? THEN 1 ELSE 0 END) as link_views', [Link::class])
             ->selectRaw('SUM(CASE WHEN viewable_type = ? THEN 1 ELSE 0 END) as qrcode_views', [QrCode::class])
@@ -72,9 +81,9 @@ class DashboardController extends Controller
             ->get()
             ->keyBy('date');
 
-        // Assicurati che tutti i 7 giorni siano inclusi, anche senza visite
+        // Assicurati che tutti i giorni del periodo siano inclusi, anche senza visite
         $performance = collect();
-        for ($i = 6; $i >= 0; $i--) {
+        for ($i = $days - 1; $i >= 0; $i--) {
             $date = now()->subDays($i)->format('Y-m-d');
             $dayData = $performanceData->get($date);
             $linkViews = $dayData ? (int) $dayData->link_views : 0;
@@ -87,13 +96,54 @@ class DashboardController extends Controller
             ]);
         }
 
+        // Trend delle card: serie giornaliera del periodo e variazione rispetto al periodo precedente
+        $blocksQuery = fn () => PageBlock::whereHas('page', fn ($query) => $query->where('user_id', $user->id));
+        $trends = [
+            'links' => Trend::daily(fn () => Link::where('user_id', $user->id), $days),
+            'qrcodes' => Trend::daily(fn () => QrCode::where('user_id', $user->id), $days),
+            'pages' => Trend::daily(fn () => Page::where('user_id', $user->id), $days),
+            'blocks' => Trend::daily($blocksQuery, $days),
+            'views' => Trend::daily(fn () => $this->viewsQuery($linkIds, $qrcodeIds), $days),
+        ];
+
+        // Link più performanti del periodo, con variazione rispetto al periodo precedente
+        $previousFrom = $from->copy()->subDays($days);
+        $topLinks = Link::where('user_id', $user->id)
+            ->withCount([
+                'views as period_views' => fn ($query) => $query->where('created_at', '>=', $from),
+                'views as previous_views' => fn ($query) => $query->where('created_at', '>=', $previousFrom)->where('created_at', '<', $from),
+            ])
+            ->orderByDesc('period_views')
+            ->take(5)
+            ->get(['id', 'title', 'slug', 'url'])
+            ->filter(fn (Link $link) => $link->period_views > 0)
+            ->map(fn (Link $link) => [
+                'id' => $link->id,
+                'title' => $link->title,
+                'slug' => $link->slug,
+                'url' => $link->url,
+                'views' => $link->period_views,
+                'change' => Trend::change($link->period_views, $link->previous_views),
+            ])
+            ->values();
+
         return Inertia::render('tenant/Dashboard', [
             'stats' => $stats,
             'latest_links' => $latest_links,
             'latest_qrcodes' => $latest_qrcodes,
             'latest_pages' => $latest_pages,
             'latest_blocks' => $latest_blocks,
+            // Sparkline 7 giorni degli ultimi link e QR code
+            'latest_sparklines' => [
+                'links' => Trend::viewsPerItem(Link::class, $latest_links->pluck('id'), 7),
+                'qrcodes' => Trend::viewsPerItem(QrCode::class, $latest_qrcodes->pluck('id'), 7),
+            ],
             'performance' => $performance,
+            'trends' => $trends,
+            'top_links' => $topLinks,
+            'shortUrl' => config('app.short_url'),
+            'period' => $days,
+            'periods' => self::PERIODS,
         ]);
     }
 
